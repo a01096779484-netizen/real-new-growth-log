@@ -730,10 +730,7 @@
 'use strict';
 
 /* ============================================================
-   ★ Firebase 설정 — 본인 프로젝트 값으로 교체하세요
-   Firebase Console: https://console.firebase.google.com/
-   Authentication > Google 로그인 활성화 필요
-   Firestore Database 생성 필요
+   ★ Firebase 설정
 ============================================================ */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBNVVF1HfqxCl2w_Bid0mqn1iJjbl_U2kQ",
@@ -743,7 +740,7 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "319839503600",
   appId: "1:319839503600:web:4f8b779a17e9b53df2ee35",
   measurementId: "G-NCXM999N32"
-}
+};
 
 /* ============================================================
    전역 상태
@@ -834,7 +831,7 @@ function lsSet(path, val) {
 ============================================================ */
 async function initFB() {
   try {
-    firebase.initializeApp(FB_CONFIG);
+    firebase.initializeApp(FIREBASE_CONFIG);
     auth = firebase.auth();
     db   = firebase.firestore();
     fbOk = true;
@@ -1800,7 +1797,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initApp();
 });
 </script>
-</body>
-</html>
 </body>
 </html>
