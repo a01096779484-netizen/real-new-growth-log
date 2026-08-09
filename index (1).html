@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>성장 로그 — 크리스천 군인 영성 &amp; 자기관리</title>
+
+  <!-- Firebase Compat v9 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS 변수 — Paper Warm Theme
+    ============================================================ */
+    :root {
+      --bg-page:       #f5f0e8;
+      --bg-card:       #fdfaf4;
+      --bg-card-alt:   #f9f4ea;
+      --bg-header:     #3a2f1e;
+      --accent-gold:   #c9a84c;
+      --accent-warm:   #b5651d;
+      --accent-green:  #4a7c59;
+      --accent-red:    #8b3a3a;
+      --accent-blue:   #3a5f8b;
+      --text-primary:  #2c2416;
+      --text-secondary:#6b5a3e;
+      --text-muted:    #a0906e;
+      --text-light:    #fdfaf4;
+      --border-warm:   #d4c4a0;
+      --border-light:  #e8dfc8;
+      --shadow-card:   0 2px 8px rgba(44,36,22,0.10);
+      --radius-card:   10px;
+      --radius-btn:    6px;
+      --font-serif:    'Noto Serif KR', Georgia, serif;
+      --font-sans:     'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+      --transition:    0.2s ease;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg-page); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+    ul, ol { list-style: none; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--border-warm); border-radius: 3px; }
+
+    /* ============================================================
+       로그인 화면
+    ============================================================ */
+    #login-screen {
+      position: fixed; inset: 0; background: var(--bg-header);
+      z-index: 2000; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px; padding: 32px;
+    }
+    #login-screen.hidden { display: none; }
+    .login-logo { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--accent-gold); text-align: center; }
+    .login-logo small { display: block; font-size: 0.85rem; font-weight: 300; color: var(--text-muted); margin-top: 4px; }
+    .login-desc { font-size: 0.85rem; color: var(--text-muted); text-align: center; line-height: 1.8; max-width: 280px; }
+    .login-google-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 26px; background: #fff; border-radius: 8px;
+      font-size: 0.92rem; font-weight: 700; color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: var(--transition);
+    }
+    .login-google-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); transform: translateY(-1px); }
+    .login-skip-btn { font-size: 0.78rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+    .login-skip-btn:hover { color: var(--accent-gold); }
+    .login-firebase-note {
+      font-size: 0.72rem; color: var(--text-muted); text-align: center;
+      max-width: 300px; line-height: 1.6;
+      background: rgba(255,255,255,0.05); border-radius: 6px; padding: 8px 12px;
+    }
+
+    /* ============================================================
+       로딩 오버레이
+    ============================================================ */
+    #loading-overlay {
+      position: fixed; inset: 0; background: rgba(245,240,232,0.9);
+      z-index: 1500; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 12px;
+    }
+    #loading-overlay.hidden { display: none; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border-warm); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============================================================
+       앱 셸 레이아웃
+    ============================================================ */
+    #app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+    #app-shell.hidden { display: none; }
+
+    /* 헤더 */
+    #app-header {
+      background: var(--bg-header); color: var(--text-light);
+      padding: 0 16px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 200;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    #header-logo { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 700; color: var(--accent-gold); }
+    #header-logo small { font-weight: 300; font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-left: 6px; }
+    #header-right { display: flex; align-items: center; gap: 8px; }
+    .hbtn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-light); border-radius: var(--radius-btn);
+      padding: 5px 11px; font-size: 0.76rem; transition: var(--transition);
+    }
+    .hbtn:hover { background: rgba(255,255,255,0.18); }
+    .hbtn.gold { background: var(--accent-gold); color: #1a1000; border-color: var(--accent-gold); font-weight: 700; }
+    #user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
+    #user-name-disp { font-size: 0.76rem; color: var(--accent-gold); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* 날짜 네비 */
+    #date-nav {
+      background: var(--bg-card); border-bottom: 1px solid var(--border-light);
+      padding: 9px 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
+      position: sticky; top: 56px; z-index: 190;
+    }
+    .dnbtn {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--bg-card-alt); border: 1px solid var(--border-warm);
+      color: var(--text-secondary); font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center; transition: var(--transition);
+    }
+    .dnbtn:hover { background: var(--accent-gold); color: #fff; border-color: var(--accent-gold); }
+    #date-disp {
+      font-family: var(--font-serif); font-size: 1rem; font-weight: 600;
+      color: var(--text-primary); cursor: pointer; padding: 4px 10px;
+      border-radius: var(--radius-btn); transition: var(--transition);
+    }
+    #date-disp:hover { background: var(--border-light); }
+    #today-btn {
+      font-size: 0.7rem; padding: 3px 8px; border-radius: 12px;
+      background: var(--accent-warm); color: #fff; font-weight: 700;
+    }
+    #today-btn:hover { opacity: 0.85; }
+    #date-picker { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+
+    /* 메인 */
+    #main { flex: 1; padding: 14px; max-width: 900px; margin: 0 auto; width: 100%; }
+
+    /* ============================================================
+       카드
+    ============================================================ */
+    .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
+    .card-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 15px; background: var(--bg-card-alt); border-bottom: 1px solid var(--border-light);
+    }
+    .card-title { font-family: var(--font-serif); font-size: 0.93rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
+    .card-bd { padding: 13px 15px; }
+
+    /* ============================================================
+       주간 차트
+    ============================================================ */
+    .week-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 80px; }
+    .wbar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; cursor: pointer; }
+    .wbar-outer { flex: 1; width: 100%; background: var(--border-light); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; overflow: hidden; transition: var(--transition); }
+    .wbar-wrap:hover .wbar-outer { background: var(--border-warm); }
+    .wbar-inner { width: 100%; background: linear-gradient(to top, var(--accent-gold), #e8c96a); border-radius: 4px 4px 0 0; transition: height 0.5s ease; min-height: 2px; }
+    .wbar-inner.today { background: linear-gradient(to top, var(--accent-warm), #e8944a); }
+    .wbar-inner.current { outline: 2px solid var(--accent-warm); outline-offset: 1px; }
+    .wbar-lbl { font-size: 0.66rem; color: var(--text-muted); font-weight: 500; }
+    .wbar-lbl.cur { color: var(--accent-warm); font-weight: 700; }
+    .wbar-pct { font-size: 0.63rem; color: var(--text-secondary); font-weight: 600; }
+
+    /* ============================================================
+       체크리스트
+    ============================================================ */
+    .cl-wrap { display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
+    .cl-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 7px 9px; border-radius: 7px;
+      border: 1px solid transparent; background: var(--bg-page);
+      transition: var(--transition); position: relative; user-select: none;
+    }
+    .cl-item:hover { border-color: var(--border-warm); background: var(--bg-card-alt); }
+    .cl-item.dragging { opacity: 0.45; border: 2px dashed var(--accent-gold) !important; }
+    .cl-item.drag-over { border-color: var(--accent-gold) !important; background: #fdf6e3 !important; transform: scale(1.01); }
+    .drag-handle { color: var(--text-muted); cursor: grab; font-size: 1rem; padding: 0 1px; flex-shrink: 0; touch-action: none; line-height: 1; }
+    .drag-handle:active { cursor: grabbing; }
+    .chk-btn {
+      width: 21px; height: 21px; border-radius: 50%;
+      border: 2px solid var(--border-warm); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; transition: var(--transition); background: var(--bg-card);
+    }
+    .chk-btn.done { background: var(--accent-green); border-color: var(--accent-green); color: #fff; }
+    .chk-btn.fail { background: var(--accent-red); border-color: var(--accent-red); color: #fff; }
+    .item-tw { flex: 1; min-width: 0; }
+    .item-txt { font-size: 0.86rem; color: var(--text-primary); word-break: break-all; line-height: 1.4; }
+    .item-txt.done { text-decoration: line-through; color: var(--text-muted); }
+    .item-txt.fail { color: var(--accent-red); }
+    .item-fail-r { font-size: 0.72rem; color: var(--accent-red); margin-top: 2px; font-style: italic; }
+    .pin-ico { font-size: 0.68rem; color: var(--accent-gold); flex-shrink: 0; }
+    .item-acts { display: flex; gap: 3px; flex-shrink: 0; }
+    .iabtn {
+      width: 24px; height: 24px; border-radius: 4px; font-size: 0.72rem;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: var(--transition);
+    }
+    .iabtn:hover { background: var(--border-light); color: var(--text-primary); }
+    .iabtn.pin-on { color: var(--accent-gold); }
+    .iabtn.del:hover { background: #fde8e8; color: var(--accent-red); }
+    .add-row { display: flex; gap: 6px; margin-top: 8px; }
+    .add-inp {
+      flex: 1; padding: 7px 9px; border: 1px solid var(--border-warm);
+      border-radius: var(--radius-btn); background: var(--bg-page);
+      font-size: 0.83rem; color: var(--text-primary); outline: none; transition: var(--transition);
+    }
+    .add-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .add-btn {
+      padding: 7px 13px; background: var(--accent-gold); color: #1a1000;
+      border-radius: var(--radius-btn); font-size: 0.8rem; font-weight: 700; transition: var(--transition);
+    }
+    .add-btn:hover { opacity: 0.85; }
+    .prog-wrap { height: 5px; background: var(--border-light); border-radius: 3px; overflow: hidden; margin-top: 7px; }
+    .prog-fill { height: 100%; background: linear-gradient(to right, var(--accent-gold), var(--accent-warm)); border-radius: 3px; transition: width 0.4s ease; }
+    .prog-lbl { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 2px; }
+
+    /* ============================================================
+       말씀 묵상 카드
+    ============================================================ */
+    .verse-prev {
+      font-family: var(--font-serif); font-size: 0.9rem; line-height: 1.8;
+      color: var(--text-secondary); background: var(--bg-page);
+      border-left: 3px solid var(--accent-gold); padding: 9px 13px;
+      border-radius: 0 6px 6px 0; cursor: pointer; transition: var(--transition); white-space: pre-wrap;
+    }
+    .verse-prev:hover { background: #fdf6e3; }
+    .medit-prev { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-top: 7px; white-space: pre-wrap; word-break: break-all; }
+    .dev-empty { text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.83rem; font-style: italic; }
+
+    /* ============================================================
+       도구 그리드
+    ============================================================ */
+    .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .tool-btn {
+      padding: 13px 8px; border-radius: var(--radius-card);
+      border: 1px solid var(--border-light); background: var(--bg-card-alt);
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      transition: var(--transition); font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
+    }
+    .tool-btn .ti { font-size: 1.5rem; }
+    .tool-btn:hover { border-color: var(--accent-gold); background: #fdf6e3; color: var(--text-primary); }
+
+    /* ============================================================
+       AI 코칭 & 메모
+    ============================================================ */
+    #coaching-inp {
+      width: 100%; min-height: 75px; padding: 9px;
+      border: 1px solid var(--border-warm); border-radius: var(--radius-btn);
+      background: var(--bg-page); font-size: 0.84rem; color: var(--text-primary);
+      resize: vertical; outline: none; line-height: 1.6; transition: var(--transition);
+    }
+    #coaching-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .c-btn-row { display: flex; gap: 6px; margin-top: 7px; }
+    .c-submit-btn {
+      flex: 1; padding: 8px; background: var(--accent-blue); color: #fff;
+      border-radius: var(--radius-btn); font-size: 0.8rem; font-weight: 700; transition: var(--transition);
+    }
+    .c-submit-btn:hover { opacity: 0.85; }
+    .c-memo-btn {
+      padding: 8px 13px; background: var(--bg-card-alt); border: 1px solid var(--border-warm);
+      border-radius: var(--radius-btn); font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; transition: var(--transition);
+    }
+    .c-memo-btn:hover { background: var(--border-light); }
+    #coaching-resp {
+      background: var(--bg-page); border: 1px solid var(--border-light);
+      border-radius: var(--radius-btn); padding: 11px; font-size: 0.82rem;
+      line-height: 1.75; color: var(--text-secondary); white-space: pre-wrap;
+      display: none; margin-top: 8px;
+    }
+    #coaching-resp.vis { display: block; }
+    #c-add-todo-btn {
+      margin-top: 6px; padding: 6px 12px; background: var(--accent-green); color: #fff;
+      border-radius: var(--radius-btn); font-size: 0.76rem; font-weight: 700; transition: var(--transition); display: none;
+    }
+    #c-add-todo-btn:hover { opacity: 0.85; }
+    .memo-list { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+    .memo-item {
+      background: var(--bg-page); border: 1px solid var(--border-light);
+      border-radius: 6px; padding: 7px 9px; font-size: 0.8rem; color: var(--text-secondary);
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 7px;
+    }
+    .memo-txt { flex: 1; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+    .memo-del { color: var(--text-muted); font-size: 0.82rem; flex-shrink: 0; transition: var(--transition); }
+    .memo-del:hover { color: var(--accent-red); }
+    .divider { height: 1px; background: var(--border-light); margin: 10px 0; }
+
+    /* ============================================================
+       모달 공통
+    ============================================================ */
+    .modal-ov {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+    }
+    .modal-ov.open { opacity: 1; pointer-events: all; }
+    .modal-sh {
+      background: var(--bg-card); border-radius: 18px 18px 0 0;
+      width: 100%; max-width: 640px; max-height: 90vh;
+      overflow-y: auto; padding-bottom: 20px;
+      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    }
+    .modal-ov.open .modal-sh { transform: translateY(0); }
+    .modal-handle { width: 38px; height: 4px; background: var(--border-warm); border-radius: 2px; margin: 9px auto 0; }
+    .modal-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 17px 9px; border-bottom: 1px solid var(--border-light);
+    }
+    .modal-title { font-family: var(--font-serif); font-size: 0.97rem; font-weight: 700; color: var(--text-primary); }
+    .modal-x {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--bg-card-alt); border: 1px solid var(--border-light);
+      color: var(--text-muted); font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center; transition: var(--transition);
+    }
+    .modal-x:hover { background: var(--border-light); color: var(--text-primary); }
+    .modal-bd { padding: 14px 17px; }
+
+    /* 말씀 묵상 모달 */
+    .dev-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; margin-top: 12px; }
+    .dev-lbl:first-child { margin-top: 0; }
+    .dev-verse-inp {
+      width: 100%; padding: 9px; border: 1px solid var(--border-warm);
+      border-radius: var(--radius-btn); background: var(--bg-page);
+      font-family: var(--font-serif); font-size: 0.88rem; color: var(--text-primary);
+      resize: vertical; min-height: 70px; outline: none; transition: var(--transition);
+    }
+    .dev-verse-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .dev-med-inp {
+      width: 100%; padding: 9px; border: 1px solid var(--border-warm);
+      border-radius: var(--radius-btn); background: var(--bg-page);
+      font-size: 0.86rem; color: var(--text-primary); resize: vertical;
+      min-height: 100px; outline: none; transition: var(--transition); line-height: 1.6;
+    }
+    .dev-med-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .dev-save-btn {
+      width: 100%; margin-top: 13px; padding: 10px;
+      background: var(--accent-gold); color: #1a1000;
+      border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700; transition: var(--transition);
+    }
+    .dev-save-btn:hover { opacity: 0.85; }
+
+    /* 자기점검 모달 */
+    .rq-wrap { margin-bottom: 14px; }
+    .rq-txt { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 7px; line-height: 1.5; }
+    .rq-scores { display: flex; gap: 5px; }
+    .rq-sbtn {
+      flex: 1; padding: 6px 3px; border-radius: 5px;
+      border: 1px solid var(--border-warm); background: var(--bg-page);
+      font-size: 0.78rem; font-weight: 600; color: var(--text-muted); transition: var(--transition);
+    }
+    .rq-sbtn:hover { border-color: var(--accent-gold); color: var(--text-primary); }
+    .rq-sbtn.sel { background: var(--accent-gold); border-color: var(--accent-gold); color: #1a1000; }
+    .rq-comment {
+      width: 100%; margin-top: 5px; padding: 6px 9px;
+      border: 1px solid var(--border-light); border-radius: var(--radius-btn);
+      background: var(--bg-page); font-size: 0.8rem; color: var(--text-primary); outline: none; transition: var(--transition);
+    }
+    .rq-comment:focus { border-color: var(--accent-gold); }
+    #retro-total { text-align: center; font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--accent-warm); margin: 10px 0 4px; }
+    #retro-grade { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; }
+    .retro-save-btn {
+      width: 100%; padding: 10px; background: var(--accent-warm); color: #fff;
+      border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700; transition: var(--transition);
+    }
+    .retro-save-btn:hover { opacity: 0.85; }
+
+    /* 타이머 모달 */
+    .tab-row { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 13px; }
+    .tab-btn { flex: 1; padding: 8px; font-size: 0.83rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; transition: var(--transition); }
+    .tab-btn.active { color: var(--accent-warm); border-bottom-color: var(--accent-warm); }
+    .timer-disp { font-family: var(--font-serif); font-size: 3rem; font-weight: 700; text-align: center; color: var(--text-primary); letter-spacing: 0.04em; margin: 14px 0; }
+    .timer-btns { display: flex; gap: 9px; justify-content: center; margin-bottom: 10px; }
+    .tbtn { padding: 9px 22px; border-radius: 22px; font-size: 0.86rem; font-weight: 700; transition: var(--transition); }
+    .tbtn.start { background: var(--accent-green); color: #fff; }
+    .tbtn.pause { background: var(--accent-warm); color: #fff; }
+    .tbtn.reset { background: var(--bg-card-alt); border: 1px solid var(--border-warm); color: var(--text-secondary); }
+    .tbtn:hover { opacity: 0.85; }
+    .preset-row { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
+    .preset-btn {
+      padding: 4px 11px; border-radius: 13px; border: 1px solid var(--border-warm);
+      background: var(--bg-page); font-size: 0.76rem; color: var(--text-secondary); font-weight: 600; transition: var(--transition);
+    }
+    .preset-btn:hover { border-color: var(--accent-gold); color: var(--text-primary); }
+    .preset-btn.active-preset { background: var(--accent-gold); border-color: var(--accent-gold); color: #1a1000; }
+    .lap-list { max-height: 130px; overflow-y: auto; margin-top: 9px; border: 1px solid var(--border-light); border-radius: var(--radius-btn); }
+    .lap-item { display: flex; justify-content: space-between; padding: 4px 9px; font-size: 0.76rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); }
+    .lap-item:last-child { border-bottom: none; }
+
+    /* 실패 사유 / 편집 모달 공통 */
+    .modal-inp {
+      width: 100%; padding: 9px; border: 1px solid var(--border-warm);
+      border-radius: var(--radius-btn); background: var(--bg-page);
+      font-size: 0.88rem; color: var(--text-primary); outline: none; transition: var(--transition);
+    }
+    .modal-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .modal-save-btn {
+      width: 100%; margin-top: 11px; padding: 10px;
+      border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700; transition: var(--transition);
+    }
+    .modal-save-btn:hover { opacity: 0.85; }
+
+    /* ============================================================
+       토스트
+    ============================================================ */
+    #toast-box { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
+    .toast { background: var(--bg-header); color: var(--text-light); padding: 8px 17px; border-radius: 18px; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); transition: opacity 0.22s, transform 0.22s; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.ok { background: var(--accent-green); }
+    .toast.err { background: var(--accent-red); }
+    .toast.info { background: var(--accent-blue); }
+
+    /* ============================================================
+       배지
+    ============================================================ */
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.66rem; font-weight: 700; }
+    .bg-gold { background: var(--accent-gold); color: #1a1000; }
+    .bg-green { background: var(--accent-green); color: #fff; }
+    .bg-blue { background: var(--accent-blue); color: #fff; }
+    .bg-red { background: var(--accent-red); color: #fff; }
+
+    /* ============================================================
+       반응형
+    ============================================================ */
+    @media (min-width: 640px) {
+      #main { padding: 18px 22px; }
+      .modal-ov { align-items: center; }
+      .modal-sh { border-radius: var(--radius-card); max-height: 88vh; }
+    }
+    @media (min-width: 860px) {
+      #main { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+      #chart-card, #dev-card { grid-column: 1 / -1; }
+    }
+
+    /* 타이핑 커서 */
+    .typing::after { content: '|'; animation: blink 0.7s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     로그인 화면
+============================================================ -->
+<div id="login-screen">
+  <div class="login-logo">
+    ✝ 성장 로그
+    <small>크리스천 군인 영성 &amp; 자기관리</small>
+  </div>
+  <p class="login-desc">하나님 앞에 성실한 하루를 기록하세요.<br/>루틴 · 묵상 · 자기점검을 한 곳에서.</p>
+  <button class="login-google-btn" id="btn-google-login">
+    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Google로 로그인
+  </button>
+  <button class="login-skip-btn" id="btn-skip-login">로그인 없이 시작 (로컬 저장)</button>
+  <p class="login-firebase-note">
+    ⚙ Firebase 연동 시 Google 로그인으로 모든 기기에서<br/>데이터가 동기화됩니다.<br/>
+    로컬 모드는 이 기기에만 저장됩니다.
+  </p>
+</div>
+
+<!-- ============================================================
+     로딩 오버레이
+============================================================ -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <span style="font-size:0.8rem;color:var(--text-muted);">불러오는 중...</span>
+</div>
+
+<!-- ============================================================
+     앱 셸
+============================================================ -->
+<div id="app-shell" class="hidden">
+
+  <!-- 헤더 -->
+  <header id="app-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="header-logo">✝ 성장 로그 <small>Growth Log</small></span>
+    </div>
+    <div id="header-right">
+      <span id="user-name-disp"></span>
+      <img id="user-avatar" src="" alt="avatar" class="hidden" />
+      <button class="hbtn" id="btn-logout">로그아웃</button>
+    </div>
+  </header>
+
+  <!-- 날짜 네비 -->
+  <nav id="date-nav">
+    <button class="dnbtn" id="btn-prev-day">◀</button>
+    <span id="date-disp">2024년 1월 1일 (월)</span>
+    <button class="dnbtn" id="btn-next-day">▶</button>
+    <button id="today-btn">오늘</button>
+    <input type="date" id="date-picker" />
+  </nav>
+
+  <!-- 메인 -->
+  <main id="main">
+
+    <!-- 주간 달성률 차트 -->
+    <div class="card" id="chart-card">
+      <div class="card-hd">
+        <span class="card-title">📊 주간 달성률</span>
+        <span class="badge bg-gold" id="week-avg-badge">평균 0%</span>
+      </div>
+      <div class="card-bd">
+        <div class="week-bars" id="week-bars"></div>
+      </div>
+    </div>
+
+    <!-- 말씀 묵상 -->
+    <div class="card" id="dev-card">
+      <div class="card-hd">
+        <span class="card-title">📖 오늘의 말씀 묵상</span>
+        <button class="hbtn" id="btn-dev-edit" style="font-size:0.73rem;padding:4px 9px;">✏ 기록</button>
+      </div>
+      <div class="card-bd" id="dev-preview">
+        <div class="dev-empty">말씀을 기록해 보세요 ✝</div>
+      </div>
+    </div>
+
+    <!-- My Routine -->
+    <div class="card" id="routine-card">
+      <div class="card-hd">
+        <span class="card-title">🔄 My Routine</span>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <span class="badge bg-green" id="routine-badge">0/0</span>
+        </div>
+      </div>
+      <div class="card-bd">
+        <div class="cl-wrap" id="routine-list" data-zone="routine"></div>
+        <div class="prog-wrap"><div class="prog-fill" id="routine-prog" style="width:0%"></div></div>
+        <p class="prog-lbl" id="routine-prog-lbl">완료 0%</p>
+        <div class="add-row">
+          <input type="text" class="add-inp" id="routine-inp" placeholder="루틴 항목 추가 (Enter)..." />
+          <button class="add-btn" id="btn-routine-add">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- To-do List -->
+    <div class="card" id="todo-card">
+      <div class="card-hd">
+        <span class="card-title">✅ To-do List</span>
+        <span class="badge bg-blue" id="todo-badge">0/0</span>
+      </div>
+      <div class="card-bd">
+        <div class="cl-wrap" id="todo-list" data-zone="todo"></div>
+        <div class="prog-wrap"><div class="prog-fill" id="todo-prog" style="width:0%;background:linear-gradient(to right,var(--accent-blue),#6a9fd8)"></div></div>
+        <p class="prog-lbl" id="todo-prog-lbl">완료 0%</p>
+        <div class="add-row">
+          <input type="text" class="add-inp" id="todo-inp" placeholder="할 일 추가 (Enter)..." />
+          <button class="add-btn" id="btn-todo-add" style="background:var(--accent-blue);">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 몰입 도구 -->
+    <div class="card" id="tools-card">
+      <div class="card-hd"><span class="card-title">🛠 몰입 도구</span></div>
+      <div class="card-bd">
+        <div class="tool-grid">
+          <button class="tool-btn" id="btn-stopwatch"><span class="ti">⏱</span>스톱워치</button>
+          <button class="tool-btn" id="btn-timer"><span class="ti">⏳</span>카운트다운</button>
+          <button class="tool-btn" id="btn-retro"><span class="ti">🌙</span>밤 자기점검</button>
+          <button class="tool-btn" id="btn-ai-open"><span class="ti">🤖</span>AI 코칭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI 코칭 & 메모 Board -->
+    <div class="card" id="ai-card">
+      <div class="card-hd">
+        <span class="card-title">🤖 AI 코칭 &amp; 메모 Board</span>
+        <button class="hbtn" id="btn-memo-toggle" style="font-size:0.7rem;padding:3px 7px;">메모 ▾</button>
+      </div>
+      <div class="card-bd">
+        <textarea id="coaching-inp" placeholder="오늘의 고민, 목표, 상황을 입력하면 AI가 코칭해 드립니다..."></textarea>
+        <div class="c-btn-row">
+          <button class="c-submit-btn" id="btn-coaching">🤖 AI 코칭 받기</button>
+          <button class="c-memo-btn" id="btn-save-memo">📌 메모 저장</button>
+        </div>
+        <div id="coaching-resp"></div>
+        <button id="c-add-todo-btn">+ To-do에 추가</button>
+        <div class="divider"></div>
+        <div class="memo-list" id="memo-list"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============================================================
+     모달: 말씀 묵상
+============================================================ -->
+<div class="modal-ov" id="modal-dev">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">📖 말씀 묵상 기록</span>
+      <button class="modal-x" data-close="modal-dev">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="dev-lbl">📌 오늘의 말씀 (성경 구절)</div>
+      <textarea class="dev-verse-inp" id="dev-verse" placeholder="예) 빌립보서 4:13 — 내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"></textarea>
+      <div class="dev-lbl">✍ 묵상 / 적용 / 기도</div>
+      <textarea class="dev-med-inp" id="dev-med" placeholder="오늘 말씀을 통해 받은 은혜, 적용할 점, 기도 제목을 자유롭게 기록하세요..."></textarea>
+      <button class="dev-save-btn" id="btn-dev-save">💾 저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     모달: 밤 자기점검
+============================================================ -->
+<div class="modal-ov" id="modal-retro">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">🌙 밤 자기점검</span>
+      <button class="modal-x" data-close="modal-retro">✕</button>
+    </div>
+    <div class="modal-bd" id="retro-body"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     모달: 스톱워치 & 타이머
+============================================================ -->
+<div class="modal-ov" id="modal-timer">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">⏱ 몰입 타이머</span>
+      <button class="modal-x" data-close="modal-timer">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="tab-row">
+        <button class="tab-btn active" id="tab-sw">⏱ 스톱워치</button>
+        <button class="tab-btn" id="tab-cd">⏳ 카운트다운</button>
+      </div>
+      <!-- 스톱워치 -->
+      <div id="panel-sw">
+        <div class="timer-disp" id="sw-disp">00:00:00</div>
+        <div class="timer-btns">
+          <button class="tbtn start" id="btn-sw-start">시작</button>
+          <button class="tbtn reset" id="btn-sw-reset">초기화</button>
+          <button class="tbtn pause" id="btn-sw-lap">랩</button>
+        </div>
+        <div class="lap-list" id="lap-list"></div>
+      </div>
+      <!-- 카운트다운 -->
+      <div id="panel-cd" class="hidden">
+        <div class="timer-disp" id="cd-disp">25:00</div>
+        <div class="preset-row" id="preset-row">
+          <button class="preset-btn" data-min="5">5분</button>
+          <button class="preset-btn active-preset" data-min="25">25분</button>
+          <button class="preset-btn" data-min="10">10분</button>
+          <button class="preset-btn" data-min="45">45분</button>
+          <button class="preset-btn" data-min="60">60분</button>
+        </div>
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:8px;">
+          <input type="number" id="cd-custom" placeholder="분 직접 입력" min="1" max="999"
+            style="width:110px;padding:5px 9px;border:1px solid var(--border-warm);border-radius:var(--radius-btn);font-size:0.83rem;text-align:center;background:var(--bg-page);outline:none;" />
+          <button class="preset-btn" id="btn-cd-custom">설정</button>
+        </div>
+        <div class="timer-btns" style="margin-top:10px;">
+          <button class="tbtn start" id="btn-cd-start">시작</button>
+          <button class="tbtn reset" id="btn-cd-reset">초기화</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     모달: 실패 사유
+============================================================ -->
+<div class="modal-ov" id="modal-fail">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">❌ 실패 사유 기록</span>
+      <button class="modal-x" data-close="modal-fail">✕</button>
+    </div>
+    <div class="modal-bd">
+      <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:9px;line-height:1.6;">왜 이 항목을 완수하지 못했나요?<br/>솔직한 기록이 성장의 발판이 됩니다.</p>
+      <textarea class="modal-inp" id="fail-inp" style="min-height:75px;resize:vertical;" placeholder="실패 사유를 입력하세요..."></textarea>
+      <button class="modal-save-btn" id="btn-fail-save" style="background:var(--accent-red);color:#fff;">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     모달: 항목 편집
+============================================================ -->
+<div class="modal-ov" id="modal-edit">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">✏ 항목 편집</span>
+      <button class="modal-x" data-close="modal-edit">✕</button>
+    </div>
+    <div class="modal-bd">
+      <input type="text" class="modal-inp" id="edit-inp" placeholder="항목 내용 수정..." />
+      <button class="modal-save-btn" id="btn-edit-save" style="background:var(--accent-gold);color:#1a1000;">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div id="toast-box"></div>
+
+<!-- ============================================================
+     JavaScript
+============================================================ -->
+<script>
+'use strict';
+
+/* ============================================================
+   ★ Firebase 설정 — 본인 프로젝트 값으로 교체하세요
+   Firebase Console: https://console.firebase.google.com/
+   Authentication > Google 로그인 활성화 필요
+   Firestore Database 생성 필요
+============================================================ */
+const FB_CONFIG = {
+  apiKey:            "AIzaSyDEMO_REPLACE_WITH_YOUR_KEY",
+  authDomain:        "your-project.firebaseapp.com",
+  projectId:         "your-project-id",
+  storageBucket:     "your-project.appspot.com",
+  messagingSenderId: "000000000000",
+  appId:             "1:000000000000:web:0000000000000000"
+};
+
+/* ============================================================
+   전역 상태
+============================================================ */
+let db = null, auth = null, fbOk = false;
+let currentUser = null;
+let curDate = todayStr();
+
+// 앱 데이터 (메모리)
+const D = {
+  routineItems: [],  // 전역 루틴 템플릿 [{id, text, pinned}]
+  dayData: {},       // {YYYY-MM-DD: {routineState:{id:{status,failReason}}, todoItems:[{id,text,status,failReason,pinned}], devotion:{verse,meditation}, retro:{answers,total}}}
+  memos: [],         // [{id, text, createdAt}]
+};
+
+// 스톱워치
+let swTimer = null, swElapsed = 0, swRunning = false, swStart = 0, swLaps = [];
+// 카운트다운
+let cdTimer = null, cdRem = 1500, cdTotal = 1500, cdRunning = false;
+// 컨텍스트
+let editCtx = null;   // {zone, id}
+let failCtx = null;   // {zone, id}
+let retroAns = {};
+let lastCoach = '';
+
+/* ============================================================
+   유틸
+============================================================ */
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+function fmtDate(s) {
+  const d = new Date(s + 'T00:00:00');
+  const dn = ['일','월','화','수','목','금','토'];
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${dn[d.getDay()]})`;
+}
+function addDays(s, n) {
+  const d = new Date(s + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function weekDates(s) {
+  const d = new Date(s + 'T00:00:00');
+  const mon = new Date(d);
+  mon.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return Array.from({length:7}, (_,i) => { const dd = new Date(mon); dd.setDate(mon.getDate()+i); return dd.toISOString().slice(0,10); });
+}
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function fmtSW(ms) { const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000); return `${pad(h)}:${pad(m)}:${pad(s)}`; }
+function fmtCD(s) { return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
+
+function toast(msg, type='') {
+  const box = document.getElementById('toast-box');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  box.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 2600);
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function setLoading(v) { document.getElementById('loading-overlay').classList.toggle('hidden', !v); }
+
+/* ============================================================
+   LocalStorage 헬퍼
+============================================================ */
+const LS = 'growth_log_v3';
+function lsRead() { try { return JSON.parse(localStorage.getItem(LS)||'{}'); } catch(e) { return {}; } }
+function lsWrite(data) { try { localStorage.setItem(LS, JSON.stringify(data)); } catch(e) {} }
+function lsGet(path) {
+  const keys = path.split('/'); let cur = lsRead();
+  for (const k of keys) { if (!cur||typeof cur!=='object') return undefined; cur = cur[k]; }
+  return cur;
+}
+function lsSet(path, val) {
+  const data = lsRead(); const keys = path.split('/'); let cur = data;
+  for (let i=0;i<keys.length-1;i++) { if (!cur[keys[i]]||typeof cur[keys[i]]!=='object') cur[keys[i]]={}; cur=cur[keys[i]]; }
+  cur[keys[keys.length-1]] = val; lsWrite(data);
+}
+
+/* ============================================================
+   Firebase 초기화
+============================================================ */
+async function initFB() {
+  try {
+    firebase.initializeApp(FB_CONFIG);
+    auth = firebase.auth();
+    db   = firebase.firestore();
+    fbOk = true;
+  } catch(e) {
+    console.warn('Firebase 초기화 실패 → 로컬 모드:', e.message);
+    fbOk = false;
+  }
+}
+
+/* ============================================================
+   데이터 레이어
+============================================================ */
+function userPath()    { return `users/${currentUser.uid}`; }
+function tmplPath()    { return `${userPath()}/settings/template`; }
+function dayPath(d)    { return `${userPath()}/days/${d}`; }
+
+async function saveTemplate() {
+  if (fbOk && currentUser) {
+    try { await db.doc(tmplPath()).set({ routineItems: D.routineItems, memos: D.memos }, { merge: true }); }
+    catch(e) { console.error(e); }
+  } else {
+    lsSet('template/routineItems', D.routineItems);
+    lsSet('template/memos', D.memos);
+  }
+}
+
+async function saveDayData(date) {
+  const data = D.dayData[date] || {};
+  if (fbOk && currentUser) {
+    try { await db.doc(dayPath(date)).set(data, { merge: true }); }
+    catch(e) { console.error(e); }
+  } else {
+    lsSet(`days/${date}`, data);
+  }
+}
+
+async function loadData() {
+  if (fbOk && currentUser) {
+    try {
+      // 템플릿
+      const ts = await db.doc(tmplPath()).get();
+      if (ts.exists) {
+        const td = ts.data();
+        D.routineItems = td.routineItems || [];
+        D.memos = td.memos || [];
+      }
+      // 날짜 데이터 (오늘 기준 ±7일)
+      const today = todayStr();
+      const dates = Array.from({length:15}, (_,i) => addDays(today, i-7));
+      const snaps = await Promise.all(dates.map(d => db.doc(dayPath(d)).get()));
+      snaps.forEach((snap, i) => {
+        if (snap.exists) D.dayData[dates[i]] = snap.data();
+      });
+    } catch(e) {
+      console.error('Firestore 로드 실패 → 로컬 폴백:', e);
+      loadLocal();
+    }
+  } else {
+    loadLocal();
+  }
+}
+
+function loadLocal() {
+  const ls = lsRead();
+  D.routineItems = (ls.template && ls.template.routineItems) || defaultRoutine();
+  D.memos        = (ls.template && ls.template.memos) || [];
+  D.dayData      = ls.days || {};
+}
+
+function defaultRoutine() {
+  return [
+    { id: uid(), text: '기상 후 말씀 묵상 (10분)', pinned: false },
+    { id: uid(), text: '아침 체조 / 스트레칭', pinned: false },
+    { id: uid(), text: '일과 시작 전 기도', pinned: false },
+    { id: uid(), text: '점심 식사 감사 기도', pinned: false },
+    { id: uid(), text: '저녁 자기점검 & 일지 작성', pinned: false },
+  ];
+}
+
+// 날짜별 데이터 접근 헬퍼
+function dayD(date) { if (!D.dayData[date]) D.dayData[date]={}; return D.dayData[date]; }
+function routineState(date) { const d=dayD(date); if (!d.routineState) d.routineState={}; return d.routineState; }
+function todoItems(date) { const d=dayD(date); if (!d.todoItems) d.todoItems=[]; return d.todoItems; }
+function devotion(date) { return dayD(date).devotion || {}; }
+function retro(date) { return dayD(date).retro || {}; }
+
+/* ============================================================
+   달성률 계산
+============================================================ */
+function calcAchievement(date) {
+  const rs = routineState(date);
+  const ti = todoItems(date);
+  const total = D.routineItems.length + ti.length;
+  if (total === 0) return -1;
+  let done = 0;
+  D.routineItems.forEach(r => { if ((rs[r.id]||{}).status === 'done') done++; });
+  ti.forEach(t => { if (t.status === 'done') done++; });
+  return Math.round((done / total) * 100);
+}
+
+/* ============================================================
+   렌더링
+============================================================ */
+function renderAll() {
+  renderDateNav();
+  renderChart();
+  renderRoutine();
+  renderTodo();
+  renderDevPreview();
+  renderMemos();
+}
+
+function renderDateNav() {
+  document.getElementById('date-disp').textContent = fmtDate(curDate);
+}
+
+function renderChart() {
+  const dates = weekDates(curDate);
+  const container = document.getElementById('week-bars');
+  container.innerHTML = '';
+  const labels = ['월','화','수','목','금','토','일'];
+  let sum = 0, cnt = 0;
+  dates.forEach((date, i) => {
+    const pct = calcAchievement(date);
+    if (pct >= 0) { sum += pct; cnt++; }
+    const isToday = date === todayStr();
+    const isCur   = date === curDate;
+    const wrap = document.createElement('div');
+    wrap.className = 'wbar-wrap';
+    wrap.title = `${date}: ${pct >= 0 ? pct+'%' : '데이터 없음'}`;
+    wrap.innerHTML = `
+      <div class="wbar-outer">
+        <div class="wbar-inner${isToday?' today':''}${isCur?' current':''}" style="height:${pct>=0?pct:0}%"></div>
+      </div>
+      <span class="wbar-lbl${isCur?' cur':''}">${labels[i]}</span>
+      <span class="wbar-pct">${pct>=0?pct+'%':'-'}</span>
+    `;
+    wrap.addEventListener('click', () => { curDate = date; renderAll(); });
+    container.appendChild(wrap);
+  });
+  document.getElementById('week-avg-badge').textContent = `평균 ${cnt>0?Math.round(sum/cnt):0}%`;
+}
+
+function renderRoutine() {
+  const rs = routineState(curDate);
+  const sorted = [...D.routineItems].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0));
+  const list = document.getElementById('routine-list');
+  list.innerHTML = '';
+  sorted.forEach(item => list.appendChild(makeClItem('routine', item, rs[item.id]||{})));
+  updateProg('routine', D.routineItems, rs);
+}
+
+function renderTodo() {
+  const ti = todoItems(curDate);
+  const sorted = [...ti].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0));
+  const list = document.getElementById('todo-list');
+  list.innerHTML = '';
+  const stateMap = {};
+  ti.forEach(t => stateMap[t.id] = t);
+  sorted.forEach(item => list.appendChild(makeClItem('todo', item, item)));
+  updateProg('todo', ti, stateMap);
+}
+
+function makeClItem(zone, item, state) {
+  const el = document.createElement('div');
+  el.className = 'cl-item';
+  el.dataset.id = item.id;
+  el.dataset.zone = zone;
+  el.draggable = true;
+  const sc = state.status === 'done' ? 'done' : state.status === 'fail' ? 'fail' : '';
+  const ci = state.status === 'done' ? '✓' : state.status === 'fail' ? '✕' : '';
+  el.innerHTML = `
+    <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+    <button class="chk-btn ${sc}" data-act="chk">${ci}</button>
+    <div class="item-tw">
+      <span class="item-txt ${sc}">${esc(item.text)}</span>
+      ${state.failReason ? `<div class="item-fail-r">사유: ${esc(state.failReason)}</div>` : ''}
+    </div>
+    ${item.pinned ? '<span class="pin-ico">📌</span>' : ''}
+    <div class="item-acts">
+      <button class="iabtn ${item.pinned?'pin-on':''}" data-act="pin" title="${item.pinned?'고정 해제':'고정'}">${item.pinned?'📌':'📍'}</button>
+      <button class="iabtn" data-act="edit" title="편집">✏</button>
+      ${sc==='fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
+      <button class="iabtn del" data-act="del" title="삭제">🗑</button>
+    </div>
+  `;
+  el.querySelector('[data-act="chk"]').addEventListener('click', e => { e.stopPropagation(); toggleStatus(zone, item.id); });
+  el.querySelector('[data-act="pin"]').addEventListener('click', e => { e.stopPropagation(); togglePin(zone, item.id); });
+  el.querySelector('[data-act="edit"]').addEventListener('click', e => { e.stopPropagation(); openEditModal(zone, item.id, item.text); });
+  el.querySelector('[data-act="del"]').addEventListener('click', e => { e.stopPropagation(); deleteItem(zone, item.id); });
+  const efBtn = el.querySelector('[data-act="edit-fail"]');
+  if (efBtn) efBtn.addEventListener('click', e => { e.stopPropagation(); openFailModal(zone, item.id, state.failReason||''); });
+  setupDrag(el, zone);
+  return el;
+}
+
+function updateProg(zone, items, stateMap) {
+  const total = items.length;
+  let done = 0;
+  items.forEach(item => { if ((stateMap[item.id]||{}).status === 'done') done++; });
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+  if (zone === 'routine') {
+    document.getElementById('routine-prog').style.width = pct + '%';
+    document.getElementById('routine-prog-lbl').textContent = `완료 ${pct}%`;
+    document.getElementById('routine-badge').textContent = `${done}/${total}`;
+  } else {
+    document.getElementById('todo-prog').style.width = pct + '%';
+    document.getElementById('todo-prog-lbl').textContent = `완료 ${pct}%`;
+    document.getElementById('todo-badge').textContent = `${done}/${total}`;
+  }
+}
+
+function renderDevPreview() {
+  const dev = devotion(curDate);
+  const el = document.getElementById('dev-preview');
+  if (dev.verse || dev.meditation) {
+    el.innerHTML = '';
+    if (dev.verse) {
+      const vEl = document.createElement('div');
+      vEl.className = 'verse-prev';
+      vEl.textContent = dev.verse;
+      vEl.addEventListener('click', openDevModal);
+      el.appendChild(vEl);
+    }
+    if (dev.meditation) {
+      const mEl = document.createElement('div');
+      mEl.className = 'medit-prev';
+      mEl.textContent = dev.meditation;
+      el.appendChild(mEl);
+    }
+  } else {
+    el.innerHTML = '<div class="dev-empty">말씀을 기록해 보세요 ✝</div>';
+  }
+}
+
+function renderMemos() {
+  const list = document.getElementById('memo-list');
+  list.innerHTML = '';
+  (D.memos||[]).forEach((memo, idx) => {
+    const el = document.createElement('div');
+    el.className = 'memo-item';
+    el.innerHTML = `<span class="memo-txt">${esc(memo.text)}</span><button class="memo-del" data-idx="${idx}">✕</button>`;
+    el.querySelector('.memo-del').addEventListener('click', async () => {
+      D.memos.splice(idx, 1);
+      await saveTemplate();
+      renderMemos();
+      toast('메모가 삭제되었습니다.');
+    });
+    list.appendChild(el);
+  });
+}
+
+/* ============================================================
+   체크리스트 액션
+============================================================ */
+async function toggleStatus(zone, id) {
+  if (zone === 'routine') {
+    const rs = routineState(curDate);
+    const cur = (rs[id]||{}).status || 'none';
+    const next = cur==='none'||!cur ? 'done' : cur==='done' ? 'fail' : 'none';
+    rs[id] = { ...(rs[id]||{}), status: next };
+    if (next === 'fail') { openFailModal(zone, id, (rs[id]||{}).failReason||''); }
+    await saveDayData(curDate);
+    renderRoutine(); renderChart();
+  } else {
+    const ti = todoItems(curDate);
+    const item = ti.find(t => t.id === id);
+    if (!item) return;
+    const cur = item.status || 'none';
+    const next = cur==='none'||!cur ? 'done' : cur==='done' ? 'fail' : 'none';
+    item.status = next;
+    if (next === 'fail') { openFailModal(zone, id, item.failReason||''); }
+    await saveDayData(curDate);
+    renderTodo(); renderChart();
+  }
+}
+
+async function togglePin(zone, id) {
+  if (zone === 'routine') {
+    const item = D.routineItems.find(r => r.id === id);
+    if (!item) return;
+    item.pinned = !item.pinned;
+    await saveTemplate();
+    renderRoutine();
+    toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
+  } else {
+    const item = todoItems(curDate).find(t => t.id === id);
+    if (!item) return;
+    item.pinned = !item.pinned;
+    await saveDayData(curDate);
+    renderTodo();
+    toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
+  }
+}
+
+async function deleteItem(zone, id) {
+  if (!confirm('이 항목을 삭제할까요?')) return;
+  if (zone === 'routine') {
+    D.routineItems = D.routineItems.filter(r => r.id !== id);
+    await saveTemplate();
+    renderRoutine();
+  } else {
+    dayD(curDate).todoItems = todoItems(curDate).filter(t => t.id !== id);
+    await saveDayData(curDate);
+    renderTodo();
+  }
+  renderChart();
+  toast('삭제되었습니다.', 'err');
+}
+
+async function addItem(zone) {
+  const inpId = zone === 'routine' ? 'routine-inp' : 'todo-inp';
+  const inp = document.getElementById(inpId);
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  if (zone === 'routine') {
+    D.routineItems.push({ id: uid(), text, pinned: false });
+    await saveTemplate();
+    renderRoutine();
+  } else {
+    todoItems(curDate).push({ id: uid(), text, status: 'none', pinned: false });
+    await saveDayData(curDate);
+    renderTodo();
+  }
+  renderChart();
+  toast('항목이 추가되었습니다.', 'ok');
+}
+
+function openEditModal(zone, id, text) {
+  editCtx = { zone, id };
+  document.getElementById('edit-inp').value = text;
+  openModal('modal-edit');
+  setTimeout(() => document.getElementById('edit-inp').focus(), 300);
+}
+
+async function saveEdit() {
+  if (!editCtx) return;
+  const text = document.getElementById('edit-inp').value.trim();
+  if (!text) return;
+  const { zone, id } = editCtx;
+  if (zone === 'routine') {
+    const item = D.routineItems.find(r => r.id === id);
+    if (item) item.text = text;
+    await saveTemplate();
+    renderRoutine();
+  } else {
+    const item = todoItems(curDate).find(t => t.id === id);
+    if (item) item.text = text;
+    await saveDayData(curDate);
+    renderTodo();
+  }
+  closeModal('modal-edit');
+  editCtx = null;
+  toast('수정되었습니다.', 'ok');
+}
+
+function openFailModal(zone, id, reason) {
+  failCtx = { zone, id };
+  document.getElementById('fail-inp').value = reason || '';
+  openModal('modal-fail');
+  setTimeout(() => document.getElementById('fail-inp').focus(), 300);
+}
+
+async function saveFail() {
+  if (!failCtx) return;
+  const reason = document.getElementById('fail-inp').value.trim();
+  const { zone, id } = failCtx;
+  if (zone === 'routine') {
+    const rs = routineState(curDate);
+    rs[id] = { ...(rs[id]||{}), status: 'fail', failReason: reason };
+    await saveDayData(curDate);
+    renderRoutine();
+  } else {
+    const item = todoItems(curDate).find(t => t.id === id);
+    if (item) { item.status = 'fail'; item.failReason = reason; }
+    await saveDayData(curDate);
+    renderTodo();
+  }
+  closeModal('modal-fail');
+  failCtx = null;
+  toast('실패 사유가 기록되었습니다.');
+}
+
+/* ============================================================
+   드래그 앤 드롭
+============================================================ */
+let dragSrc = null, dragZone = null;
+
+function setupDrag(el, zone) {
+  // 마우스 드래그
+  el.addEventListener('dragstart', e => {
+    dragSrc = el; dragZone = zone;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', el.dataset.id);
+  });
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
+  });
+  el.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (dragSrc && dragSrc !== el && dragZone === zone) {
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    }
+  });
+  el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    if (dragSrc && dragSrc !== el && dragZone === zone) {
+      reorder(zone, dragSrc.dataset.id, el.dataset.id);
+    }
+  });
+
+  // 터치 드래그
+  let touchStartY = 0, touchClone = null, touchActive = false;
+  el.addEventListener('touchstart', e => {
+    if (!e.target.closest('.drag-handle')) return;
+    touchStartY = e.touches[0].clientY;
+    dragSrc = el; dragZone = zone;
+    touchActive = true;
+    el.classList.add('dragging');
+    touchClone = el.cloneNode(true);
+    const r = el.getBoundingClientRect();
+    Object.assign(touchClone.style, {
+      position:'fixed', zIndex:'9999', opacity:'0.8', pointerEvents:'none',
+      width: r.width+'px', left: r.left+'px', top: r.top+'px',
+      boxShadow:'0 8px 24px rgba(0,0,0,0.2)', borderRadius:'7px'
+    });
+    document.body.appendChild(touchClone);
+  }, {passive:true});
+
+  el.addEventListener('touchmove', e => {
+    if (!touchActive || !touchClone) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const dy = t.clientY - touchStartY;
+    const r = el.getBoundingClientRect();
+    touchClone.style.top = (r.top + dy) + 'px';
+    touchClone.style.display = 'none';
+    const target = document.elementFromPoint(t.clientX, t.clientY);
+    touchClone.style.display = '';
+    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
+    const ti = target && target.closest('.cl-item');
+    if (ti && ti !== el && ti.dataset.zone === zone) ti.classList.add('drag-over');
+  }, {passive:false});
+
+  el.addEventListener('touchend', e => {
+    if (!touchActive) return;
+    touchActive = false;
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    el.classList.remove('dragging');
+    const t = e.changedTouches[0];
+    const target = document.elementFromPoint(t.clientX, t.clientY);
+    const ti = target && target.closest('.cl-item');
+    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
+    if (ti && ti !== el && ti.dataset.zone === zone) reorder(zone, el.dataset.id, ti.dataset.id);
+  });
+}
+
+async function reorder(zone, srcId, tgtId) {
+  if (zone === 'routine') {
+    const items = D.routineItems;
+    const si = items.findIndex(i => i.id === srcId);
+    const ti = items.findIndex(i => i.id === tgtId);
+    if (si < 0 || ti < 0) return;
+    const [rm] = items.splice(si, 1);
+    items.splice(ti, 0, rm);
+    await saveTemplate();
+    renderRoutine();
+  } else {
+    const items = todoItems(curDate);
+    const si = items.findIndex(i => i.id === srcId);
+    const ti = items.findIndex(i => i.id === tgtId);
+    if (si < 0 || ti < 0) return;
+    const [rm] = items.splice(si, 1);
+    items.splice(ti, 0, rm);
+    await saveDayData(curDate);
+    renderTodo();
+  }
+  toast('순서가 변경되었습니다.');
+}
+
+/* ============================================================
+   말씀 묵상 모달
+============================================================ */
+function openDevModal() {
+  const dev = devotion(curDate);
+  document.getElementById('dev-verse').value = dev.verse || '';
+  document.getElementById('dev-med').value = dev.meditation || '';
+  openModal('modal-dev');
+}
+
+async function saveDev() {
+  const verse = document.getElementById('dev-verse').value.trim();
+  const meditation = document.getElementById('dev-med').value.trim();
+  dayD(curDate).devotion = { verse, meditation };
+  await saveDayData(curDate);
+  renderDevPreview();
+  closeModal('modal-dev');
+  toast('말씀 묵상이 저장되었습니다. ✝', 'ok');
+}
+
+/* ============================================================
+   자기점검 (Retrospective)
+============================================================ */
+const RETRO_QS = [
+  { id:'q1',  text:'오늘 하나님과의 교제(기도·말씀)를 충분히 했나요?' },
+  { id:'q2',  text:'오늘 나의 루틴을 성실히 이행했나요?' },
+  { id:'q3',  text:'오늘 동료·상관에게 선한 영향력을 끼쳤나요?' },
+  { id:'q4',  text:'오늘 부정적인 말이나 행동을 자제했나요?' },
+  { id:'q5',  text:'오늘 맡은 임무에 최선을 다했나요?' },
+  { id:'q6',  text:'오늘 몸과 마음의 건강을 돌봤나요?' },
+  { id:'q7',  text:'오늘 시간을 낭비하지 않고 집중했나요?' },
+  { id:'q8',  text:'오늘 감사한 일을 3가지 이상 떠올릴 수 있나요?' },
+  { id:'q9',  text:'오늘 내일을 위한 준비(계획·정리)를 했나요?' },
+  { id:'q10', text:'오늘 하루 전반적으로 만족스러웠나요?' },
+];
+
+function retroGrade(total) {
+  if (total >= 45) return '🌟 탁월한 하루! 주님께 영광을 돌립니다.';
+  if (total >= 35) return '😊 좋은 하루였습니다. 내일도 화이팅!';
+  if (total >= 25) return '🙂 보통의 하루. 작은 것부터 개선해 보세요.';
+  if (total >= 15) return '😔 어려운 하루였군요. 주님께 위로를 구하세요.';
+  return '💪 힘든 하루였지만 내일은 더 나아질 거예요!';
+}
+
+function renderRetroModal() {
+  const saved = retro(curDate);
+  retroAns = { ...(saved.answers || {}) };
+  const body = document.getElementById('retro-body');
+  let html = '';
+  RETRO_QS.forEach((q, i) => {
+    const ans = retroAns[q.id] || {};
+    html += `
+      <div class="rq-wrap">
+        <div class="rq-txt">${i+1}. ${q.text}</div>
+        <div class="rq-scores">
+          ${[1,2,3,4,5].map(n => `<button class="rq-sbtn${ans.score===n?' sel':''}" data-qid="${q.id}" data-n="${n}">${n}</button>`).join('')}
+        </div>
+        <input class="rq-comment" data-qid="${q.id}" placeholder="한 줄 코멘트 (선택)" value="${esc(ans.comment||'')}" />
+      </div>
+    `;
+  });
+  const tot = calcRetroTotal();
+  html += `
+    <div id="retro-total">총점: ${tot} / 50</div>
+    <div id="retro-grade">${retroGrade(tot)}</div>
+    <button class="retro-save-btn" id="btn-retro-save">💾 자기점검 저장</button>
+  `;
+  body.innerHTML = html;
+
+  body.querySelectorAll('.rq-sbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qid = btn.dataset.qid, n = parseInt(btn.dataset.n);
+      if (!retroAns[qid]) retroAns[qid] = {};
+      retroAns[qid].score = n;
+      body.querySelectorAll(`.rq-sbtn[data-qid="${qid}"]`).forEach(b => b.classList.toggle('sel', parseInt(b.dataset.n)===n));
+      const tot2 = calcRetroTotal();
+      document.getElementById('retro-total').textContent = `총점: ${tot2} / 50`;
+      document.getElementById('retro-grade').textContent = retroGrade(tot2);
+    });
+  });
+  body.querySelectorAll('.rq-comment').forEach(inp => {
+    inp.addEventListener('input', () => {
+      if (!retroAns[inp.dataset.qid]) retroAns[inp.dataset.qid] = {};
+      retroAns[inp.dataset.qid].comment = inp.value;
+    });
+  });
+  document.getElementById('btn-retro-save').addEventListener('click', saveRetro);
+}
+
+function calcRetroTotal() {
+  return Object.values(retroAns).reduce((s, a) => s + (a.score||0), 0);
+}
+
+async function saveRetro() {
+  const total = calcRetroTotal();
+  dayD(curDate).retro = { answers: retroAns, total, savedAt: new Date().toISOString() };
+  await saveDayData(curDate);
+  closeModal('modal-retro');
+  toast(`자기점검 완료! 총점: ${total}/50 🌙`, 'ok');
+}
+
+/* ============================================================
+   스톱워치
+============================================================ */
+function swUpdate() {
+  swElapsed = Date.now() - swStart;
+  document.getElementById('sw-disp').textContent = fmtSW(swElapsed);
+}
+function swGo() {
+  if (swRunning) { swPause(); return; }
+  swRunning = true; swStart = Date.now() - swElapsed;
+  swTimer = setInterval(swUpdate, 100);
+  const btn = document.getElementById('btn-sw-start');
+  btn.textContent = '일시정지'; btn.className = 'tbtn pause';
+}
+function swPause() {
+  swRunning = false; clearInterval(swTimer);
+  const btn = document.getElementById('btn-sw-start');
+  btn.textContent = '재개'; btn.className = 'tbtn start';
+}
+function swReset() {
+  swRunning = false; clearInterval(swTimer);
+  swElapsed = 0; swLaps = [];
+  document.getElementById('sw-disp').textContent = '00:00:00';
+  document.getElementById('lap-list').innerHTML = '';
+  const btn = document.getElementById('btn-sw-start');
+  btn.textContent = '시작'; btn.className = 'tbtn start';
+}
+function swLap() {
+  if (!swRunning) return;
+  swLaps.push(swElapsed);
+  const el = document.createElement('div');
+  el.className = 'lap-item';
+  el.innerHTML = `<span>랩 ${swLaps.length}</span><span>${fmtSW(swElapsed)}</span>`;
+  document.getElementById('lap-list').prepend(el);
+}
+
+/* ============================================================
+   카운트다운
+============================================================ */
+function cdUpdate() {
+  if (cdRem <= 0) { cdStop(); document.getElementById('cd-disp').textContent = '00:00'; playBeep(); toast('⏰ 타이머 종료!', 'info'); return; }
+  cdRem--;
+  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
+}
+function cdGo() {
+  if (cdRunning) { cdPause(); return; }
+  if (cdRem <= 0) cdRem = cdTotal;
+  cdRunning = true; cdTimer = setInterval(cdUpdate, 1000);
+  const btn = document.getElementById('btn-cd-start');
+  btn.textContent = '일시정지'; btn.className = 'tbtn pause';
+}
+function cdPause() {
+  cdRunning = false; clearInterval(cdTimer);
+  const btn = document.getElementById('btn-cd-start');
+  btn.textContent = '재개'; btn.className = 'tbtn start';
+}
+function cdStop() {
+  cdRunning = false; clearInterval(cdTimer);
+  const btn = document.getElementById('btn-cd-start');
+  btn.textContent = '시작'; btn.className = 'tbtn start';
+}
+function cdReset() {
+  cdStop(); cdRem = cdTotal;
+  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
+}
+function cdSet(min) {
+  cdStop(); cdTotal = min * 60; cdRem = cdTotal;
+  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
+  document.querySelectorAll('.preset-btn[data-min]').forEach(b => b.classList.toggle('active-preset', parseInt(b.dataset.min)===min));
+}
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.3, 0.6].forEach(delay => {
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.4);
+      osc.start(ctx.currentTime + delay); osc.stop(ctx.currentTime + delay + 0.4);
+    });
+  } catch(e) {}
+}
+
+/* ============================================================
+   AI 코칭
+============================================================ */
+async function submitCoaching() {
+  const input = document.getElementById('coaching-inp').value.trim();
+  if (!input) { toast('코칭 내용을 입력해 주세요.'); return; }
+  const btn = document.getElementById('btn-coaching');
+  btn.disabled = true; btn.textContent = '🤖 코칭 중...';
+  const resp = document.getElementById('coaching-resp');
+  resp.classList.add('vis'); resp.textContent = ''; resp.classList.add('typing');
+
+  // 오늘 컨텍스트 빌드
+  const rs = routineState(curDate);
+  const rCtx = D.routineItems.map(r => `- ${r.text}: ${(rs[r.id]||{}).status==='done'?'완료':(rs[r.id]||{}).status==='fail'?'실패':'미완료'}`).join('\n');
+  const ti = todoItems(curDate);
+  const tCtx = ti.map(t => `- ${t.text}: ${t.status==='done'?'완료':t.status==='fail'?'실패':'미완료'}`).join('\n');
+
+  const systemPrompt = `당신은 크리스천 군인을 위한 영성 & 자기관리 코치입니다. 성경적 가치관과 군인 정신을 바탕으로 실용적이고 따뜻한 조언을 제공합니다. 답변은 한국어로 200자 이내로 간결하게 작성하고, 마지막에 "→ To-do: [구체적 행동]" 형식으로 실천 항목 1개를 제안하세요.`;
+  const userMsg = `날짜: ${curDate}\n루틴 현황:\n${rCtx||'(없음)'}\nTo-do 현황:\n${tCtx||'(없음)'}\n\n사용자: ${input}`;
+
+  let coachText = '';
+  try {
+    // OpenAI API 호출 시도 (환경변수 또는 직접 키 입력 필요)
+    const apiKey = typeof OPENAI_API_KEY !== 'undefined' ? OPENAI_API_KEY : '';
+    if (apiKey) {
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role:'system', content: systemPrompt }, { role:'user', content: userMsg }],
+          max_tokens: 300, temperature: 0.7
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        coachText = data.choices?.[0]?.message?.content || '';
+      }
+    }
+  } catch(e) { /* API 실패 시 폴백 */ }
+
+  if (!coachText) coachText = localCoach(input);
+  lastCoach = coachText;
+
+  resp.classList.remove('typing');
+  await typeEffect(resp, coachText);
+
+  if (coachText.includes('To-do:')) {
+    document.getElementById('c-add-todo-btn').style.display = 'inline-block';
+  }
+  btn.disabled = false; btn.textContent = '🤖 AI 코칭 받기';
+}
+
+function localCoach(input) {
+  const verses = [
+    '빌 4:13 — 내게 능력 주시는 자 안에서 모든 것을 할 수 있느니라',
+    '수 1:9 — 강하고 담대하라. 두려워하지 말며 놀라지 말라',
+    '잠 3:5-6 — 네 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라',
+    '사 40:31 — 여호와를 앙망하는 자는 새 힘을 얻으리니',
+    '시 23:1 — 여호와는 나의 목자시니 내게 부족함이 없으리로다',
+  ];
+  const actions = [
+    '오늘 감사한 일 3가지 일지에 기록하기',
+    '취침 전 5분 말씀 묵상하기',
+    '동료에게 격려의 말 한마디 건네기',
+    '내일 루틴 미리 점검하고 준비하기',
+    '10분 조용한 기도 시간 갖기',
+  ];
+  const v = verses[Math.floor(Math.random()*verses.length)];
+  const a = actions[Math.floor(Math.random()*actions.length)];
+  return `"${v}"\n\n입력하신 내용을 바탕으로, 오늘 하루도 주님의 은혜 안에서 한 걸음씩 나아가고 있습니다. 완벽하지 않아도 괜찮습니다. 작은 성실함이 쌓여 큰 변화를 만듭니다.\n\n→ To-do: ${a}`;
+}
+
+async function typeEffect(el, text) {
+  return new Promise(resolve => {
+    let i = 0;
+    const iv = setInterval(() => {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) { clearInterval(iv); resolve(); }
+    }, 15);
+  });
+}
+
+async function addCoachingToTodo() {
+  if (!lastCoach) return;
+  const m = lastCoach.match(/→\s*To-do:\s*(.+)/);
+  const text = m ? m[1].trim() : lastCoach.slice(0, 60) + '...';
+  todoItems(curDate).push({ id: uid(), text, status: 'none', pinned: false });
+  await saveDayData(curDate);
+  renderTodo(); renderChart();
+  toast('To-do에 추가되었습니다! ✅', 'ok');
+  document.getElementById('c-add-todo-btn').style.display = 'none';
+}
+
+async function saveMemo() {
+  const text = document.getElementById('coaching-inp').value.trim();
+  if (!text) { toast('메모할 내용을 입력해 주세요.'); return; }
+  D.memos.unshift({ id: uid(), text, createdAt: new Date().toISOString() });
+  await saveTemplate();
+  renderMemos();
+  toast('📌 메모가 저장되었습니다.', 'ok');
+}
+
+/* ============================================================
+   인증 & 앱 초기화
+============================================================ */
+async function initApp() {
+  setLoading(true);
+  await initFB();
+
+  if (fbOk) {
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        currentUser = user;
+        await onLogin(user);
+      } else {
+        setLoading(false);
+        document.getElementById('login-screen').classList.remove('hidden');
+      }
+    });
+  } else {
+    setLoading(false);
+    document.getElementById('login-screen').classList.remove('hidden');
+  }
+}
+
+async function onLogin(user) {
+  document.getElementById('user-name-disp').textContent = user.displayName || user.email || '성도';
+  if (user.photoURL) {
+    const av = document.getElementById('user-avatar');
+    av.src = user.photoURL; av.classList.remove('hidden');
+  }
+  await loadData();
+  if (!D.routineItems || D.routineItems.length === 0) D.routineItems = defaultRoutine();
+  setLoading(false);
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  renderAll();
+  toast(`환영합니다, ${user.displayName||'성도'}님! ✝`, 'ok');
+}
+
+async function skipLogin() {
+  currentUser = null;
+  loadLocal();
+  if (!D.routineItems || D.routineItems.length === 0) D.routineItems = defaultRoutine();
+  setLoading(false);
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  renderAll();
+  toast('로컬 모드로 시작합니다. (이 기기에만 저장)', 'info');
+}
+
+/* ============================================================
+   이벤트 리스너
+============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // 로그인
+  document.getElementById('btn-google-login').addEventListener('click', async () => {
+    if (!fbOk) { toast('Firebase 설정이 필요합니다. 로컬 모드를 이용하세요.', 'err'); return; }
+    try {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      await auth.signInWithPopup(provider);
+    } catch(e) { toast('로그인 실패: ' + e.message, 'err'); }
+  });
+  document.getElementById('btn-skip-login').addEventListener('click', skipLogin);
+
+  // 로그아웃
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    if (fbOk && currentUser) await auth.signOut();
+    currentUser = null;
+    Object.assign(D, { routineItems:[], dayData:{}, memos:[] });
+    document.getElementById('app-shell').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+    toast('로그아웃되었습니다.');
+  });
+
+  // 날짜 네비
+  document.getElementById('btn-prev-day').addEventListener('click', () => { curDate = addDays(curDate,-1); renderAll(); });
+  document.getElementById('btn-next-day').addEventListener('click', () => { curDate = addDays(curDate,1); renderAll(); });
+  document.getElementById('today-btn').addEventListener('click', () => { curDate = todayStr(); renderAll(); });
+  document.getElementById('date-disp').addEventListener('click', () => {
+    const p = document.getElementById('date-picker');
+    p.value = curDate;
+    if (p.showPicker) p.showPicker(); else p.click();
+  });
+  document.getElementById('date-picker').addEventListener('change', e => {
+    if (e.target.value) { curDate = e.target.value; renderAll(); }
+  });
+
+  // 루틴 추가
+  document.getElementById('btn-routine-add').addEventListener('click', () => addItem('routine'));
+  document.getElementById('routine-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('routine'); });
+
+  // 투두 추가
+  document.getElementById('btn-todo-add').addEventListener('click', () => addItem('todo'));
+  document.getElementById('todo-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('todo'); });
+
+  // 말씀 묵상
+  document.getElementById('btn-dev-edit').addEventListener('click', openDevModal);
+  document.getElementById('btn-dev-save').addEventListener('click', saveDev);
+
+  // 자기점검
+  document.getElementById('btn-retro').addEventListener('click', () => { renderRetroModal(); openModal('modal-retro'); });
+
+  // 스톱워치
+  document.getElementById('btn-stopwatch').addEventListener('click', () => {
+    document.getElementById('tab-sw').click();
+    openModal('modal-timer');
+  });
+  document.getElementById('btn-sw-start').addEventListener('click', swGo);
+  document.getElementById('btn-sw-reset').addEventListener('click', swReset);
+  document.getElementById('btn-sw-lap').addEventListener('click', swLap);
+
+  // 카운트다운
+  document.getElementById('btn-timer').addEventListener('click', () => {
+    document.getElementById('tab-cd').click();
+    openModal('modal-timer');
+  });
+  document.getElementById('btn-cd-start').addEventListener('click', cdGo);
+  document.getElementById('btn-cd-reset').addEventListener('click', cdReset);
+  document.getElementById('btn-cd-custom').addEventListener('click', () => {
+    const v = parseInt(document.getElementById('cd-custom').value);
+    if (v > 0) cdSet(v);
+  });
+  document.getElementById('cd-custom').addEventListener('keydown', e => {
+    if (e.key==='Enter') { const v=parseInt(e.target.value); if(v>0) cdSet(v); }
+  });
+  document.querySelectorAll('.preset-btn[data-min]').forEach(btn => {
+    btn.addEventListener('click', () => cdSet(parseInt(btn.dataset.min)));
+  });
+
+  // 타이머 탭 전환
+  document.getElementById('tab-sw').addEventListener('click', () => {
+    document.getElementById('tab-sw').classList.add('active');
+    document.getElementById('tab-cd').classList.remove('active');
+    document.getElementById('panel-sw').classList.remove('hidden');
+    document.getElementById('panel-cd').classList.add('hidden');
+  });
+  document.getElementById('tab-cd').addEventListener('click', () => {
+    document.getElementById('tab-cd').classList.add('active');
+    document.getElementById('tab-sw').classList.remove('active');
+    document.getElementById('panel-cd').classList.remove('hidden');
+    document.getElementById('panel-sw').classList.add('hidden');
+  });
+
+  // AI 코칭
+  document.getElementById('btn-ai-open').addEventListener('click', () => {
+    document.getElementById('ai-card').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => document.getElementById('coaching-inp').focus(), 400);
+  });
+  document.getElementById('btn-coaching').addEventListener('click', submitCoaching);
+  document.getElementById('c-add-todo-btn').addEventListener('click', addCoachingToTodo);
+  document.getElementById('btn-save-memo').addEventListener('click', saveMemo);
+
+  // 메모 토글
+  document.getElementById('btn-memo-toggle').addEventListener('click', () => {
+    const ml = document.getElementById('memo-list');
+    const hidden = ml.style.display === 'none';
+    ml.style.display = hidden ? '' : 'none';
+    document.getElementById('btn-memo-toggle').textContent = hidden ? '메모 ▴' : '메모 ▾';
+  });
+
+  // 편집 저장
+  document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
+  document.getElementById('edit-inp').addEventListener('keydown', e => { if(e.key==='Enter') saveEdit(); });
+
+  // 실패 사유 저장
+  document.getElementById('btn-fail-save').addEventListener('click', saveFail);
+
+  // 모달 닫기 버튼 (data-close 속성)
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+
+  // 모달 오버레이 클릭으로 닫기
+  document.querySelectorAll('.modal-ov').forEach(ov => {
+    ov.addEventListener('click', e => {
+      if (e.target === ov) closeModal(ov.id);
+    });
+  });
+
+  // 키보드 ESC로 모달 닫기
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-ov.open').forEach(ov => closeModal(ov.id));
+    }
+  });
+
+  // 앱 초기화
+  initApp();
+});
+</script>
+</body>
+</html>
