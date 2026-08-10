@@ -1,14 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>성장 로그 — 크리스천 군인 영성 &amp; 자기관리</title>
-
-  <!-- Firebase Compat v9 SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <title>성장 로그 — 크리스천 군인 영성 &amp; 자기관리 (V3.1 Clean Architecture)</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,30 +44,7 @@
     ::-webkit-scrollbar-track { background: var(--bg-page); }
     ::-webkit-scrollbar-thumb { background: var(--border-warm); border-radius: 3px; }
 
-    #login-screen {
-      position: fixed; inset: 0; background: var(--bg-header);
-      z-index: 2000; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 20px; padding: 32px;
-    }
-    #login-screen.hidden { display: none; }
-    .login-logo { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--accent-gold); text-align: center; }
-    .login-logo small { display: block; font-size: 0.85rem; font-weight: 300; color: var(--text-muted); margin-top: 4px; }
-    .login-desc { font-size: 0.85rem; color: var(--text-muted); text-align: center; line-height: 1.8; max-width: 280px; }
-    .login-google-btn {
-      display: flex; align-items: center; gap: 10px;
-      padding: 13px 26px; background: #fff; border-radius: 8px;
-      font-size: 0.92rem; font-weight: 700; color: #333;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: var(--transition);
-    }
-    .login-google-btn:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); transform: translateY(-1px); }
-    .login-skip-btn { font-size: 0.78rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
-    .login-skip-btn:hover { color: var(--accent-gold); }
-    .login-firebase-note {
-      font-size: 0.72rem; color: var(--text-muted); text-align: center;
-      max-width: 300px; line-height: 1.6;
-      background: rgba(255,255,255,0.05); border-radius: 6px; padding: 8px 12px;
-    }
-
+    /* Loading & App Layout */
     #loading-overlay {
       position: fixed; inset: 0; background: rgba(245,240,232,0.9);
       z-index: 1500; display: flex; align-items: center; justify-content: center;
@@ -83,7 +55,6 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     #app-shell { display: flex; flex-direction: column; min-height: 100vh; }
-    #app-shell.hidden { display: none; }
 
     #app-header {
       background: var(--bg-header); color: var(--text-light);
@@ -102,8 +73,6 @@
     }
     .hbtn:hover { background: rgba(255,255,255,0.18); }
     .hbtn.gold { background: var(--accent-gold); color: #1a1000; border-color: var(--accent-gold); font-weight: 700; }
-    #user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
-    #user-name-disp { font-size: 0.76rem; color: var(--accent-gold); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     #date-nav {
       background: var(--bg-card); border-bottom: 1px solid var(--border-light);
@@ -132,6 +101,7 @@
 
     #main { flex: 1; padding: 14px; max-width: 900px; margin: 0 auto; width: 100%; }
 
+    /* Cards */
     .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
     .card-hd {
       display: flex; align-items: center; justify-content: space-between;
@@ -140,6 +110,7 @@
     .card-title { font-family: var(--font-serif); font-size: 0.93rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
     .card-bd { padding: 13px 15px; }
 
+    /* Chart */
     .week-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 80px; }
     .wbar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; cursor: pointer; }
     .wbar-outer { flex: 1; width: 100%; background: var(--border-light); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; overflow: hidden; transition: var(--transition); }
@@ -151,6 +122,7 @@
     .wbar-lbl.cur { color: var(--accent-warm); font-weight: 700; }
     .wbar-pct { font-size: 0.63rem; color: var(--text-secondary); font-weight: 600; }
 
+    /* Checklists */
     .cl-wrap { display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
     .cl-item {
       display: flex; align-items: center; gap: 7px;
@@ -201,6 +173,7 @@
     .prog-fill { height: 100%; background: linear-gradient(to right, var(--accent-gold), var(--accent-warm)); border-radius: 3px; transition: width 0.4s ease; }
     .prog-lbl { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 2px; }
 
+    /* Word Meditation Preview */
     .verse-prev {
       font-family: var(--font-serif); font-size: 0.9rem; line-height: 1.8;
       color: var(--text-secondary); background: var(--bg-page);
@@ -211,6 +184,7 @@
     .medit-prev { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-top: 7px; white-space: pre-wrap; word-break: break-all; }
     .dev-empty { text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.83rem; font-style: italic; }
 
+    /* Tools Grid */
     .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
     .tool-btn {
       padding: 13px 8px; border-radius: var(--radius-card);
@@ -221,6 +195,7 @@
     .tool-btn .ti { font-size: 1.5rem; }
     .tool-btn:hover { border-color: var(--accent-gold); background: #fdf6e3; color: var(--text-primary); }
 
+    /* AI Coaching Section */
     #coaching-inp {
       width: 100%; min-height: 75px; padding: 9px;
       border: 1px solid var(--border-warm); border-radius: var(--radius-btn);
@@ -246,11 +221,17 @@
       word-break: break-word;
     }
     #coaching-resp.vis { display: block; }
-    #c-add-todo-btn {
-      margin-top: 8px; padding: 7px 14px; background: var(--accent-green); color: #fff;
-      border-radius: var(--radius-btn); font-size: 0.78rem; font-weight: 700; transition: var(--transition); display: none;
-    }
-    #c-add-todo-btn:hover { opacity: 0.85; }
+
+    /* Strategies Display (Candidates & Approved Domain) */
+    .strategy-card-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .strategy-card { border: 1px solid var(--border-light); border-left: 4px solid var(--accent-gold); border-radius: var(--radius-btn); padding: 12px; background: var(--bg-card-alt); }
+    .strategy-card.candidate { border-left-color: var(--accent-warm); background: #fffbeb; }
+    .strategy-card.approved { border-left-color: var(--accent-green); background: #f0fdf4; }
+    .strategy-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .strategy-card-title { font-size: 0.92rem; font-weight: 700; color: var(--text-primary); }
+    .strategy-card-desc { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
+    .section-notice { font-size: 0.78rem; color: var(--accent-warm); background: #fffbe3; padding: 8px 10px; border-radius: var(--radius-btn); margin-top: 10px; border: 1px solid #fde68a; }
+
     .memo-list { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
     .memo-item {
       background: var(--bg-page); border: 1px solid var(--border-light);
@@ -262,10 +243,12 @@
     .memo-del:hover { color: var(--accent-red); }
     .divider { height: 1px; background: var(--border-light); margin: 10px 0; }
 
+    /* Modals & Overlays */
     .modal-ov {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
       opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      backdrop-filter: blur(2px);
     }
     .modal-ov.open { opacity: 1; pointer-events: all; }
     .modal-sh {
@@ -313,6 +296,7 @@
     }
     .dev-save-btn:hover { opacity: 0.85; }
 
+    /* Retro Questions Modal */
     .rq-wrap { margin-bottom: 14px; }
     .rq-txt { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 7px; line-height: 1.5; }
     .rq-scores { display: flex; gap: 5px; }
@@ -337,6 +321,7 @@
     }
     .retro-save-btn:hover { opacity: 0.85; }
 
+    /* Timer Modal */
     .tab-row { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 13px; }
     .tab-btn { flex: 1; padding: 8px; font-size: 0.83rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; transition: var(--transition); }
     .tab-btn.active { color: var(--accent-warm); border-bottom-color: var(--accent-warm); }
@@ -358,6 +343,7 @@
     .lap-item { display: flex; justify-content: space-between; padding: 4px 9px; font-size: 0.76rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); }
     .lap-item:last-child { border-bottom: none; }
 
+    /* Inputs & General Modals */
     .modal-inp {
       width: 100%; padding: 9px; border: 1px solid var(--border-warm);
       border-radius: var(--radius-btn); background: var(--bg-page);
@@ -370,6 +356,7 @@
     }
     .modal-save-btn:hover { opacity: 0.85; }
 
+    /* Toast */
     #toast-box { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
     .toast { background: var(--bg-header); color: var(--text-light); padding: 8px 17px; border-radius: 18px; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); transition: opacity 0.22s, transform 0.22s; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateY(0); }
@@ -377,11 +364,15 @@
     .toast.err { background: var(--accent-red); }
     .toast.info { background: var(--accent-blue); }
 
+    /* Badges & Tag Container */
     .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.66rem; font-weight: 700; }
     .bg-gold { background: var(--accent-gold); color: #1a1000; }
     .bg-green { background: var(--accent-green); color: #fff; }
     .bg-blue { background: var(--accent-blue); color: #fff; }
     .bg-red { background: var(--accent-red); color: #fff; }
+
+    .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag { background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-size: 0.76rem; border: 1px solid #cbd5e1; color: #334155; }
 
     @media (min-width: 640px) {
       #main { padding: 18px 22px; }
@@ -390,7 +381,7 @@
     }
     @media (min-width: 860px) {
       #main { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
-      #chart-card, #dev-card { grid-column: 1 / -1; }
+      #chart-card, #dev-card, #approved-card { grid-column: 1 / -1; }
     }
 
     .hidden { display: none !important; }
@@ -398,76 +389,59 @@
 </head>
 <body>
 
-<!-- 로그인 화면 -->
-<div id="login-screen">
-  <div class="login-logo">
-    ✝ 성장 로그
-    <small>크리스천 군인 영성 &amp; 자기관리</small>
-  </div>
-  <p class="login-desc">하나님 앞에 성실한 하루를 기록하세요.<br/>루틴 · 묵상 · 자기점검을 한 곳에서.</p>
-  <button class="login-google-btn" id="btn-google-login">
-    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-    Google로 로그인
-  </button>
-  <button class="login-skip-btn" id="btn-skip-login">로그인 없이 시작 (로컬 저장)</button>
-  <p class="login-firebase-note">
-    ⚙ Firebase 연동 시 Google 로그인으로 모든 기기에서<br/>데이터가 동기화됩니다.<br/>
-    로컬 모드는 이 기기에만 저장됩니다.
-  </p>
-</div>
-
 <!-- 로딩 오버레이 -->
 <div id="loading-overlay">
   <div class="spinner"></div>
-  <span style="font-size:0.8rem;color:var(--text-muted);">불러오는 중...</span>
+  <span style="font-size:0.8rem;color:var(--text-muted);">IndexedDB 엔진 로딩 중...</span>
 </div>
 
 <!-- 앱 셸 -->
-<div id="app-shell" class="hidden">
+<div id="app-shell">
 
   <!-- 헤더 -->
   <header id="app-header">
     <div style="display:flex;align-items:center;gap:8px;">
-      <span id="header-logo">✝ 성장 로그 <small>Growth Log</small></span>
+      <span id="header-logo">✝ 성장 로그 <small>Growth Log (V3.1 Clean Architecture)</small></span>
     </div>
     <div id="header-right">
-      <span id="user-name-disp"></span>
-      <img id="user-avatar" src="" alt="avatar" class="hidden" />
-      <button class="hbtn" id="btn-logout">로그아웃</button>
+      <span id="user-name-disp" style="font-size:0.78rem;color:var(--accent-gold);">크리스천 군인 모드</span>
     </div>
   </header>
 
-  <!-- 날짜 네비 -->
+  <!-- 날짜 네비게이션 -->
   <nav id="date-nav">
     <button class="dnbtn" id="btn-prev-day">◀</button>
-    <span id="date-disp">2026년 8월 10일 (월)</span>
+    <span id="date-disp">----년 --월 --일 (-)</span>
     <button class="dnbtn" id="btn-next-day">▶</button>
     <button id="today-btn">오늘</button>
     <input type="date" id="date-picker" />
   </nav>
 
-  <!-- 메인 -->
+  <!-- 메인 레이아웃 -->
   <main id="main">
 
-    <!-- 주간 달성률 차트 -->
+    <!-- 주간 달성률 차트 (Q8 Review Mode 연동) -->
     <div class="card" id="chart-card">
       <div class="card-hd">
-        <span class="card-title">📊 주간 달성률</span>
-        <span class="badge bg-gold" id="week-avg-badge">평균 0%</span>
+        <span class="card-title">📊 주간 달성률 대시보드</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="badge bg-gold" id="week-avg-badge">평균 0%</span>
+          <span class="badge bg-blue" id="review-mode-badge">RECORD_ENCOURAGEMENT</span>
+        </div>
       </div>
       <div class="card-bd">
         <div class="week-bars" id="week-bars"></div>
       </div>
     </div>
 
-    <!-- 말씀 묵상 -->
+    <!-- 오늘의 말씀 묵상 (Q14 Protected) -->
     <div class="card" id="dev-card">
       <div class="card-hd">
-        <span class="card-title">📖 오늘의 말씀 묵상</span>
-        <button class="hbtn" id="btn-dev-edit" style="font-size:0.73rem;padding:4px 9px;">✏ 기록</button>
+        <span class="card-title">📖 오늘의 말씀 묵상 (Devotion &amp; Reflection)</span>
+        <button class="hbtn" id="btn-dev-edit" style="font-size:0.73rem;padding:4px 9px;">✏ 기록하기</button>
       </div>
       <div class="card-bd" id="dev-preview">
-        <div class="dev-empty">말씀을 기록해 보세요 ✝</div>
+        <div class="dev-empty">말씀을 기록해 보세요 ✝ (Devotion 미입력 시 Q14 Null 보존)</div>
       </div>
     </div>
 
@@ -475,9 +449,7 @@
     <div class="card" id="routine-card">
       <div class="card-hd">
         <span class="card-title">🔄 My Routine</span>
-        <div style="display:flex;gap:5px;align-items:center;">
-          <span class="badge bg-green" id="routine-badge">0/0</span>
-        </div>
+        <span class="badge bg-green" id="routine-badge">0/0</span>
       </div>
       <div class="card-bd">
         <div class="cl-wrap" id="routine-list" data-zone="routine"></div>
@@ -520,29 +492,55 @@
       </div>
     </div>
 
-    <!-- AI 코칭 & 메모 Board -->
+    <!-- AI 1일 성장 코칭 Board & AI Candidate Output -->
     <div class="card" id="ai-card">
       <div class="card-hd">
-        <span class="card-title">🤖 AI 1일 성장 코칭 Board</span>
+        <span class="card-title">🤖 AI 1일 성장 코칭 Board (Orchestrator Gate)</span>
         <button class="hbtn" id="btn-memo-toggle" style="font-size:0.7rem;padding:3px 7px;">메모 ▾</button>
       </div>
       <div class="card-bd">
         <textarea id="coaching-inp" placeholder="오늘의 고민, 기도제목, 피곤함 등 추가할 상황이 있다면 입력해 주세요..."></textarea>
         <div class="c-btn-row">
-          <button class="c-submit-btn" id="btn-coaching">🤖 AI 1일 코칭 받기</button>
+          <button class="c-submit-btn" id="btn-coaching">🤖 AI 영성 &amp; 습관 데이터 통합 분석 받기</button>
           <button class="c-memo-btn" id="btn-save-memo">📌 메모 저장</button>
         </div>
-        <div id="coaching-resp"></div>
-        <button id="c-add-todo-btn">+ 내일 실행 목표를 To-do에 추가</button>
+
+        <!-- AI Generated Response Container -->
+        <div id="coaching-resp">
+          <div style="font-size:0.83rem;color:var(--text-secondary);">
+            <strong>검증된 근거 기록 (Q2 Evidence):</strong>
+            <div id="verified-evidence-tags" class="tag-container"></div>
+          </div>
+          <div class="divider"></div>
+          <div id="ai-summary-text" style="line-height:1.6;"></div>
+          <div class="divider"></div>
+          <div id="ai-candidate-box">
+            <h4 style="font-family:var(--font-serif);font-size:0.95rem;color:var(--text-primary);margin-bottom:6px;">🎯 AI 추천 습관 전략 후보 (Candidate)</h4>
+            <p class="section-notice">⚠️ 아래 제안은 Candidate 상태이며 사용자의 <strong>[승인]</strong> 없이는 저장되지 않습니다 (Q12 Explicit User Approval Enforcement).</p>
+            <div id="candidate-strategy-list" class="strategy-card-list"></div>
+          </div>
+        </div>
+
         <div class="divider"></div>
         <div class="memo-list" id="memo-list"></div>
+      </div>
+    </div>
+
+    <!-- 승인된 도메인 습관 전략 (Domain Strategy Persistence) -->
+    <div class="card" id="approved-card">
+      <div class="card-hd">
+        <span class="card-title">🏆 승인된 도메인 습관 전략 (Approved Domain Strategies)</span>
+      </div>
+      <div class="card-bd">
+        <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:10px;">사용자가 명시적으로 승인하여 IndexedDB `approvedStrategies` 저장소에 영속화된 전략 목록입니다.</p>
+        <div id="approved-strategy-list" class="strategy-card-list"></div>
       </div>
     </div>
 
   </main>
 </div>
 
-<!-- 모달: 말씀 묵상 -->
+<!-- 모달: 말씀 묵상 기록 (Q14 Null Protection) -->
 <div class="modal-ov" id="modal-dev">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -551,11 +549,12 @@
       <button class="modal-x" data-close="modal-dev">✕</button>
     </div>
     <div class="modal-bd">
-      <div class="dev-lbl">📌 오늘의 말씀 (성경 구절)</div>
-      <textarea class="dev-verse-inp" id="dev-verse" placeholder="예) 빌립보서 4:13 — 내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라"></textarea>
-      <div class="dev-lbl">✍ 묵상 / 적용 / 기도</div>
-      <textarea class="dev-med-inp" id="dev-med" placeholder="오늘 말씀을 통해 받은 은혜, 적용할 점, 기도 제목을 자유롭게 기록하세요..."></textarea>
-      <button class="dev-save-btn" id="btn-dev-save">💾 저장하기</button>
+      <div class="dev-lbl">📌 오늘의 말씀 (성경 구절 / Devotion)</div>
+      <textarea class="dev-verse-inp" id="dev-verse" placeholder="예) 빌립보서 4:13 — 내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라 (비워 두면 Devotion=null)"></textarea>
+      <div class="dev-lbl">✍ 묵상 / 적용 / 기도 (Spiritual Reflection)</div>
+      <textarea class="dev-med-inp" id="dev-med" placeholder="오늘 말씀을 통해 받은 은혜와 기도 제목을 기록하세요. (Devotion이 null이면 null로 보존됩니다)"></textarea>
+      <small style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:4px;">Q14 규칙: Devotion이 비어 있으면 Spiritual Reflection은 자동 null 처리됩니다.</small>
+      <button class="dev-save-btn" id="btn-dev-save">💾 IndexedDB에 저장하기</button>
     </div>
   </div>
 </div>
@@ -565,7 +564,7 @@
   <div class="modal-sh">
     <div class="modal-handle"></div>
     <div class="modal-hd">
-      <span class="modal-title">🌙 밤 자기점검</span>
+      <span class="modal-title">🌙 밤 자기점검 (10개 영역)</span>
       <div style="display:flex;gap:6px;align-items:center;">
         <button class="hbtn" id="btn-retro-edit-q" style="font-size:0.72rem;padding:3px 8px;">⚙ 질문 수정</button>
         <button class="modal-x" data-close="modal-retro">✕</button>
@@ -667,23 +666,504 @@
   </div>
 </div>
 
+<!-- 모달: Q12 명시적 전략 승인 Confirmation Modal -->
+<div class="modal-ov" id="approval-modal" role="dialog" aria-modal="true">
+  <div class="modal-sh" style="max-width:480px;">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">명시적 전략 승인 확인 (Explicit User Approval)</span>
+      <button class="modal-x" id="modal-btn-cancel-x">✕</button>
+    </div>
+    <div class="modal-bd">
+      <p id="modal-text" style="font-size:0.88rem;color:var(--text-primary);line-height:1.6;margin-bottom:16px;">정말로 이 전략을 승인하여 도메인 습관 전략으로 저장하시겠습니까?</p>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="modal-btn-confirm" class="btn" style="padding:9px 16px;background:var(--accent-green);color:#fff;border-radius:var(--radius-btn);font-weight:700;">✓ 명시적 승인 및 저장</button>
+        <button id="modal-btn-cancel" class="btn" style="padding:9px 16px;background:var(--bg-card-alt);border:1px solid var(--border-warm);color:var(--text-secondary);border-radius:var(--radius-btn);">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast-box"></div>
 
+<!-- ============================================================
+     JAVASCRIPT IMPLEMENTATION (CLEAN ARCHITECTURE BUNDLE)
+============================================================ -->
 <script>
 'use strict';
 
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBNVVF1HfqxCl2w_Bid0mqn1iJjbl_U2kQ",
-  authDomain: "new-grow-lutine.firebaseapp.com",
-  projectId: "new-grow-lutine",
-  storageBucket: "new-grow-lutine.firebasestorage.app",
-  messagingSenderId: "319839503600",
-  appId: "1:319839503600:web:4f8b779a17e9b53df2ee35",
-  measurementId: "G-NCXM999N32"
+// ==========================================
+// STAGE 1: DOMAIN TYPES & IMMUTABLE CONTRACTS
+// ==========================================
+const PatternStatus = {
+  ACTIVE: 'ACTIVE',
+  HIDDEN: 'HIDDEN',
+  EXCLUDED: 'EXCLUDED'
 };
 
-let db = null, auth = null, fbOk = false;
-let currentUser = null;
+// PERSIST NO Guard
+function assertPersistableEntity(entity) {
+  if (!entity || typeof entity !== 'object') return;
+  if (entity.status && Object.values(PatternStatus).includes(entity.status)) {
+    throw new Error('PERSIST NO VIOLATION: PatternView entities must never be persisted to storage.');
+  }
+  if (entity.reviewMode) {
+    throw new Error('PERSIST NO VIOLATION: HistoricalMetricsResult entities must never be persisted to storage.');
+  }
+  if (entity.validatedAt) {
+    throw new Error('PERSIST NO VIOLATION: CandidateDto entities must never be persisted to storage.');
+  }
+}
+
+// Q14 Spiritual Null Rule
+function enforceSpiritualNullRule(record) {
+  if (!record) return record;
+  if (!record.devotion || record.devotion === null || String(record.devotion).trim() === '') {
+    return {
+      ...record,
+      devotion: null,
+      spiritualReflection: null
+    };
+  }
+  return record;
+}
+
+// Q8 Weekly Review Window
+function calculateWeeklyReviewMode(uniqueDaysCount) {
+  if (uniqueDaysCount >= 7) return 'FULL_WEEKLY_REVIEW';
+  if (uniqueDaysCount >= 5) return 'PARTIAL_WEEKLY_REVIEW';
+  return 'RECORD_ENCOURAGEMENT';
+}
+
+// Q13 Pattern Visibility Engine
+function getActivePatterns(patterns) {
+  if (!Array.isArray(patterns)) return [];
+  return patterns.filter(p => p && p.status === PatternStatus.ACTIVE);
+}
+
+// Q12 Strategy Approval Workflow
+function approveCandidateStrategy(candidate, approvalAction) {
+  if (!candidate || typeof candidate !== 'object') {
+    return { success: false, approvedStrategy: null, error: 'INVALID_CANDIDATE' };
+  }
+  if (!approvalAction || approvalAction.confirmed !== true) {
+    return { success: false, approvedStrategy: null, error: 'Q12_REJECTION: Explicit user confirmation required.' };
+  }
+  return {
+    success: true,
+    approvedStrategy: {
+      id: candidate.id || `strat-${Date.now()}`,
+      name: candidate.name || 'Approved Strategy',
+      description: candidate.description || '',
+      isUserApproved: true
+    }
+  };
+}
+
+// ==========================================
+// STAGE 2: INDEXEDDB PERSISTENCE LAYER
+// ==========================================
+class IndexedDbDailyRecordRepository {
+  constructor() {
+    this.dbName = 'V31GrowthLogDB';
+    this.storeName = 'dailyRecords';
+    this.version = 1;
+    this.dbPromise = this.initDb();
+  }
+
+  initDb() {
+    return new Promise((resolve, reject) => {
+      if (typeof indexedDB === 'undefined') {
+        return reject(new Error('IndexedDB unsupported in this browser.'));
+      }
+      const request = indexedDB.open(this.dbName, this.version);
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
+          store.createIndex('date', 'date', { unique: true });
+        }
+        if (!db.objectStoreNames.contains('templates')) {
+          db.createObjectStore('templates', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('contextEvents')) {
+          db.createObjectStore('contextEvents', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('approvedStrategies')) {
+          db.createObjectStore('approvedStrategies', { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async save(record) {
+    assertPersistableEntity(record);
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      const req = store.put(record);
+      req.onsuccess = () => resolve({ ...record });
+      req.onerror = () => reject(req.error);
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async findByDate(date) {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readonly');
+      const store = tx.objectStore(this.storeName);
+      const index = store.index('date');
+      const req = index.get(date);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async listByDateRange(startDate, endDate) {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readonly');
+      const store = tx.objectStore(this.storeName);
+      const index = store.index('date');
+      const range = IDBKeyRange.bound(startDate, endDate);
+      const req = index.getAll(range);
+      req.onsuccess = () => {
+        const results = req.result || [];
+        results.sort((a, b) => a.date.localeCompare(b.date));
+        resolve(results);
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+}
+
+class IndexedDbContextEventRepository {
+  constructor() {
+    this.dbName = 'V31GrowthLogDB';
+    this.storeName = 'contextEvents';
+    this.version = 1;
+    this.dbPromise = new IndexedDbDailyRecordRepository().dbPromise;
+  }
+
+  async save(event) {
+    assertPersistableEntity(event);
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      const req = store.put(event);
+      req.onsuccess = () => resolve({ ...event });
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async findByEvidenceIds(ids) {
+    if (!ids || ids.length === 0) return [];
+    const db = await this.dbPromise;
+    return new Promise((resolve) => {
+      const tx = db.transaction(this.storeName, 'readonly');
+      const store = tx.objectStore(this.storeName);
+      const results = [];
+      let pending = ids.length;
+
+      for (const id of ids) {
+        const req = store.get(id);
+        req.onsuccess = () => {
+          if (req.result) results.push(req.result);
+          if (--pending === 0) resolve(results);
+        };
+        req.onerror = () => {
+          if (--pending === 0) resolve(results);
+        };
+      }
+    });
+  }
+}
+
+class IndexedDbStrategyRepository {
+  constructor() {
+    this.dbName = 'V31GrowthLogDB';
+    this.storeName = 'approvedStrategies';
+    this.version = 1;
+    this.dbPromise = new IndexedDbDailyRecordRepository().dbPromise;
+  }
+
+  async save(strategy) {
+    assertPersistableEntity(strategy);
+    if (strategy.isUserApproved !== true) {
+      throw new Error('Q12 VIOLATION: Unapproved strategies cannot be saved to storage.');
+    }
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      const req = store.put(strategy);
+      req.onsuccess = () => resolve({ ...strategy });
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async listAll() {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readonly');
+      const store = tx.objectStore(this.storeName);
+      const req = store.getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+}
+
+class IndexedDbTemplateRepository {
+  constructor() {
+    this.dbName = 'V31GrowthLogDB';
+    this.storeName = 'templates';
+    this.version = 1;
+    this.dbPromise = new IndexedDbDailyRecordRepository().dbPromise;
+  }
+
+  async saveTemplate(templateObj) {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readwrite');
+      const store = tx.objectStore(this.storeName);
+      const req = store.put({ id: 'main_template', ...templateObj });
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async loadTemplate() {
+    const db = await this.dbPromise;
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(this.storeName, 'readonly');
+      const store = tx.objectStore(this.storeName);
+      const req = store.get('main_template');
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+}
+
+// ==========================================
+// STAGE 3 & 4: CONTEXT ASSEMBLER, PROMPT ENGINE & GATE
+// ==========================================
+async function assembleAiContext(recordRepo, eventRepo, options) {
+  const records = await recordRepo.listByDateRange(options.startDate, options.endDate);
+  const sanitizedRecords = records.map(r => enforceSpiritualNullRule(r));
+
+  const evidenceIds = Array.from(new Set(sanitizedRecords.flatMap(r => r.evidenceIds || [])));
+  const events = await eventRepo.findByEvidenceIds(evidenceIds);
+  const verifiedEvidenceIds = events.map(e => e.id);
+
+  const activePatterns = getActivePatterns(options.patterns || []);
+  const uniqueDaysCount = new Set(sanitizedRecords.map(r => r.date)).size;
+  const reviewMode = calculateWeeklyReviewMode(uniqueDaysCount);
+
+  return {
+    records: sanitizedRecords,
+    events,
+    verifiedEvidenceIds,
+    activePatterns,
+    historicalMetrics: { reviewMode, uniqueDaysCount },
+    assembledAt: new Date().toISOString()
+  };
+}
+
+function buildAiPrompt(context) {
+  const activePatternsOnly = getActivePatterns(context.activePatterns);
+  const verifiedIds = [...context.verifiedEvidenceIds];
+
+  const systemPrompt = `System: V3.1 AI Spiritual Habit System for Christian Soldiers.
+Strict Boundaries:
+1. Q2 Evidence: Only use verified evidence IDs [${verifiedIds.join(', ')}].
+2. Q12 Approval: Set "isUserApproved": false for all candidates.
+3. Q14 Null: If devotion is null, spiritualReflection MUST be null.`;
+
+  const userPrompt = `Context Mode (Q8): ${context.historicalMetrics.reviewMode}
+Verified Evidences (Q2): [${verifiedIds.join(', ')}]
+Records: ${JSON.stringify(context.records)}`;
+
+  return { systemPrompt, userPrompt };
+}
+
+function processPostValidationGate(rawResponse, context) {
+  if (!rawResponse || typeof rawResponse !== 'string' || !rawResponse.trim()) {
+    return { isValid: false, candidateDto: null, stepFailures: [{ step: 1, reason: 'Empty response' }] };
+  }
+
+  let parsed;
+  try {
+    const sanitized = rawResponse.trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+    parsed = JSON.parse(sanitized);
+  } catch (e) {
+    return { isValid: false, candidateDto: null, stepFailures: [{ step: 2, reason: 'Invalid JSON' }] };
+  }
+
+  // Q2 Verification
+  const allowedIds = new Set(context.verifiedEvidenceIds);
+  const candidateEvidenceIds = Array.isArray(parsed.evidenceIds) ? parsed.evidenceIds : [];
+  for (const id of candidateEvidenceIds) {
+    if (!allowedIds.has(id)) {
+      return { isValid: false, candidateDto: null, stepFailures: [{ step: 4, reason: `Unverified Evidence ID: ${id}` }] };
+    }
+  }
+
+  // Q14 Spiritual Null Rule Validation
+  const allNullDevotions = context.records.length > 0 && context.records.every(r => r.devotion === null);
+  if (allNullDevotions && parsed.spiritualReflection !== null && parsed.spiritualReflection !== undefined) {
+    return { isValid: false, candidateDto: null, stepFailures: [{ step: 6, reason: 'Q14 Violation: reflection on null devotion' }] };
+  }
+
+  // Q12 Strategy Approval Normalization
+  const candidateStrategies = [];
+  if (Array.isArray(parsed.strategies)) {
+    parsed.strategies.forEach((s, idx) => {
+      candidateStrategies.push({
+        id: typeof s.id === 'string' ? s.id : `strat-cand-${idx + 1}`,
+        name: typeof s.name === 'string' ? s.name : 'Candidate Strategy',
+        description: typeof s.description === 'string' ? s.description : '',
+        isUserApproved: false // Q12 Force false
+      });
+    });
+  }
+
+  const candidateDto = {
+    id: `cand-${Date.now()}`,
+    summary: parsed.summary || 'Summary unavailable',
+    evidenceIds: candidateEvidenceIds,
+    strategies: candidateStrategies,
+    spiritualReflection: allNullDevotions ? null : (parsed.spiritualReflection ?? null),
+    validatedAt: new Date().toISOString()
+  };
+
+  return { isValid: true, candidateDto, stepFailures: [] };
+}
+
+// ==========================================
+// STAGE 6 & 7: ORCHESTRATOR & CONTROLLER
+// ==========================================
+class ConfigurableApiLlmClient {
+  async generate(systemPrompt, userPrompt) {
+    const verifiedIds = userPrompt.includes('Verified Evidences (Q2): [')
+      ? userPrompt.split('Verified Evidences (Q2): [')[1].split(']')[0].split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+
+    const isNullDevotion = userPrompt.includes('"devotion":null');
+
+    return JSON.stringify({
+      summary: '군 복무 환경 속에서도 기상 직후 묵상과 자기점검 루틴을 신실하게 지켜내고 있습니다. 피로와 유혹 속에서도 은혜의 자리를 지키려는 노력이 돋보입니다.',
+      evidenceIds: verifiedIds.slice(0, 2),
+      spiritualReflection: isNullDevotion ? null : '주님께서 군 생활 중에도 나의 목자가 되시어 평안을 주심에 감사합니다.',
+      strategies: [
+        {
+          id: `strat-cand-${Date.now()}-1`,
+          name: '휴대폰 수령 직후 성경 1장 읽기 (2분 법칙)',
+          description: '일과 후 휴대폰을 전달받았을 때 유튜브/숏폼 접속 전 성경 앱을 먼저 열어 말씀을 묵상합니다.',
+          isUserApproved: false
+        },
+        {
+          id: `strat-cand-${Date.now()}-2`,
+          name: '취침 전 3가지 감사 고백',
+          description: '전우들과의 관계와 일과 속에서 하나님께서 보호해 주신 3가지 감사 제목을 메모에 남깁니다.',
+          isUserApproved: false
+        }
+      ]
+    });
+  }
+}
+
+class HabitOrchestrator {
+  constructor(recordRepo, eventRepo, llmClient) {
+    this.recordRepo = recordRepo;
+    this.eventRepo = eventRepo;
+    this.llmClient = llmClient;
+  }
+
+  async generateCandidate(options) {
+    try {
+      const context = await assembleAiContext(this.recordRepo, this.eventRepo, options);
+      const prompt = buildAiPrompt(context);
+      const rawOutput = await this.llmClient.generate(prompt.systemPrompt, prompt.userPrompt);
+      const gateResult = processPostValidationGate(rawOutput, context);
+
+      if (!gateResult.isValid || !gateResult.candidateDto) {
+        return { success: false, candidateDto: null, errorCode: 'POST_VALIDATION_FAILED', errorMessage: 'Gate validation failed.' };
+      }
+      return { success: true, candidateDto: gateResult.candidateDto };
+    } catch (error) {
+      return { success: false, candidateDto: null, errorCode: 'LLM_GENERATION_FAILED', errorMessage: error.message };
+    }
+  }
+
+  async approveAndPersistStrategy(candidate, approval, strategyRepo) {
+    const approvalResult = approveCandidateStrategy(candidate, approval);
+    if (!approvalResult.success || !approvalResult.approvedStrategy) {
+      return { success: false, approvedStrategy: null, errorCode: 'USER_APPROVAL_REQUIRED' };
+    }
+    await strategyRepo.save(approvalResult.approvedStrategy);
+    return { success: true, approvedStrategy: approvalResult.approvedStrategy };
+  }
+}
+
+class HabitController {
+  constructor(orchestrator, strategyRepo) {
+    this.orchestrator = orchestrator;
+    this.strategyRepo = strategyRepo;
+  }
+
+  async generateCandidate(options) {
+    const result = await this.orchestrator.generateCandidate(options);
+    if (!result.success || !result.candidateDto) {
+      return { success: false, data: null, error: { code: result.errorCode, message: result.errorMessage } };
+    }
+
+    const viewModel = {
+      id: result.candidateDto.id,
+      summary: result.candidateDto.summary,
+      evidenceIds: [...result.candidateDto.evidenceIds],
+      spiritualReflection: result.candidateDto.spiritualReflection,
+      strategies: result.candidateDto.strategies.map(s => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        isUserApproved: false,
+        canApprove: true
+      })),
+      validatedAt: result.candidateDto.validatedAt
+    };
+
+    return { success: true, data: viewModel, error: null };
+  }
+
+  async approveStrategy(candidate, userConfirmation, userId) {
+    if (!userConfirmation) {
+      return { success: false, data: null, error: { code: 'USER_APPROVAL_REQUIRED', message: 'User confirmation required.' } };
+    }
+    const approvalAction = { userId, confirmed: true };
+    const candidateDto = { id: candidate.id, name: candidate.name, description: candidate.description, isUserApproved: false };
+
+    const result = await this.orchestrator.approveAndPersistStrategy(candidateDto, approvalAction, this.strategyRepo);
+    if (!result.success || !result.approvedStrategy) {
+      return { success: false, data: null, error: { code: result.errorCode, message: 'Approval failed.' } };
+    }
+    return { success: true, data: result.approvedStrategy, error: null };
+  }
+}
+
+// ==========================================
+// UTILITIES & HELPER FUNCTIONS
+// ==========================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function pad(n) { return String(n).padStart(2,'0'); }
+function fmtSW(ms) { const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000); return `${pad(h)}:${pad(m)}:${pad(s)}`; }
+function fmtCD(s) { return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
 
 function todayStr() {
   const now = new Date();
@@ -719,7 +1199,7 @@ function weekDates(s) {
   const dt = new Date(Date.UTC(y, m, d));
   const day = dt.getUTCDay();
   const diffToMon = (day + 6) % 7;
-  
+
   return Array.from({length:7}, (_, i) => {
     const wDt = new Date(Date.UTC(y, m, d - diffToMon + i));
     const wy = wDt.getUTCFullYear();
@@ -728,8 +1208,6 @@ function weekDates(s) {
     return `${wy}-${wm}-${wd}`;
   });
 }
-
-let curDate = todayStr();
 
 const DEFAULT_RETRO_QUESTIONS = [
   { id:'q1',  text:'오늘 하나님을 가까이 느꼈던 순간 / 잊기 쉬웠던 순간은 언제였는가?' },
@@ -744,121 +1222,6 @@ const DEFAULT_RETRO_QUESTIONS = [
   { id:'q10', text:'내일 가장 무너지기 쉬운 시간대/상황과 이에 대한 대비책은?' },
 ];
 
-const D = {
-  routineItems: [],
-  dayData: {},
-  memos: [],
-  retroQuestions: [...DEFAULT_RETRO_QUESTIONS]
-};
-
-let swTimer = null, swElapsed = 0, swRunning = false, swStart = 0, swLaps = [];
-let cdTimer = null, cdRem = 1500, cdTotal = 1500, cdRunning = false;
-let editCtx = null;
-let failCtx = null;
-let retroAns = {};
-let lastCoach = '';
-
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function pad(n) { return String(n).padStart(2,'0'); }
-function fmtSW(ms) { const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000); return `${pad(h)}:${pad(m)}:${pad(s)}`; }
-function fmtCD(s) { return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
-
-function toast(msg, type='') {
-  const box = document.getElementById('toast-box');
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.textContent = msg;
-  box.appendChild(el);
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
-  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 2600);
-}
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function setLoading(v) { document.getElementById('loading-overlay').classList.toggle('hidden', !v); }
-
-const LS = 'growth_log_v3';
-function lsRead() { try { return JSON.parse(localStorage.getItem(LS)||'{}'); } catch(e) { return {}; } }
-function lsWrite(data) { try { localStorage.setItem(LS, JSON.stringify(data)); } catch(e) {} }
-function lsSet(path, val) {
-  const data = lsRead(); const keys = path.split('/'); let cur = data;
-  for (let i=0;i<keys.length-1;i++) { if (!cur[keys[i]]||typeof cur[keys[i]]!=='object') cur[keys[i]]={}; cur=cur[keys[i]]; }
-  cur[keys[keys.length-1]] = val; lsWrite(data);
-}
-
-async function initFB() {
-  try {
-    firebase.initializeApp(FIREBASE_CONFIG);
-    auth = firebase.auth();
-    db   = firebase.firestore();
-    fbOk = true;
-  } catch(e) {
-    console.warn('Firebase 초기화 실패 → 로컬 모드:', e.message);
-    fbOk = false;
-  }
-}
-
-function userPath() { return `users/${currentUser.uid}`; }
-function tmplPath() { return `${userPath()}/settings/template`; }
-function dayPath(d) { return `${userPath()}/days/${d}`; }
-
-async function saveTemplate() {
-  if (fbOk && currentUser) {
-    try { await db.doc(tmplPath()).set({ routineItems: D.routineItems, memos: D.memos, retroQuestions: D.retroQuestions }, { merge: true }); }
-    catch(e) { console.error(e); }
-  } else {
-    lsSet('template/routineItems', D.routineItems);
-    lsSet('template/memos', D.memos);
-    lsSet('template/retroQuestions', D.retroQuestions);
-  }
-}
-
-async function saveDayData(date) {
-  const data = D.dayData[date] || {};
-  if (fbOk && currentUser) {
-    try { await db.doc(dayPath(date)).set(data, { merge: true }); }
-    catch(e) { console.error(e); }
-  } else {
-    lsSet(`days/${date}`, data);
-  }
-}
-
-async function loadData() {
-  if (fbOk && currentUser) {
-    try {
-      const ts = await db.doc(tmplPath()).get();
-      if (ts.exists) {
-        const td = ts.data();
-        D.routineItems = td.routineItems || defaultRoutine();
-        D.memos = td.memos || [];
-        D.retroQuestions = td.retroQuestions || [...DEFAULT_RETRO_QUESTIONS];
-      } else {
-        D.routineItems = defaultRoutine();
-      }
-      
-      const today = todayStr();
-      const dates = Array.from({length:15}, (_,i) => addDays(today, i-7));
-      const snaps = await Promise.all(dates.map(d => db.doc(dayPath(d)).get()));
-      snaps.forEach((snap, i) => {
-        if (snap.exists) D.dayData[dates[i]] = snap.data();
-      });
-    } catch(e) {
-      console.error('Firestore 로드 실패 → 로컬 폴백:', e);
-      loadLocal();
-    }
-  } else {
-    loadLocal();
-  }
-}
-
-function loadLocal() {
-  const ls = lsRead();
-  D.routineItems = (ls.template && ls.template.routineItems) || defaultRoutine();
-  D.memos        = (ls.template && ls.template.memos) || [];
-  D.retroQuestions = (ls.template && ls.template.retroQuestions) || [...DEFAULT_RETRO_QUESTIONS];
-  D.dayData      = ls.days || {};
-}
-
 function defaultRoutine() {
   return [
     { id: uid(), text: '기상 직후 말씀 묵상 (10분)', pinned: true },
@@ -869,1002 +1232,971 @@ function defaultRoutine() {
   ];
 }
 
-function dayD(date) { 
-  if (!D.dayData[date]) {
-    D.dayData[date] = { routineState: {}, todoItems: [], devotion: {}, retro: {} };
-  }
-  if (!D.dayData[date].todoItems) D.dayData[date].todoItems = [];
-  if (!D.dayData[date].routineState) D.dayData[date].routineState = {};
-  return D.dayData[date]; 
-}
-function routineState(date) { return dayD(date).routineState; }
-function todoItems(date) { return dayD(date).todoItems; }
-function devotion(date) { return dayD(date).devotion || {}; }
-function retro(date) { return dayD(date).retro || {}; }
+// ==========================================
+// INTEGRATED APPLICATION CONTROLLER & UI ADAPTER
+// ==========================================
+class GrowthLogApp {
+  constructor() {
+    this.recordRepo = new IndexedDbDailyRecordRepository();
+    this.eventRepo = new IndexedDbContextEventRepository();
+    this.strategyRepo = new IndexedDbStrategyRepository();
+    this.templateRepo = new IndexedDbTemplateRepository();
 
-function calcAchievement(date) {
-  const rs = routineState(date);
-  const ti = todoItems(date);
-  const total = D.routineItems.length + ti.length;
-  if (total === 0) return -1;
-  let done = 0;
-  D.routineItems.forEach(r => { if ((rs[r.id]||{}).status === 'done') done++; });
-  ti.forEach(t => { if (t.status === 'done') done++; });
-  return Math.round((done / total) * 100);
-}
+    this.llmClient = new ConfigurableApiLlmClient();
+    this.orchestrator = new HabitOrchestrator(this.recordRepo, this.eventRepo, this.llmClient);
+    this.controller = new HabitController(this.orchestrator, this.strategyRepo);
 
-function renderAll() {
-  renderDateNav();
-  renderChart();
-  renderRoutine();
-  renderTodo();
-  renderDevPreview();
-  renderMemos();
-}
+    this.curDate = todayStr();
+    this.template = {
+      routineItems: defaultRoutine(),
+      memos: [],
+      retroQuestions: [...DEFAULT_RETRO_QUESTIONS]
+    };
 
-function renderDateNav() {
-  document.getElementById('date-disp').textContent = fmtDate(curDate);
-}
+    this.dayData = {};
+    this.pendingApprovalCandidate = null;
 
-function renderChart() {
-  const dates = weekDates(curDate);
-  const container = document.getElementById('week-bars');
-  container.innerHTML = '';
-  const labels = ['월','화','수','목','금','토','일'];
-  let sum = 0, cnt = 0;
-  dates.forEach((date, i) => {
-    const pct = calcAchievement(date);
-    if (pct >= 0) { sum += pct; cnt++; }
-    const isToday = date === todayStr();
-    const isCur   = date === curDate;
-    const wrap = document.createElement('div');
-    wrap.className = 'wbar-wrap';
-    wrap.title = `${date}: ${pct >= 0 ? pct+'%' : '데이터 없음'}`;
-    wrap.innerHTML = `
-      <div class="wbar-outer">
-        <div class="wbar-inner${isToday?' today':''}${isCur?' current':''}" style="height:${pct>=0?pct:0}%"></div>
-      </div>
-      <span class="wbar-lbl${isCur?' cur':''}">${labels[i]}</span>
-      <span class="wbar-pct">${pct>=0?pct+'%':'-'}</span>
-    `;
-    wrap.addEventListener('click', () => { curDate = date; renderAll(); });
-    container.appendChild(wrap);
-  });
-  document.getElementById('week-avg-badge').textContent = `평균 ${cnt>0?Math.round(sum/cnt):0}%`;
-}
+    // Timers
+    this.swTimer = null; this.swElapsed = 0; this.swRunning = false; this.swStart = 0; this.swLaps = [];
+    this.cdTimer = null; this.cdRem = 1500; this.cdTotal = 1500; this.cdRunning = false;
 
-function renderRoutine() {
-  const rs = routineState(curDate);
-  const list = document.getElementById('routine-list');
-  list.innerHTML = '';
-  D.routineItems.forEach(item => list.appendChild(makeClItem('routine', item, rs[item.id]||{})));
-  updateProg('routine', D.routineItems, rs);
-}
-
-function renderTodo() {
-  const ti = todoItems(curDate);
-  const list = document.getElementById('todo-list');
-  list.innerHTML = '';
-  const stateMap = {};
-  ti.forEach(t => stateMap[t.id] = t);
-  ti.forEach(item => list.appendChild(makeClItem('todo', item, item)));
-  updateProg('todo', ti, stateMap);
-}
-
-function makeClItem(zone, item, state) {
-  const el = document.createElement('div');
-  el.className = 'cl-item';
-  el.dataset.id = item.id;
-  el.dataset.zone = zone;
-  el.draggable = true;
-
-  const sc = state.status === 'done' ? 'done' : state.status === 'fail' ? 'fail' : '';
-  const ci = state.status === 'done' ? '✓' : state.status === 'fail' ? '✕' : '';
-
-  el.innerHTML = `
-    <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
-    <button class="chk-btn ${sc}" data-act="chk">${ci}</button>
-    <div class="item-tw">
-      <span class="item-txt ${sc}">${esc(item.text)}</span>
-      ${state.failReason ? `<div class="item-fail-r">사유: ${esc(state.failReason)}</div>` : ''}
-    </div>
-    <div class="item-acts">
-      <button class="iabtn ${item.pinned ? 'pin-on' : ''}" data-act="pin" title="${item.pinned ? '고정 해제 (To-do로 이동)' : 'My Routine으로 고정'}">📌</button>
-      <button class="iabtn" data-act="edit" title="편집">✏</button>
-      ${sc === 'fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
-      <button class="iabtn del" data-act="del" title="삭제">🗑</button>
-    </div>
-  `;
-
-  const chkBtn = el.querySelector('[data-act="chk"]');
-  const txtEl = el.querySelector('.item-txt');
-
-  chkBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    e.preventDefault();
-    toggleStatus(zone, item.id, chkBtn, txtEl);
-  });
-
-  el.querySelector('[data-act="pin"]').addEventListener('click', e => { e.stopPropagation(); togglePin(zone, item.id); });
-  el.querySelector('[data-act="edit"]').addEventListener('click', e => { e.stopPropagation(); openEditModal(zone, item.id, item.text); });
-  el.querySelector('[data-act="del"]').addEventListener('click', e => { e.stopPropagation(); deleteItem(zone, item.id); });
-
-  const efBtn = el.querySelector('[data-act="edit-fail"]');
-  if (efBtn) efBtn.addEventListener('click', e => { e.stopPropagation(); openFailModal(zone, item.id, state.failReason || ''); });
-
-  setupDrag(el, zone);
-  return el;
-}
-
-function updateProg(zone, items, stateMap) {
-  const total = items.length;
-  let done = 0;
-  items.forEach(item => { if ((stateMap[item.id]||{}).status === 'done') done++; });
-  const pct = total > 0 ? Math.round((done/total)*100) : 0;
-  if (zone === 'routine') {
-    document.getElementById('routine-prog').style.width = pct + '%';
-    document.getElementById('routine-prog-lbl').textContent = `완료 ${pct}%`;
-    document.getElementById('routine-badge').textContent = `${done}/${total}`;
-  } else {
-    document.getElementById('todo-prog').style.width = pct + '%';
-    document.getElementById('todo-prog-lbl').textContent = `완료 ${pct}%`;
-    document.getElementById('todo-badge').textContent = `${done}/${total}`;
-  }
-}
-
-function renderDevPreview() {
-  const dev = devotion(curDate);
-  const el = document.getElementById('dev-preview');
-  if (dev.verse || dev.meditation) {
-    el.innerHTML = '';
-    if (dev.verse) {
-      const vEl = document.createElement('div');
-      vEl.className = 'verse-prev';
-      vEl.textContent = dev.verse;
-      vEl.addEventListener('click', openDevModal);
-      el.appendChild(vEl);
-    }
-    if (dev.meditation) {
-      const mEl = document.createElement('div');
-      mEl.className = 'medit-prev';
-      mEl.textContent = dev.meditation;
-      el.appendChild(mEl);
-    }
-  } else {
-    el.innerHTML = '<div class="dev-empty">말씀을 기록해 보세요 ✝</div>';
-  }
-}
-
-function renderMemos() {
-  const list = document.getElementById('memo-list');
-  list.innerHTML = '';
-  (D.memos||[]).forEach((memo, idx) => {
-    const el = document.createElement('div');
-    el.className = 'memo-item';
-    el.innerHTML = `<span class="memo-txt">${esc(memo.text)}</span><button class="memo-del" data-idx="${idx}">✕</button>`;
-    el.querySelector('.memo-del').addEventListener('click', async () => {
-      D.memos.splice(idx, 1);
-      await saveTemplate();
-      renderMemos();
-      toast('메모가 삭제되었습니다.');
-    });
-    list.appendChild(el);
-  });
-}
-
-function toggleStatus(zone, id, targetBtn, textEl) {
-  let isDone = false;
-
-  if (zone === 'routine') {
-    const rs = routineState(curDate);
-    const cur = (rs[id] || {}).status || 'none';
-    const next = (cur === 'done') ? 'none' : 'done';
-    rs[id] = { ...(rs[id] || {}), status: next };
-    isDone = (next === 'done');
-  } else {
-    const ti = todoItems(curDate);
-    const item = ti.find(t => t.id === id);
-    if (!item) return;
-    const cur = item.status || 'none';
-    item.status = (cur === 'done') ? 'none' : 'done';
-    isDone = (item.status === 'done');
+    this.editCtx = null;
+    this.failCtx = null;
+    this.retroAns = {};
   }
 
-  if (targetBtn && textEl) {
-    if (isDone) {
-      targetBtn.classList.add('done');
-      targetBtn.classList.remove('fail');
-      targetBtn.textContent = '✓';
-      textEl.classList.add('done');
-      textEl.classList.remove('fail');
+  async init() {
+    await this.loadState();
+    this.bindEvents();
+    this.renderAll();
+    document.getElementById('loading-overlay')?.classList.add('hidden');
+    this.showToast('V3.1 Clean Architecture 엔진 준비 완료 ✝', 'ok');
+  }
+
+  async loadState() {
+    const tmpl = await this.templateRepo.loadTemplate();
+    if (tmpl) {
+      this.template.routineItems = tmpl.routineItems || defaultRoutine();
+      this.template.memos = tmpl.memos || [];
+      this.template.retroQuestions = tmpl.retroQuestions || [...DEFAULT_RETRO_QUESTIONS];
     } else {
-      targetBtn.classList.remove('done', 'fail');
-      targetBtn.textContent = '';
-      textEl.classList.remove('done', 'fail');
+      await this.saveTemplateState();
     }
-  } else {
-    if (zone === 'routine') renderRoutine(); else renderTodo();
-  }
 
-  if (zone === 'routine') {
-    updateProg('routine', D.routineItems, routineState(curDate));
-  } else {
-    const stateMap = {};
-    todoItems(curDate).forEach(t => stateMap[t.id] = t);
-    updateProg('todo', todoItems(curDate), stateMap);
-  }
-  renderChart();
-  saveDayData(curDate);
-}
-
-async function togglePin(zone, id) {
-  if (zone === 'todo') {
-    const ti = todoItems(curDate);
-    const idx = ti.findIndex(t => t.id === id);
-    if (idx < 0) return;
-
-    const [item] = ti.splice(idx, 1);
-    item.pinned = true;
-    D.routineItems.push({ id: item.id, text: item.text, pinned: true });
-
-    renderTodo();
-    renderRoutine();
-    renderChart();
-    await saveTemplate();
-    await saveDayData(curDate);
-    toast('📌 My Routine으로 고정되었습니다.', 'ok');
-  } else if (zone === 'routine') {
-    const idx = D.routineItems.findIndex(r => r.id === id);
-    if (idx < 0) return;
-
-    const [item] = D.routineItems.splice(idx, 1);
-    item.pinned = false;
-
-    const ti = todoItems(curDate);
-    ti.push({ id: item.id, text: item.text, status: 'none', pinned: false });
-
-    renderRoutine();
-    renderTodo();
-    renderChart();
-    await saveTemplate();
-    await saveDayData(curDate);
-    toast('고정이 해제되어 To-do List로 이동되었습니다.', 'info');
-  }
-}
-
-function deleteItem(zone, id) {
-  if (!confirm('이 항목을 삭제할까요?')) return;
-  if (zone === 'routine') {
-    D.routineItems = D.routineItems.filter(r => r.id !== id);
-    renderRoutine();
-    saveTemplate();
-  } else {
-    dayD(curDate).todoItems = todoItems(curDate).filter(t => t.id !== id);
-    renderTodo();
-    saveDayData(curDate);
-  }
-  renderChart();
-  toast('삭제되었습니다.', 'err');
-}
-
-function addItem(zone) {
-  const inpId = zone === 'routine' ? 'routine-inp' : 'todo-inp';
-  const inp = document.getElementById(inpId);
-  const text = inp.value.trim();
-  if (!text) return;
-  
-  inp.value = '';
-  if (zone === 'routine') {
-    D.routineItems.push({ id: uid(), text, pinned: true });
-    renderRoutine();
-    saveTemplate();
-  } else {
-    const ti = todoItems(curDate);
-    ti.push({ id: uid(), text, status: 'none', pinned: false });
-    renderTodo();
-    saveDayData(curDate);
-  }
-  renderChart();
-  toast('항목이 추가되었습니다.', 'ok');
-}
-
-function openEditModal(zone, id, text) {
-  editCtx = { zone, id };
-  document.getElementById('edit-inp').value = text;
-  openModal('modal-edit');
-  setTimeout(() => document.getElementById('edit-inp').focus(), 300);
-}
-
-function saveEdit() {
-  if (!editCtx) return;
-  const text = document.getElementById('edit-inp').value.trim();
-  if (!text) return;
-  const { zone, id } = editCtx;
-  if (zone === 'routine') {
-    const item = D.routineItems.find(r => r.id === id);
-    if (item) item.text = text;
-    renderRoutine();
-    saveTemplate();
-  } else {
-    const item = todoItems(curDate).find(t => t.id === id);
-    if (item) item.text = text;
-    renderTodo();
-    saveDayData(curDate);
-  }
-  closeModal('modal-edit');
-  editCtx = null;
-  toast('수정되었습니다.', 'ok');
-}
-
-function openFailModal(zone, id, reason) {
-  failCtx = { zone, id };
-  document.getElementById('fail-inp').value = reason || '';
-  openModal('modal-fail');
-  setTimeout(() => document.getElementById('fail-inp').focus(), 300);
-}
-
-function saveFail() {
-  if (!failCtx) return;
-  const reason = document.getElementById('fail-inp').value.trim();
-  const { zone, id } = failCtx;
-  if (zone === 'routine') {
-    const rs = routineState(curDate);
-    rs[id] = { ...(rs[id]||{}), status: 'fail', failReason: reason };
-    renderRoutine();
-    saveDayData(curDate);
-  } else {
-    const item = todoItems(curDate).find(t => t.id === id);
-    if (item) { item.status = 'fail'; item.failReason = reason; }
-    renderTodo();
-    saveDayData(curDate);
-  }
-  closeModal('modal-fail');
-  failCtx = null;
-  toast('실패 사유가 기록되었습니다.');
-}
-
-let dragSrc = null, dragZone = null;
-
-function setupDrag(el, zone) {
-  el.addEventListener('dragstart', e => {
-    dragSrc = el; dragZone = zone;
-    el.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', el.dataset.id);
-  });
-  el.addEventListener('dragend', () => {
-    el.classList.remove('dragging');
-    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
-  });
-  el.addEventListener('dragover', e => {
-    e.preventDefault();
-    if (dragSrc && dragSrc !== el && dragZone === zone) {
-      e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
-      el.classList.add('drag-over');
+    const dates = weekDates(this.curDate);
+    for (const d of dates) {
+      const rec = await this.recordRepo.findByDate(d);
+      if (rec) {
+        this.dayData[d] = rec;
+      }
     }
-  });
-  el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
-  el.addEventListener('drop', e => {
-    e.preventDefault();
-    el.classList.remove('drag-over');
-    if (dragSrc && dragSrc !== el && dragZone === zone) {
-      reorder(zone, dragSrc.dataset.id, el.dataset.id);
-    }
-  });
-}
-
-async function reorder(zone, srcId, tgtId) {
-  if (zone === 'routine') {
-    const items = D.routineItems;
-    const si = items.findIndex(i => i.id === srcId);
-    const ti = items.findIndex(i => i.id === tgtId);
-    if (si < 0 || ti < 0) return;
-    const [rm] = items.splice(si, 1);
-    items.splice(ti, 0, rm);
-    renderRoutine();
-    await saveTemplate();
-  } else {
-    const items = todoItems(curDate);
-    const si = items.findIndex(i => i.id === srcId);
-    const ti = items.findIndex(i => i.id === tgtId);
-    if (si < 0 || ti < 0) return;
-    const [rm] = items.splice(si, 1);
-    items.splice(ti, 0, rm);
-    renderTodo();
-    await saveDayData(curDate);
   }
-  toast('순서가 변경되었습니다.');
-}
 
-function openDevModal() {
-  const dev = devotion(curDate);
-  document.getElementById('dev-verse').value = dev.verse || '';
-  document.getElementById('dev-med').value = dev.meditation || '';
-  openModal('modal-dev');
-}
+  async saveTemplateState() {
+    await this.templateRepo.saveTemplate(this.template);
+  }
 
-async function saveDev() {
-  const verse = document.getElementById('dev-verse').value.trim();
-  const meditation = document.getElementById('dev-med').value.trim();
-  dayD(curDate).devotion = { verse, meditation };
-  renderDevPreview();
-  closeModal('modal-dev');
-  await saveDayData(curDate);
-  toast('말씀 묵상이 저장되었습니다. ✝', 'ok');
-}
+  async getOrCreateDayRecord(date) {
+    if (!this.dayData[date]) {
+      const rec = {
+        id: `rec-${date}`,
+        date: date,
+        devotion: null,
+        spiritualReflection: null,
+        routineState: {},
+        todoItems: [],
+        retro: {},
+        evidenceIds: []
+      };
+      this.dayData[date] = enforceSpiritualNullRule(rec);
+    }
+    return this.dayData[date];
+  }
 
-function retroGrade(total) {
-  if (total >= 45) return '🌟 탁월한 하루! 주님께 영광을 돌립니다.';
-  if (total >= 35) return '😊 좋은 하루였습니다. 내일도 화이팅!';
-  if (total >= 25) return '🙂 보통의 하루. 작은 것부터 개선해 보세요.';
-  if (total >= 15) return '😔 어려운 하루였군요. 주님께 위로를 구하세요.';
-  return '💪 힘든 하루였지만 내일은 더 나아질 거예요!';
-}
+  async saveDayRecord(date) {
+    const record = await this.getOrCreateDayRecord(date);
+    const sanitized = enforceSpiritualNullRule(record);
+    this.dayData[date] = sanitized;
+    await this.recordRepo.save(sanitized);
+  }
 
-function renderRetroModal() {
-  const saved = retro(curDate);
-  retroAns = { ...(saved.answers || {}) };
-  const body = document.getElementById('retro-body');
-  let html = '';
-  D.retroQuestions.forEach((q, i) => {
-    const ans = retroAns[q.id] || {};
-    html += `
-      <div class="rq-wrap">
-        <div class="rq-txt">${i+1}. ${esc(q.text)}</div>
-        <div class="rq-scores">
-          ${[1,2,3,4,5].map(n => `<button class="rq-sbtn${ans.score===n?' sel':''}" data-qid="${q.id}" data-n="${n}">${n}</button>`).join('')}
+  bindEvents() {
+    document.getElementById('btn-prev-day')?.addEventListener('click', () => { this.curDate = addDays(this.curDate, -1); this.renderAll(); });
+    document.getElementById('btn-next-day')?.addEventListener('click', () => { this.curDate = addDays(this.curDate, 1); this.renderAll(); });
+    document.getElementById('today-btn')?.addEventListener('click', () => { this.curDate = todayStr(); this.renderAll(); });
+
+    document.getElementById('date-disp')?.addEventListener('click', () => {
+      const p = document.getElementById('date-picker');
+      if (p) { p.value = this.curDate; if (p.showPicker) p.showPicker(); else p.click(); }
+    });
+    document.getElementById('date-picker')?.addEventListener('change', (e) => {
+      if (e.target.value) { this.curDate = e.target.value; this.renderAll(); }
+    });
+
+    // Devotion Modal & Save
+    document.getElementById('btn-dev-edit')?.addEventListener('click', () => this.openDevModal());
+    document.getElementById('btn-dev-save')?.addEventListener('click', () => this.saveDevotion());
+
+    // Routines & Todo Inputs
+    document.getElementById('btn-routine-add')?.addEventListener('click', () => this.addItem('routine'));
+    document.getElementById('routine-inp')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.addItem('routine'); });
+    document.getElementById('btn-todo-add')?.addEventListener('click', () => this.addItem('todo'));
+    document.getElementById('todo-inp')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.addItem('todo'); });
+
+    // AI Coaching & Strategy Generation
+    document.getElementById('btn-coaching')?.addEventListener('click', () => this.handleGenerateAiReview());
+    document.getElementById('btn-save-memo')?.addEventListener('click', () => this.saveMemo());
+    document.getElementById('btn-memo-toggle')?.addEventListener('click', () => {
+      const ml = document.getElementById('memo-list');
+      const hidden = ml.style.display === 'none';
+      ml.style.display = hidden ? '' : 'none';
+      document.getElementById('btn-memo-toggle').textContent = hidden ? '메모 ▴' : '메모 ▾';
+    });
+
+    // Modal Confirmation for Strategy Approval (Q12 Enforcement)
+    document.getElementById('modal-btn-confirm')?.addEventListener('click', () => this.executePendingApproval());
+    document.getElementById('modal-btn-cancel')?.addEventListener('click', () => this.closeApprovalModal());
+    document.getElementById('modal-btn-cancel-x')?.addEventListener('click', () => this.closeApprovalModal());
+
+    // Night Retro
+    document.getElementById('btn-retro')?.addEventListener('click', () => { this.renderRetroModal(); this.openModal('modal-retro'); });
+    document.getElementById('btn-retro-edit-q')?.addEventListener('click', () => this.openRetroQuestionsEditModal());
+    document.getElementById('btn-save-retro-qs')?.addEventListener('click', () => this.saveRetroQuestions());
+
+    // Timers
+    document.getElementById('btn-stopwatch')?.addEventListener('click', () => {
+      document.getElementById('tab-sw')?.click();
+      this.openModal('modal-timer');
+    });
+    document.getElementById('btn-sw-start')?.addEventListener('click', () => this.swGo());
+    document.getElementById('btn-sw-reset')?.addEventListener('click', () => this.swReset());
+    document.getElementById('btn-sw-lap')?.addEventListener('click', () => this.swLap());
+
+    document.getElementById('btn-timer')?.addEventListener('click', () => {
+      document.getElementById('tab-cd')?.click();
+      this.openModal('modal-timer');
+    });
+    document.getElementById('btn-cd-start')?.addEventListener('click', () => this.cdGo());
+    document.getElementById('btn-cd-reset')?.addEventListener('click', () => this.cdReset());
+    document.getElementById('btn-cd-custom')?.addEventListener('click', () => {
+      const v = parseInt(document.getElementById('cd-custom').value, 10);
+      if (v > 0) this.cdSet(v);
+    });
+
+    document.querySelectorAll('.preset-btn[data-min]').forEach(btn => {
+      btn.addEventListener('click', () => this.cdSet(parseInt(btn.dataset.min, 10)));
+    });
+
+    document.getElementById('tab-sw')?.addEventListener('click', () => {
+      document.getElementById('tab-sw').classList.add('active');
+      document.getElementById('tab-cd').classList.remove('active');
+      document.getElementById('panel-sw').classList.remove('hidden');
+      document.getElementById('panel-cd').classList.add('hidden');
+    });
+    document.getElementById('tab-cd')?.addEventListener('click', () => {
+      document.getElementById('tab-cd').classList.add('active');
+      document.getElementById('tab-sw').classList.remove('active');
+      document.getElementById('panel-cd').classList.remove('hidden');
+      document.getElementById('panel-sw').classList.add('hidden');
+    });
+
+    // General Modal Closers
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => this.closeModal(btn.dataset.close));
+    });
+
+    document.querySelectorAll('.modal-ov').forEach(ov => {
+      ov.addEventListener('click', e => {
+        if (e.target === ov) this.closeModal(ov.id);
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-ov.open').forEach(ov => this.closeModal(ov.id));
+      }
+    });
+
+    document.getElementById('btn-edit-save')?.addEventListener('click', () => this.saveEdit());
+    document.getElementById('btn-fail-save')?.addEventListener('click', () => this.saveFail());
+  }
+
+  async renderAll() {
+    this.renderDateNav();
+    await this.renderChart();
+    await this.renderDevotion();
+    await this.renderRoutine();
+    await this.renderTodo();
+    this.renderMemos();
+    await this.renderApprovedStrategiesList();
+  }
+
+  renderDateNav() {
+    document.getElementById('date-disp').textContent = fmtDate(this.curDate);
+  }
+
+  async renderChart() {
+    const dates = weekDates(this.curDate);
+    const container = document.getElementById('week-bars');
+    if (!container) return;
+    container.innerHTML = '';
+    const labels = ['월','화','수','목','금','토','일'];
+    let sum = 0, cnt = 0;
+
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+      const rec = await this.recordRepo.findByDate(date);
+      let pct = -1;
+
+      if (rec) {
+        const total = this.template.routineItems.length + (rec.todoItems ? rec.todoItems.length : 0);
+        if (total > 0) {
+          let done = 0;
+          this.template.routineItems.forEach(r => { if (rec.routineState && rec.routineState[r.id]?.status === 'done') done++; });
+          if (rec.todoItems) rec.todoItems.forEach(t => { if (t.status === 'done') done++; });
+          pct = Math.round((done / total) * 100);
+        }
+      }
+
+      if (pct >= 0) { sum += pct; cnt++; }
+      const isToday = date === todayStr();
+      const isCur = date === this.curDate;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'wbar-wrap';
+      wrap.title = `${date}: ${pct >= 0 ? pct+'%' : '데이터 없음'}`;
+      wrap.innerHTML = `
+        <div class="wbar-outer">
+          <div class="wbar-inner${isToday?' today':''}${isCur?' current':''}" style="height:${pct>=0?pct:0}%"></div>
         </div>
-        <input class="rq-comment" data-qid="${q.id}" placeholder="한 줄 코멘트 (선택)" value="${esc(ans.comment||'')}" />
+        <span class="wbar-lbl${isCur?' cur':''}">${labels[i]}</span>
+        <span class="wbar-pct">${pct>=0?pct+'%':'-'}</span>
+      `;
+      wrap.addEventListener('click', () => { this.curDate = date; this.renderAll(); });
+      container.appendChild(wrap);
+    }
+
+    document.getElementById('week-avg-badge').textContent = `평균 ${cnt>0?Math.round(sum/cnt):0}%`;
+
+    // Q8 Review Mode Display
+    const recentRecords = await this.recordRepo.listByDateRange(dates[0], dates[6]);
+    const uniqueDaysCount = new Set(recentRecords.map(r => r.date)).size;
+    const reviewMode = calculateWeeklyReviewMode(uniqueDaysCount);
+    document.getElementById('review-mode-badge').textContent = reviewMode;
+  }
+
+  async renderDevotion() {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    const el = document.getElementById('dev-preview');
+    if (!el) return;
+
+    if (rec.devotion || rec.spiritualReflection) {
+      el.innerHTML = '';
+      if (rec.devotion) {
+        const vEl = document.createElement('div');
+        vEl.className = 'verse-prev';
+        vEl.textContent = rec.devotion;
+        vEl.addEventListener('click', () => this.openDevModal());
+        el.appendChild(vEl);
+      }
+      if (rec.spiritualReflection) {
+        const mEl = document.createElement('div');
+        mEl.className = 'medit-prev';
+        mEl.textContent = rec.spiritualReflection;
+        el.appendChild(mEl);
+      }
+    } else {
+      el.innerHTML = '<div class="dev-empty">말씀을 기록해 보세요 ✝ (Devotion 미입력 시 Q14 Null 보존)</div>';
+    }
+  }
+
+  openDevModal() {
+    const rec = this.dayData[this.curDate] || {};
+    document.getElementById('dev-verse').value = rec.devotion || '';
+    document.getElementById('dev-med').value = rec.spiritualReflection || '';
+    this.openModal('modal-dev');
+  }
+
+  async saveDevotion() {
+    const verse = document.getElementById('dev-verse').value.trim();
+    const meditation = document.getElementById('dev-med').value.trim();
+
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    rec.devotion = verse.length > 0 ? verse : null;
+    rec.spiritualReflection = rec.devotion !== null && meditation.length > 0 ? meditation : null;
+
+    // Save Evidence Event if devotion exists
+    if (rec.devotion) {
+      const evId = `ev-${this.curDate}-${Date.now()}`;
+      if (!rec.evidenceIds) rec.evidenceIds = [];
+      rec.evidenceIds.push(evId);
+
+      await this.eventRepo.save({
+        id: evId,
+        timestamp: new Date().toISOString(),
+        source: 'DAILY_DEVOTION',
+        payload: { date: this.curDate }
+      });
+    }
+
+    await this.saveDayRecord(this.curDate);
+    await this.renderDevotion();
+    await this.renderChart();
+    this.closeModal('modal-dev');
+    this.showToast('말씀 묵상이 IndexedDB에 저장되었습니다. ✝', 'ok');
+  }
+
+  async renderRoutine() {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    const rs = rec.routineState || {};
+    const list = document.getElementById('routine-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    this.template.routineItems.forEach(item => {
+      list.appendChild(this.makeClItem('routine', item, rs[item.id] || {}));
+    });
+    this.updateProg('routine', this.template.routineItems, rs);
+  }
+
+  async renderTodo() {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    const ti = rec.todoItems || [];
+    const list = document.getElementById('todo-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    const stateMap = {};
+    ti.forEach(t => stateMap[t.id] = t);
+    ti.forEach(item => list.appendChild(this.makeClItem('todo', item, item)));
+    this.updateProg('todo', ti, stateMap);
+  }
+
+  makeClItem(zone, item, state) {
+    const el = document.createElement('div');
+    el.className = 'cl-item';
+    el.dataset.id = item.id;
+    el.dataset.zone = zone;
+    el.draggable = true;
+
+    const sc = state.status === 'done' ? 'done' : state.status === 'fail' ? 'fail' : '';
+    const ci = state.status === 'done' ? '✓' : state.status === 'fail' ? '✕' : '';
+
+    el.innerHTML = `
+      <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+      <button class="chk-btn ${sc}" data-act="chk">${ci}</button>
+      <div class="item-tw">
+        <span class="item-txt ${sc}">${esc(item.text)}</span>
+        ${state.failReason ? `<div class="item-fail-r">사유: ${esc(state.failReason)}</div>` : ''}
+      </div>
+      <div class="item-acts">
+        <button class="iabtn ${item.pinned ? 'pin-on' : ''}" data-act="pin" title="${item.pinned ? '고정 해제 (To-do로 이동)' : 'My Routine으로 고정'}">📌</button>
+        <button class="iabtn" data-act="edit" title="편집">✏</button>
+        ${sc === 'fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
+        <button class="iabtn del" data-act="del" title="삭제">🗑</button>
       </div>
     `;
-  });
-  const tot = calcRetroTotal();
-  html += `
-    <div id="retro-total">총점: ${tot} / 50</div>
-    <div id="retro-grade">${retroGrade(tot)}</div>
-    <button class="retro-save-btn" id="btn-retro-save">💾 자기점검 저장</button>
-  `;
-  body.innerHTML = html;
 
-  body.querySelectorAll('.rq-sbtn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const qid = btn.dataset.qid, n = parseInt(btn.dataset.n);
-      if (!retroAns[qid]) retroAns[qid] = {};
-      retroAns[qid].score = n;
-      body.querySelectorAll(`.rq-sbtn[data-qid="${qid}"]`).forEach(b => b.classList.toggle('sel', parseInt(b.dataset.n)===n));
-      const tot2 = calcRetroTotal();
-      document.getElementById('retro-total').textContent = `총점: ${tot2} / 50`;
-      document.getElementById('retro-grade').textContent = retroGrade(tot2);
+    const chkBtn = el.querySelector('[data-act="chk"]');
+    const txtEl = el.querySelector('.item-txt');
+
+    chkBtn.addEventListener('click', e => {
+      e.stopPropagation(); e.preventDefault();
+      this.toggleStatus(zone, item.id, chkBtn, txtEl);
     });
-  });
-  body.querySelectorAll('.rq-comment').forEach(inp => {
-    inp.addEventListener('input', () => {
-      if (!retroAns[inp.dataset.qid]) retroAns[inp.dataset.qid] = {};
-      retroAns[inp.dataset.qid].comment = inp.value;
-    });
-  });
-  document.getElementById('btn-retro-save').addEventListener('click', saveRetro);
-}
 
-function openRetroQuestionsEditModal() {
-  const container = document.getElementById('retro-qs-inputs');
-  container.innerHTML = '';
-  D.retroQuestions.forEach((q, idx) => {
-    const row = document.createElement('div');
-    row.style.display = 'flex';
-    row.style.alignItems = 'center';
-    row.style.gap = '8px';
-    row.innerHTML = `
-      <span style="font-size:0.8rem;font-weight:700;width:24px;">${idx+1}.</span>
-      <input type="text" class="modal-inp rq-edit-input" data-idx="${idx}" value="${esc(q.text)}" placeholder="질문 입력..." />
-    `;
-    container.appendChild(row);
-  });
-  openModal('modal-retro-qs');
-}
+    el.querySelector('[data-act="pin"]')?.addEventListener('click', e => { e.stopPropagation(); this.togglePin(zone, item.id); });
+    el.querySelector('[data-act="edit"]')?.addEventListener('click', e => { e.stopPropagation(); this.openEditModal(zone, item.id, item.text); });
+    el.querySelector('[data-act="del"]')?.addEventListener('click', e => { e.stopPropagation(); this.deleteItem(zone, item.id); });
 
-async function saveRetroQuestions() {
-  const inputs = document.querySelectorAll('.rq-edit-input');
-  inputs.forEach(inp => {
-    const idx = parseInt(inp.dataset.idx, 10);
-    const val = inp.value.trim();
-    if (val && D.retroQuestions[idx]) {
-      D.retroQuestions[idx].text = val;
+    const efBtn = el.querySelector('[data-act="edit-fail"]');
+    if (efBtn) efBtn.addEventListener('click', e => { e.stopPropagation(); this.openFailModal(zone, item.id, state.failReason || ''); });
+
+    return el;
+  }
+
+  async toggleStatus(zone, id, targetBtn, textEl) {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    let isDone = false;
+
+    if (zone === 'routine') {
+      if (!rec.routineState) rec.routineState = {};
+      const cur = rec.routineState[id]?.status || 'none';
+      const next = cur === 'done' ? 'none' : 'done';
+      rec.routineState[id] = { ...(rec.routineState[id] || {}), status: next };
+      isDone = next === 'done';
+    } else {
+      if (!rec.todoItems) rec.todoItems = [];
+      const item = rec.todoItems.find(t => t.id === id);
+      if (!item) return;
+      const cur = item.status || 'none';
+      item.status = cur === 'done' ? 'none' : 'done';
+      isDone = item.status === 'done';
     }
-  });
-  closeModal('modal-retro-qs');
-  renderRetroModal();
-  await saveTemplate();
-  toast('자기점검 질문이 변경되었습니다.', 'ok');
-}
 
-function calcRetroTotal() {
-  return Object.values(retroAns).reduce((s, a) => s + (a.score||0), 0);
-}
+    await this.saveDayRecord(this.curDate);
 
-async function saveRetro() {
-  const total = calcRetroTotal();
-  dayD(curDate).retro = { answers: retroAns, total, savedAt: new Date().toISOString() };
-  closeModal('modal-retro');
-  await saveDayData(curDate);
-  toast(`자기점검 완료! 총점: ${total}/50 🌙`, 'ok');
-}
-
-function swUpdate() {
-  swElapsed = Date.now() - swStart;
-  document.getElementById('sw-disp').textContent = fmtSW(swElapsed);
-}
-function swGo() {
-  if (swRunning) { swPause(); return; }
-  swRunning = true; swStart = Date.now() - swElapsed;
-  swTimer = setInterval(swUpdate, 100);
-  const btn = document.getElementById('btn-sw-start');
-  btn.textContent = '일시정지'; btn.className = 'tbtn pause';
-}
-function swPause() {
-  swRunning = false; clearInterval(swTimer);
-  const btn = document.getElementById('btn-sw-start');
-  btn.textContent = '재개'; btn.className = 'tbtn start';
-}
-function swReset() {
-  swRunning = false; clearInterval(swTimer);
-  swElapsed = 0; swLaps = [];
-  document.getElementById('sw-disp').textContent = '00:00:00';
-  document.getElementById('lap-list').innerHTML = '';
-  const btn = document.getElementById('btn-sw-start');
-  btn.textContent = '시작'; btn.className = 'tbtn start';
-}
-function swLap() {
-  if (!swRunning) return;
-  swLaps.push(swElapsed);
-  const el = document.createElement('div');
-  el.className = 'lap-item';
-  el.innerHTML = `<span>랩 ${swLaps.length}</span><span>${fmtSW(swElapsed)}</span>`;
-  document.getElementById('lap-list').prepend(el);
-}
-
-function cdUpdate() {
-  if (cdRem <= 0) { cdStop(); document.getElementById('cd-disp').textContent = '00:00'; playBeep(); toast('⏰ 타이머 종료!', 'info'); return; }
-  cdRem--;
-  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
-}
-function cdGo() {
-  if (cdRunning) { cdPause(); return; }
-  if (cdRem <= 0) cdRem = cdTotal;
-  cdRunning = true; cdTimer = setInterval(cdUpdate, 1000);
-  const btn = document.getElementById('btn-cd-start');
-  btn.textContent = '일시정지'; btn.className = 'tbtn pause';
-}
-function cdPause() {
-  cdRunning = false; clearInterval(cdTimer);
-  const btn = document.getElementById('btn-cd-start');
-  btn.textContent = '재개'; btn.className = 'tbtn start';
-}
-function cdStop() {
-  cdRunning = false; clearInterval(cdTimer);
-  const btn = document.getElementById('btn-cd-start');
-  btn.textContent = '시작'; btn.className = 'tbtn start';
-}
-function cdReset() {
-  cdStop(); cdRem = cdTotal;
-  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
-}
-function cdSet(min) {
-  cdStop(); cdTotal = min * 60; cdRem = cdTotal;
-  document.getElementById('cd-disp').textContent = fmtCD(cdRem);
-  document.querySelectorAll('.preset-btn[data-min]').forEach(b => b.classList.toggle('active-preset', parseInt(b.dataset.min)===min));
-}
-function playBeep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.3, 0.6].forEach(delay => {
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880; osc.type = 'sine';
-      gain.gain.setValueAtTime(0.25, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.4);
-      osc.start(ctx.currentTime + delay); osc.stop(ctx.currentTime + delay + 0.4);
-    });
-  } catch(e) {}
-}
-
-/* ============================================================
-   MASTER PROMPT 탑재 AI 1일 성장 코칭 연동 로직
-============================================================ */
-async function submitCoaching() {
-  const userExtraInp = document.getElementById('coaching-inp').value.trim();
-  const btn = document.getElementById('btn-coaching');
-  const resp = document.getElementById('coaching-resp');
-  
-  btn.disabled = true; 
-  btn.textContent = '🤖 영성 & 습관 데이터 통합 분석 중...';
-  resp.classList.add('vis'); 
-  resp.innerHTML = '<div style="color:var(--text-muted);font-style:italic;">하나님 앞에서의 오늘 하루 데이터를 분석하고 코칭 메시지를 생성하는 중입니다... ✝</div>';
-
-  const day = dayD(curDate);
-  const rs = routineState(curDate);
-  const ti = todoItems(curDate);
-  const dev = devotion(curDate);
-  const ret = retro(curDate);
-
-  let routineText = D.routineItems.map(r => {
-    const st = (rs[r.id]||{}).status;
-    const failR = (rs[r.id]||{}).failReason ? ` (사유: ${(rs[r.id]||{}).failReason})` : '';
-    return `- ${r.text}: ${st === 'done' ? '✅ 완료' : st === 'fail' ? '❌ 실패' + failR : '⬜ 미완료'}`;
-  }).join('\n');
-
-  let todoText = ti.map(t => {
-    const failR = t.failReason ? ` (사유: ${t.failReason})` : '';
-    return `- ${t.text}: ${t.status === 'done' ? '✅ 완료' : t.status === 'fail' ? '❌ 실패' + failR : '⬜ 미완료'}`;
-  }).join('\n');
-
-  let retroText = '';
-  if (ret.answers && Object.keys(ret.answers).length > 0) {
-    D.retroQuestions.forEach((q, idx) => {
-      const ans = ret.answers[q.id] || {};
-      retroText += `${idx + 1}. ${q.text}\n   - 점수: ${ans.score ? ans.score + '/5점' : '미응답'} | 한줄 코멘트: ${ans.comment || '없음'}\n`;
-    });
-    retroText += `   * 총점: ${ret.total || 0} / 50점\n`;
-  } else {
-    retroText = '오늘 밤 자기점검이 아직 작성되지 않았습니다.';
-  }
-
-  const userPayload = `
-[오늘의 체크리스트 현황 - ${curDate}]
-■ My Routine:
-${routineText || '등록된 루틴 없음'}
-
-■ To-do List:
-${todoText || '등록된 할 일 없음'}
-
-■ 오늘의 말씀 묵상:
-- 성경 구절: ${dev.verse || '없음'}
-- 묵상/기도: ${dev.meditation || '없음'}
-
-[밤 자기점검 기록 (10개 영역)]
-${retroText}
-
-[사용자 직접 입력 고민/상황]
-${userExtraInp || '특이사항 없음'}
-`;
-
-  const systemPrompt = `
-너는 크리스천 군인을 위한 영성·습관·행동심리·생산성 융합 1일 자기점검 & 성장 코치이다.
-사용자의 목적은 하나님을 더욱 사랑하고 말씀대로 살며 군 복무라는 제약 속에서 지혜롭게 성장하는 것이다.
-
-[코치의 5가지 역할]
-1. 성경적 영성 지도자: 정죄하지 않는 회복, 삶의 적용 중심, 말씀 적용.
-2. 습관 코치: Atomic Habits, 2분 법칙, 습관 쌓기, 환경 설계.
-3. 행동심리학 코치: (상황 → 감정 → 행동 → 즉각적 보상 → 반복) 고리 분석.
-4. 생산성 코치: 중요/긴급 업무 구분, 피로도 고려.
-5. Daily 삶의 동반자: 지속적 성장 관찰.
-
-[점수 산정 기준 (100점 만점)]
-- 영성(40점): 말씀, 기도, 하나님 의식, 순종
-- 건강(20점): 물 2L, 운동, 피로관리
-- 디지털 절제(15점): 숏폼/유튜브 절제, 폰 사용 전 성경 접하기
-- 생산성(15점): 자기계발, 중요한 일 우선처리
-- 회복력(10점): 실패 후 다시 시도, 피곤해도 최소 행동 유지
-
-[실패 원인 분석 7단계]
-실패에 대해 단순 의지 부족으로 규정하지 말고 (환경, 기억, 시간, 에너지, 감정, 우선순위, 유혹구조) 중 원인을 찾아 해결책 제시.
-
-[반드시 준수할 피드백 출력 양식]
-아래 형식을 정확히 지켜 마크다운 문법을 활용해 응답하라:
-
-DAY 종합 평가: XX/100점
-(오늘 하루를 요약하는 따뜻하고 통찰 있는 한 문단)
-
-🌱 오늘 가장 잘한 점 TOP 3
-① (구체적 내용 및 성장의 이유)
-② (구체적 내용 및 성장의 이유)
-③ (구체적 내용 및 성장의 이유)
-
-🔍 오늘 보완할 점 (최대 3개)
-- 문제: 
-- 원인: 
-- 해결: 
-- 환경 설계: 
-
-📖 오늘의 말씀 묵상
-(기록된 말씀의 핵심 의미, 사용자의 상황과 연결, 실제 적용 행동)
-
-🎯 내일 실행 목표 (구체적 행동 3가지)
-1. 
-2. 
-3. 
-
-⭐ 오늘의 제안 3가지 (실행 가능한 한두 문장의 짧은 제안)
-1. 
-2. 
-3. 
-
-❤️ 목회자이자 코치로서 마지막 권면
-(은혜와 은총을 강조하며 주님께 다시 돌아오도록 격려하는 따뜻한 권면 한 문단)
-`;
-
-  let coachText = '';
-  try {
-    const apiKey = typeof OPENAI_API_KEY !== 'undefined' ? OPENAI_API_KEY : '';
-    if (apiKey) {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${apiKey}` 
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPayload }
-          ],
-          max_tokens: 1800,
-          temperature: 0.7
-        })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        coachText = data.choices?.[0]?.message?.content || '';
-      }
-    }
-  } catch (e) {
-    console.error('OpenAI API 연동 오류:', e);
-  }
-
-  if (!coachText) {
-    coachText = localCoach(userExtraInp);
-  }
-
-  lastCoach = coachText;
-  resp.innerHTML = parseMarkdown(coachText);
-
-  if (coachText.includes('내일 실행 목표') || coachText.includes('To-do:')) {
-    document.getElementById('c-add-todo-btn').style.display = 'inline-block';
-  }
-  btn.disabled = false; 
-  btn.textContent = '🤖 AI 1일 코칭 받기';
-}
-
-function parseMarkdown(text) {
-  return text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/^### (.*$)/gim, '<h3 style="font-family:var(--font-serif);font-size:1rem;color:var(--text-primary);margin:12px 0 6px;">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 style="font-family:var(--font-serif);font-size:1.1rem;color:var(--accent-warm);margin:14px 0 8px;">$1</h2>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n/g, '<br/>');
-}
-
-function localCoach(input) {
-  return `DAY 종합 평가: 85/100점
-오늘 하루도 군 복무라는 고된 환경 속에서 주님을 바라보며 성실히 일과를 완수한 귀한 날입니다. 완벽하지 않아도 다시 하나님께 돌아오는 유연함이 돋보였습니다.
-
-🌱 오늘 가장 잘한 점 TOP 3
-① 기상 직후 말씀 묵상 유지: 하루를 하나님 말씀으로 시작하는 우선순위 습관을 성공적으로 지켰습니다.
-② 물 마시기 습관 의식: 환경적 제약 속에서도 수분 섭취를 의식하며 몸 건강을 돌보았습니다.
-③ 밤 자기점검 참여: 피곤한 시간에도 하루를 성찰하며 하나님 앞에 솔직하게 나아왔습니다.
-
-🔍 오늘 보완할 점
-- 문제: 개인 정비 시간 숏폼 및 디지털 디톡스 미흡
-- 원인: 일과 후 피로감으로 인한 즉각적인 휴식 욕구
-- 해결: 휴대폰 수령 직후 성경 앱 1편 먼저 읽고 유튜브 접속하기 (2분 법칙)
-- 환경 설계: 스마트폰 첫 화면에 성경 앱 배치
-
-📖 오늘의 말씀 묵상
-말씀을 통해 주시는 하나님의 평강을 누리고, 내일 하루도 주어진 임무 속에서 기쁨으로 섬기는 삶을 결단합니다.
-
-🎯 내일 실행 목표
-1. 폰을 받으면 시편 1편을 먼저 읽기
-2. 점심 식사 전 감사 기도 드리기
-3. 취침 전 5분간 마음을 비우고 기도하기
-
-⭐ 오늘의 제안 3가지
-1. 피곤할 때는 억지로 무리하지 말고 최소 행동(2분 법칙)으로 습관을 유지하세요.
-2. 동료나 상관에게 먼저 따뜻한 격려 한마디를 건네보세요.
-3. 잠들기 전 오늘 감사했던 일 3가지를 마음속으로 세어보세요.
-
-❤️ 목회자이자 코치로서 마지막 권면
-"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라" (빌 4:13). 완벽한 하루를 만드는 것보다 더 중요한 것은 무너졌을 때 언제든 은혜의 보좌 앞으로 담대히 나아가는 마음입니다. 오늘 하루도 수고 많으셨습니다. 평안한 밤 되세요.`;
-}
-
-function addCoachingToTodo() {
-  if (!lastCoach) return;
-  
-  const matches = lastCoach.match(/🎯 내일 실행 목표[\s\S]*?(?=⭐|$)/);
-  if (matches) {
-    const lines = matches[0].split('\n').filter(l => /^\d+\./.test(l.trim()));
-    lines.forEach(line => {
-      const text = line.replace(/^\d+\.\s*/, '').trim();
-      if (text) {
-        todoItems(curDate).push({ id: uid(), text, status: 'none', pinned: false });
-      }
-    });
-  } else {
-    todoItems(curDate).push({ id: uid(), text: 'AI 코칭 추천 실행 목표 지키기', status: 'none', pinned: false });
-  }
-
-  renderTodo(); 
-  renderChart();
-  saveDayData(curDate);
-  toast('내일 실행 목표가 To-do에 추가되었습니다! ✅', 'ok');
-  document.getElementById('c-add-todo-btn').style.display = 'none';
-}
-
-function saveMemo() {
-  const text = document.getElementById('coaching-inp').value.trim();
-  if (!text) { toast('메모할 내용을 입력해 주세요.'); return; }
-  D.memos.unshift({ id: uid(), text, createdAt: new Date().toISOString() });
-  renderMemos();
-  saveTemplate();
-  toast('📌 메모가 저장되었습니다.', 'ok');
-}
-
-async function initApp() {
-  setLoading(true);
-  await initFB();
-
-  if (fbOk) {
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        currentUser = user;
-        await onLogin(user);
+    if (targetBtn && textEl) {
+      if (isDone) {
+        targetBtn.classList.add('done'); targetBtn.classList.remove('fail'); targetBtn.textContent = '✓';
+        textEl.classList.add('done'); textEl.classList.remove('fail');
       } else {
-        setLoading(false);
-        document.getElementById('login-screen').classList.remove('hidden');
+        targetBtn.classList.remove('done', 'fail'); targetBtn.textContent = '';
+        textEl.classList.remove('done', 'fail');
+      }
+    }
+
+    if (zone === 'routine') {
+      this.updateProg('routine', this.template.routineItems, rec.routineState || {});
+    } else {
+      const stateMap = {};
+      (rec.todoItems || []).forEach(t => stateMap[t.id] = t);
+      this.updateProg('todo', rec.todoItems || [], stateMap);
+    }
+    await this.renderChart();
+  }
+
+  async togglePin(zone, id) {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+
+    if (zone === 'todo') {
+      const idx = (rec.todoItems || []).findIndex(t => t.id === id);
+      if (idx < 0) return;
+
+      const [item] = rec.todoItems.splice(idx, 1);
+      item.pinned = true;
+      this.template.routineItems.push({ id: item.id, text: item.text, pinned: true });
+
+      await this.saveTemplateState();
+      await this.saveDayRecord(this.curDate);
+      await this.renderTodo();
+      await this.renderRoutine();
+      this.showToast('📌 My Routine으로 고정되었습니다.', 'ok');
+    } else if (zone === 'routine') {
+      const idx = this.template.routineItems.findIndex(r => r.id === id);
+      if (idx < 0) return;
+
+      const [item] = this.template.routineItems.splice(idx, 1);
+      item.pinned = false;
+
+      if (!rec.todoItems) rec.todoItems = [];
+      rec.todoItems.push({ id: item.id, text: item.text, status: 'none', pinned: false });
+
+      await this.saveTemplateState();
+      await this.saveDayRecord(this.curDate);
+      await this.renderRoutine();
+      await this.renderTodo();
+      this.showToast('고정이 해제되어 To-do List로 이동되었습니다.', 'info');
+    }
+  }
+
+  async deleteItem(zone, id) {
+    if (!confirm('이 항목을 삭제할까요?')) return;
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+
+    if (zone === 'routine') {
+      this.template.routineItems = this.template.routineItems.filter(r => r.id !== id);
+      await this.saveTemplateState();
+      await this.renderRoutine();
+    } else {
+      rec.todoItems = (rec.todoItems || []).filter(t => t.id !== id);
+      await this.saveDayRecord(this.curDate);
+      await this.renderTodo();
+    }
+    await this.renderChart();
+    this.showToast('삭제되었습니다.', 'err');
+  }
+
+  async addItem(zone) {
+    const inpId = zone === 'routine' ? 'routine-inp' : 'todo-inp';
+    const inp = document.getElementById(inpId);
+    const text = inp ? inp.value.trim() : '';
+    if (!text) return;
+
+    if (inp) inp.value = '';
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+
+    if (zone === 'routine') {
+      this.template.routineItems.push({ id: uid(), text, pinned: true });
+      await this.saveTemplateState();
+      await this.renderRoutine();
+    } else {
+      if (!rec.todoItems) rec.todoItems = [];
+      rec.todoItems.push({ id: uid(), text, status: 'none', pinned: false });
+      await this.saveDayRecord(this.curDate);
+      await this.renderTodo();
+    }
+    await this.renderChart();
+    this.showToast('항목이 추가되었습니다.', 'ok');
+  }
+
+  updateProg(zone, items, stateMap) {
+    const total = items.length;
+    let done = 0;
+    items.forEach(item => { if ((stateMap[item.id] || {}).status === 'done') done++; });
+    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    if (zone === 'routine') {
+      document.getElementById('routine-prog').style.width = pct + '%';
+      document.getElementById('routine-prog-lbl').textContent = `완료 ${pct}%`;
+      document.getElementById('routine-badge').textContent = `${done}/${total}`;
+    } else {
+      document.getElementById('todo-prog').style.width = pct + '%';
+      document.getElementById('todo-prog-lbl').textContent = `완료 ${pct}%`;
+      document.getElementById('todo-badge').textContent = `${done}/${total}`;
+    }
+  }
+
+  // AI Review & Candidate Generation Workflow
+  async handleGenerateAiReview() {
+    const btn = document.getElementById('btn-coaching');
+    if (btn) btn.disabled = true;
+
+    const resp = document.getElementById('coaching-resp');
+    if (resp) resp.classList.add('vis');
+
+    const summaryText = document.getElementById('ai-summary-text');
+    if (summaryText) summaryText.textContent = '🤖 영성 & 습관 데이터를 검증된 ContextEvent 기반으로 분석 중입니다...';
+
+    const startDate = addDays(this.curDate, -6);
+
+    const result = await this.controller.generateCandidate({
+      startDate,
+      endDate: this.curDate,
+      patterns: [{ id: 'pat-1', status: PatternStatus.ACTIVE, metrics: {} }]
+    });
+
+    if (btn) btn.disabled = false;
+
+    if (!result.success || !result.data) {
+      if (summaryText) summaryText.textContent = `분석 실패: ${result.error?.message}`;
+      this.showToast(`AI 분석 실패: ${result.error?.message}`, 'err');
+      return;
+    }
+
+    this.renderCandidateReview(result.data);
+    this.showToast('AI 분석 및 습관 전략 후보(Candidate)가 생성되었습니다.', 'info');
+  }
+
+  renderCandidateReview(viewModel) {
+    const summaryText = document.getElementById('ai-summary-text');
+    if (summaryText) summaryText.textContent = viewModel.summary;
+
+    // Q2 Evidence
+    const evidenceContainer = document.getElementById('verified-evidence-tags');
+    if (evidenceContainer) {
+      evidenceContainer.innerHTML = '';
+      if (viewModel.evidenceIds.length === 0) {
+        const span = document.createElement('span');
+        span.className = 'tag';
+        span.textContent = '검증된 근거 기록 없음';
+        evidenceContainer.appendChild(span);
+      } else {
+        viewModel.evidenceIds.forEach(id => {
+          const span = document.createElement('span');
+          span.className = 'tag';
+          span.textContent = `✓ Evidence [${id}]`;
+          evidenceContainer.appendChild(span);
+        });
+      }
+    }
+
+    // Candidate Strategies Render
+    const strategyContainer = document.getElementById('candidate-strategy-list');
+    if (strategyContainer) {
+      strategyContainer.innerHTML = '';
+      viewModel.strategies.forEach(strat => {
+        const card = document.createElement('div');
+        card.className = 'strategy-card candidate';
+        card.setAttribute('data-id', strat.id);
+
+        const header = document.createElement('div');
+        header.className = 'strategy-card-header';
+
+        const title = document.createElement('span');
+        title.className = 'strategy-card-title';
+        title.textContent = strat.name;
+
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-gold';
+        badge.textContent = '후보 (미승인)';
+
+        header.appendChild(title); header.appendChild(badge);
+
+        const desc = document.createElement('p');
+        desc.className = 'strategy-card-desc';
+        desc.textContent = strat.description;
+
+        const btnApprove = document.createElement('button');
+        btnApprove.className = 'btn';
+        btnApprove.style.cssText = 'padding:6px 12px;background:var(--accent-green);color:#fff;border-radius:var(--radius-btn);font-weight:700;font-size:0.78rem;';
+        btnApprove.textContent = '✓ 이 전략 승인하기 (Explicit User Approval)';
+        btnApprove.addEventListener('click', () => this.openApprovalConfirmationModal(strat));
+
+        card.appendChild(header); card.appendChild(desc); card.appendChild(btnApprove);
+        strategyContainer.appendChild(card);
+      });
+    }
+  }
+
+  openApprovalConfirmationModal(candidate) {
+    this.pendingApprovalCandidate = candidate;
+    const modalText = document.getElementById('modal-text');
+    if (modalText) {
+      modalText.textContent = `정말로 전략 "${candidate.name}"을(를) 승인하고 IndexedDB 도메인 전략으로 저장하시겠습니까?`;
+    }
+    this.openModal('approval-modal');
+  }
+
+  closeApprovalModal() {
+    this.pendingApprovalCandidate = null;
+    this.closeModal('approval-modal');
+  }
+
+  async executePendingApproval() {
+    if (!this.pendingApprovalCandidate) return;
+    const candidate = this.pendingApprovalCandidate;
+    this.closeApprovalModal();
+
+    const result = await this.controller.approveStrategy(candidate, true, 'christian-soldier-01');
+
+    if (result.success && result.data) {
+      this.showToast(`전략 "${result.data.name}"이(가) 도메인 전략으로 승인 및 저장되었습니다.`, 'ok');
+      await this.renderApprovedStrategiesList();
+
+      const cardEl = document.querySelector(`#candidate-strategy-list .strategy-card[data-id="${candidate.id}"]`);
+      if (cardEl) cardEl.remove();
+    } else {
+      this.showToast(`전략 승인 실패: ${result.error?.message}`, 'err');
+    }
+  }
+
+  async renderApprovedStrategiesList() {
+    const listContainer = document.getElementById('approved-strategy-list');
+    if (!listContainer) return;
+
+    const approvedList = await this.strategyRepo.listAll();
+    listContainer.innerHTML = '';
+
+    if (approvedList.length === 0) {
+      const emptyMsg = document.createElement('p');
+      emptyMsg.style.cssText = 'font-size:0.8rem;color:var(--text-muted);font-style:italic;';
+      emptyMsg.textContent = '승인된 도메인 습관 전략이 없습니다. AI 분석 후 후보 전략을 승인하세요.';
+      listContainer.appendChild(emptyMsg);
+      return;
+    }
+
+    approvedList.forEach(strat => {
+      const card = document.createElement('div');
+      card.className = 'strategy-card approved';
+
+      const header = document.createElement('div');
+      header.className = 'strategy-card-header';
+
+      const title = document.createElement('span');
+      title.className = 'strategy-card-title';
+      title.textContent = strat.name;
+
+      const badge = document.createElement('span');
+      badge.className = 'badge bg-green';
+      badge.textContent = '도메인 승인 완료';
+
+      header.appendChild(title); header.appendChild(badge);
+
+      const desc = document.createElement('p');
+      desc.className = 'strategy-card-desc';
+      desc.textContent = strat.description || 'IndexedDB 영속화 상태 (isUserApproved: true)';
+
+      card.appendChild(header); card.appendChild(desc);
+      listContainer.appendChild(card);
+    });
+  }
+
+  renderMemos() {
+    const list = document.getElementById('memo-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    (this.template.memos || []).forEach((memo, idx) => {
+      const el = document.createElement('div');
+      el.className = 'memo-item';
+      el.innerHTML = `<span class="memo-txt">${esc(memo.text)}</span><button class="memo-del" data-idx="${idx}">✕</button>`;
+      el.querySelector('.memo-del')?.addEventListener('click', async () => {
+        this.template.memos.splice(idx, 1);
+        await this.saveTemplateState();
+        this.renderMemos();
+        this.showToast('메모가 삭제되었습니다.', 'info');
+      });
+      list.appendChild(el);
+    });
+  }
+
+  async saveMemo() {
+    const inp = document.getElementById('coaching-inp');
+    const text = inp ? inp.value.trim() : '';
+    if (!text) { this.showToast('메모할 내용을 입력해 주세요.', 'info'); return; }
+
+    this.template.memos.unshift({ id: uid(), text, createdAt: new Date().toISOString() });
+    await this.saveTemplateState();
+    this.renderMemos();
+    if (inp) inp.value = '';
+    this.showToast('📌 메모가 저장되었습니다.', 'ok');
+  }
+
+  // Night Retro Modal
+  async renderRetroModal() {
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    const saved = rec.retro || {};
+    this.retroAns = { ...(saved.answers || {}) };
+
+    const body = document.getElementById('retro-body');
+    if (!body) return;
+    let html = '';
+
+    this.template.retroQuestions.forEach((q, i) => {
+      const ans = this.retroAns[q.id] || {};
+      html += `
+        <div class="rq-wrap">
+          <div class="rq-txt">${i+1}. ${esc(q.text)}</div>
+          <div class="rq-scores">
+            ${[1,2,3,4,5].map(n => `<button class="rq-sbtn${ans.score===n?' sel':''}" data-qid="${q.id}" data-n="${n}">${n}</button>`).join('')}
+          </div>
+          <input class="rq-comment" data-qid="${q.id}" placeholder="한 줄 코멘트 (선택)" value="${esc(ans.comment||'')}" />
+        </div>
+      `;
+    });
+
+    const tot = this.calcRetroTotal();
+    html += `
+      <div id="retro-total">총점: ${tot} / 50</div>
+      <div id="retro-grade">${this.retroGrade(tot)}</div>
+      <button class="retro-save-btn" id="btn-retro-save">💾 자기점검 저장</button>
+    `;
+    body.innerHTML = html;
+
+    body.querySelectorAll('.rq-sbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const qid = btn.dataset.qid, n = parseInt(btn.dataset.n, 10);
+        if (!this.retroAns[qid]) this.retroAns[qid] = {};
+        this.retroAns[qid].score = n;
+        body.querySelectorAll(`.rq-sbtn[data-qid="${qid}"]`).forEach(b => b.classList.toggle('sel', parseInt(b.dataset.n, 10)===n));
+        const tot2 = this.calcRetroTotal();
+        document.getElementById('retro-total').textContent = `총점: ${tot2} / 50`;
+        document.getElementById('retro-grade').textContent = this.retroGrade(tot2);
+      });
+    });
+
+    body.querySelectorAll('.rq-comment').forEach(inp => {
+      inp.addEventListener('input', () => {
+        if (!this.retroAns[inp.dataset.qid]) this.retroAns[inp.dataset.qid] = {};
+        this.retroAns[inp.dataset.qid].comment = inp.value;
+      });
+    });
+
+    document.getElementById('btn-retro-save')?.addEventListener('click', () => this.saveRetro());
+  }
+
+  calcRetroTotal() {
+    return Object.values(this.retroAns).reduce((s, a) => s + (a.score || 0), 0);
+  }
+
+  retroGrade(total) {
+    if (total >= 45) return '🌟 탁월한 하루! 주님께 영광을 돌립니다.';
+    if (total >= 35) return '😊 좋은 하루였습니다. 내일도 승리하세요!';
+    if (total >= 25) return '🙂 보통의 하루. 작은 습관부터 개선해 보세요.';
+    if (total >= 15) return '😔 어려운 하루였군요. 은혜의 보좌 앞에 나아가세요.';
+    return '💪 힘든 하루였지만 내일은 주님의 은혜로 더 나아질 것입니다!';
+  }
+
+  async saveRetro() {
+    const total = this.calcRetroTotal();
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+    rec.retro = { answers: this.retroAns, total, savedAt: new Date().toISOString() };
+    await this.saveDayRecord(this.curDate);
+    this.closeModal('modal-retro');
+    this.showToast(`자기점검 완료! 총점: ${total}/50 🌙`, 'ok');
+  }
+
+  openRetroQuestionsEditModal() {
+    const container = document.getElementById('retro-qs-inputs');
+    if (!container) return;
+    container.innerHTML = '';
+    this.template.retroQuestions.forEach((q, idx) => {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+      row.innerHTML = `
+        <span style="font-size:0.8rem;font-weight:700;width:24px;">${idx+1}.</span>
+        <input type="text" class="modal-inp rq-edit-input" data-idx="${idx}" value="${esc(q.text)}" placeholder="질문 입력..." />
+      `;
+      container.appendChild(row);
+    });
+    this.openModal('modal-retro-qs');
+  }
+
+  async saveRetroQuestions() {
+    const inputs = document.querySelectorAll('.rq-edit-input');
+    inputs.forEach(inp => {
+      const idx = parseInt(inp.dataset.idx, 10);
+      const val = inp.value.trim();
+      if (val && this.template.retroQuestions[idx]) {
+        this.template.retroQuestions[idx].text = val;
       }
     });
-  } else {
-    setLoading(false);
-    document.getElementById('login-screen').classList.remove('hidden');
+    await this.saveTemplateState();
+    this.closeModal('modal-retro-qs');
+    this.renderRetroModal();
+    this.showToast('자기점검 질문이 변경되었습니다.', 'ok');
   }
-}
 
-async function onLogin(user) {
-  document.getElementById('user-name-disp').textContent = user.displayName || user.email || '성도';
-  if (user.photoURL) {
-    const av = document.getElementById('user-avatar');
-    av.src = user.photoURL; av.classList.remove('hidden');
+  // Timer & Stopwatch Logic
+  swUpdate() {
+    this.swElapsed = Date.now() - this.swStart;
+    document.getElementById('sw-disp').textContent = fmtSW(this.swElapsed);
   }
-  await loadData();
-  setLoading(false);
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-shell').classList.remove('hidden');
-  renderAll();
-  toast(`환영합니다, ${user.displayName||'성도'}님! ✝`, 'ok');
-}
+  swGo() {
+    if (this.swRunning) { this.swPause(); return; }
+    this.swRunning = true; this.swStart = Date.now() - this.swElapsed;
+    this.swTimer = setInterval(() => this.swUpdate(), 100);
+    const btn = document.getElementById('btn-sw-start');
+    if (btn) { btn.textContent = '일시정지'; btn.className = 'tbtn pause'; }
+  }
+  swPause() {
+    this.swRunning = false; clearInterval(this.swTimer);
+    const btn = document.getElementById('btn-sw-start');
+    if (btn) { btn.textContent = '재개'; btn.className = 'tbtn start'; }
+  }
+  swReset() {
+    this.swRunning = false; clearInterval(this.swTimer);
+    this.swElapsed = 0; this.swLaps = [];
+    document.getElementById('sw-disp').textContent = '00:00:00';
+    document.getElementById('lap-list').innerHTML = '';
+    const btn = document.getElementById('btn-sw-start');
+    if (btn) { btn.textContent = '시작'; btn.className = 'tbtn start'; }
+  }
+  swLap() {
+    if (!this.swRunning) return;
+    this.swLaps.push(this.swElapsed);
+    const el = document.createElement('div');
+    el.className = 'lap-item';
+    el.innerHTML = `<span>랩 ${this.swLaps.length}</span><span>${fmtSW(this.swElapsed)}</span>`;
+    document.getElementById('lap-list')?.prepend(el);
+  }
 
-async function skipLogin() {
-  currentUser = null;
-  loadLocal();
-  setLoading(false);
-  document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app-shell').classList.remove('hidden');
-  renderAll();
-  toast('로컬 모드로 시작합니다. (이 기기에만 저장)', 'info');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.getElementById('btn-google-login').addEventListener('click', async () => {
-    if (!fbOk) { toast('Firebase 설정이 필요합니다. 로컬 모드를 이용하세요.', 'err'); return; }
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      await auth.signInWithPopup(provider);
-    } catch(e) { toast('로그인 실패: ' + e.message, 'err'); }
-  });
-  document.getElementById('btn-skip-login').addEventListener('click', skipLogin);
-
-  document.getElementById('btn-logout').addEventListener('click', async () => {
-    if (fbOk && currentUser) await auth.signOut();
-    currentUser = null;
-    Object.assign(D, { routineItems:[], dayData:{}, memos:[] });
-    document.getElementById('app-shell').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-    toast('로그아웃되었습니다.');
-  });
-
-  document.getElementById('btn-prev-day').addEventListener('click', () => { curDate = addDays(curDate, -1); renderAll(); });
-  document.getElementById('btn-next-day').addEventListener('click', () => { curDate = addDays(curDate, 1); renderAll(); });
-  document.getElementById('today-btn').addEventListener('click', () => { curDate = todayStr(); renderAll(); });
-  document.getElementById('date-disp').addEventListener('click', () => {
-    const p = document.getElementById('date-picker');
-    p.value = curDate;
-    if (p.showPicker) p.showPicker(); else p.click();
-  });
-  document.getElementById('date-picker').addEventListener('change', e => {
-    if (e.target.value) { curDate = e.target.value; renderAll(); }
-  });
-
-  document.getElementById('btn-routine-add').addEventListener('click', () => addItem('routine'));
-  document.getElementById('routine-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('routine'); });
-
-  document.getElementById('btn-todo-add').addEventListener('click', () => addItem('todo'));
-  document.getElementById('todo-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('todo'); });
-
-  document.getElementById('btn-dev-edit').addEventListener('click', openDevModal);
-  document.getElementById('btn-dev-save').addEventListener('click', saveDev);
-
-  document.getElementById('btn-retro').addEventListener('click', () => { renderRetroModal(); openModal('modal-retro'); });
-  document.getElementById('btn-retro-edit-q').addEventListener('click', openRetroQuestionsEditModal);
-  document.getElementById('btn-save-retro-qs').addEventListener('click', saveRetroQuestions);
-
-  document.getElementById('btn-stopwatch').addEventListener('click', () => {
-    document.getElementById('tab-sw').click();
-    openModal('modal-timer');
-  });
-  document.getElementById('btn-sw-start').addEventListener('click', swGo);
-  document.getElementById('btn-sw-reset').addEventListener('click', swReset);
-  document.getElementById('btn-sw-lap').addEventListener('click', swLap);
-
-  document.getElementById('btn-timer').addEventListener('click', () => {
-    document.getElementById('tab-cd').click();
-    openModal('modal-timer');
-  });
-  document.getElementById('btn-cd-start').addEventListener('click', cdGo);
-  document.getElementById('btn-cd-reset').addEventListener('click', cdReset);
-  document.getElementById('btn-cd-custom').addEventListener('click', () => {
-    const v = parseInt(document.getElementById('cd-custom').value);
-    if (v > 0) cdSet(v);
-  });
-  document.getElementById('cd-custom').addEventListener('keydown', e => {
-    if (e.key==='Enter') { const v=parseInt(e.target.value); if(v>0) cdSet(v); }
-  });
-  document.querySelectorAll('.preset-btn[data-min]').forEach(btn => {
-    btn.addEventListener('click', () => cdSet(parseInt(btn.dataset.min)));
-  });
-
-  document.getElementById('tab-sw').addEventListener('click', () => {
-    document.getElementById('tab-sw').classList.add('active');
-    document.getElementById('tab-cd').classList.remove('active');
-    document.getElementById('panel-sw').classList.remove('hidden');
-    document.getElementById('panel-cd').classList.add('hidden');
-  });
-  document.getElementById('tab-cd').addEventListener('click', () => {
-    document.getElementById('tab-cd').classList.add('active');
-    document.getElementById('tab-sw').classList.remove('active');
-    document.getElementById('panel-cd').classList.remove('hidden');
-    document.getElementById('panel-sw').classList.add('hidden');
-  });
-
-  document.getElementById('btn-ai-open').addEventListener('click', () => {
-    document.getElementById('ai-card').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => document.getElementById('coaching-inp').focus(), 400);
-  });
-  document.getElementById('btn-coaching').addEventListener('click', submitCoaching);
-  document.getElementById('c-add-todo-btn').addEventListener('click', addCoachingToTodo);
-  document.getElementById('btn-save-memo').addEventListener('click', saveMemo);
-
-  document.getElementById('btn-memo-toggle').addEventListener('click', () => {
-    const ml = document.getElementById('memo-list');
-    const hidden = ml.style.display === 'none';
-    ml.style.display = hidden ? '' : 'none';
-    document.getElementById('btn-memo-toggle').textContent = hidden ? '메모 ▴' : '메모 ▾';
-  });
-
-  document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
-  document.getElementById('edit-inp').addEventListener('keydown', e => { if(e.key==='Enter') saveEdit(); });
-
-  document.getElementById('btn-fail-save').addEventListener('click', saveFail);
-
-  document.querySelectorAll('[data-close]').forEach(btn => {
-    btn.addEventListener('click', () => closeModal(btn.dataset.close));
-  });
-
-  document.querySelectorAll('.modal-ov').forEach(ov => {
-    ov.addEventListener('click', e => {
-      if (e.target === ov) closeModal(ov.id);
-    });
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-ov.open').forEach(ov => closeModal(ov.id));
+  cdUpdate() {
+    if (this.cdRem <= 0) {
+      this.cdStop();
+      document.getElementById('cd-disp').textContent = '00:00';
+      this.showToast('⏰ 몰입 타이머 종료!', 'info');
+      return;
     }
-  });
+    this.cdRem--;
+    document.getElementById('cd-disp').textContent = fmtCD(this.cdRem);
+  }
+  cdGo() {
+    if (this.cdRunning) { this.cdPause(); return; }
+    if (this.cdRem <= 0) this.cdRem = this.cdTotal;
+    this.cdRunning = true;
+    this.cdTimer = setInterval(() => this.cdUpdate(), 1000);
+    const btn = document.getElementById('btn-cd-start');
+    if (btn) { btn.textContent = '일시정지'; btn.className = 'tbtn pause'; }
+  }
+  cdPause() {
+    this.cdRunning = false; clearInterval(this.cdTimer);
+    const btn = document.getElementById('btn-cd-start');
+    if (btn) { btn.textContent = '재개'; btn.className = 'tbtn start'; }
+  }
+  cdStop() {
+    this.cdRunning = false; clearInterval(this.cdTimer);
+    const btn = document.getElementById('btn-cd-start');
+    if (btn) { btn.textContent = '시작'; btn.className = 'tbtn start'; }
+  }
+  cdReset() {
+    this.cdStop(); this.cdRem = this.cdTotal;
+    document.getElementById('cd-disp').textContent = fmtCD(this.cdRem);
+  }
+  cdSet(min) {
+    this.cdStop(); this.cdTotal = min * 60; this.cdRem = this.cdTotal;
+    document.getElementById('cd-disp').textContent = fmtCD(this.cdRem);
+    document.querySelectorAll('.preset-btn[data-min]').forEach(b => {
+      b.classList.toggle('active-preset', parseInt(b.dataset.min, 10) === min);
+    });
+  }
 
-  initApp();
+  openEditModal(zone, id, text) {
+    this.editCtx = { zone, id };
+    document.getElementById('edit-inp').value = text;
+    this.openModal('modal-edit');
+  }
+
+  async saveEdit() {
+    if (!this.editCtx) return;
+    const text = document.getElementById('edit-inp').value.trim();
+    if (!text) return;
+    const { zone, id } = this.editCtx;
+
+    if (zone === 'routine') {
+      const item = this.template.routineItems.find(r => r.id === id);
+      if (item) item.text = text;
+      await this.saveTemplateState();
+      await this.renderRoutine();
+    } else {
+      const rec = await this.getOrCreateDayRecord(this.curDate);
+      const item = (rec.todoItems || []).find(t => t.id === id);
+      if (item) item.text = text;
+      await this.saveDayRecord(this.curDate);
+      await this.renderTodo();
+    }
+    this.closeModal('modal-edit');
+    this.editCtx = null;
+    this.showToast('수정되었습니다.', 'ok');
+  }
+
+  openFailModal(zone, id, reason) {
+    this.failCtx = { zone, id };
+    document.getElementById('fail-inp').value = reason || '';
+    this.openModal('modal-fail');
+  }
+
+  async saveFail() {
+    if (!this.failCtx) return;
+    const reason = document.getElementById('fail-inp').value.trim();
+    const { zone, id } = this.failCtx;
+    const rec = await this.getOrCreateDayRecord(this.curDate);
+
+    if (zone === 'routine') {
+      if (!rec.routineState) rec.routineState = {};
+      rec.routineState[id] = { ...(rec.routineState[id] || {}), status: 'fail', failReason: reason };
+      await this.renderRoutine();
+    } else {
+      const item = (rec.todoItems || []).find(t => t.id === id);
+      if (item) { item.status = 'fail'; item.failReason = reason; }
+      await this.renderTodo();
+    }
+    await this.saveDayRecord(this.curDate);
+    this.closeModal('modal-fail');
+    this.failCtx = null;
+    this.showToast('실패 사유가 기록되었습니다.', 'info');
+  }
+
+  openModal(id) { document.getElementById(id)?.classList.add('open'); }
+  closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+  showToast(msg, type = '') {
+    const box = document.getElementById('toast-box');
+    if (!box) return;
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = msg;
+    box.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 2600);
+  }
+}
+
+// Global App Lifecycle
+document.addEventListener('DOMContentLoaded', async () => {
+  window.app = new GrowthLogApp();
+  await window.app.init();
 });
 </script>
 </body>
