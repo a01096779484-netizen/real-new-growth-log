@@ -579,7 +579,7 @@
   </div>
 </div>
 
-<!-- 모달: 밤 자기점검 질문 편집 (신규 추가) -->
+<!-- 모달: 밤 자기점검 질문 편집 -->
 <div class="modal-ov" id="modal-retro-qs">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -689,7 +689,7 @@ const FIREBASE_CONFIG = {
 let db = null, auth = null, fbOk = false;
 let currentUser = null;
 
-/* 안전한 날짜 계산 유틸 (타임존 오류 수정) */
+/* 안전한 UTC 기반 날짜 유틸 함수 (타임존 뒤틀림 방지) */
 function todayStr() {
   const now = new Date();
   const y = now.getFullYear();
@@ -1048,75 +1048,93 @@ function renderMemos() {
   });
 }
 
-/* 체크 토글 로직 수정 (done ↔ none 토글) */
-async function toggleStatus(zone, id) {
+/* 
+   ★ 낙관적 UI 업데이트 적용 (Optimistic UI Update)
+   - 클릭 즉시 메모리 변경 및 UI 렌더링
+   - DB/로컬 저장은 비동기 백그라운드로 실행하여 DOM 업데이트 블로킹 해제
+*/
+function toggleStatus(zone, id) {
   if (zone === 'routine') {
     const rs = routineState(curDate);
     const cur = (rs[id]||{}).status || 'none';
     const next = (cur === 'done') ? 'none' : 'done';
+    
+    // 1. 메모리 업데이트
     rs[id] = { ...(rs[id]||{}), status: next };
-    await saveDayData(curDate);
-    renderRoutine(); renderChart();
+    
+    // 2. UI 즉시 렌더링 (0.01초 최속 반영)
+    renderRoutine(); 
+    renderChart();
+    
+    // 3. 백그라운드 비동기 DB 저장
+    saveDayData(curDate);
   } else {
     const ti = todoItems(curDate);
     const item = ti.find(t => t.id === id);
     if (!item) return;
+    
+    // 1. 메모리 업데이트
     const cur = item.status || 'none';
-    const next = (cur === 'done') ? 'none' : 'done';
-    item.status = next;
-    await saveDayData(curDate);
-    renderTodo(); renderChart();
+    item.status = (cur === 'done') ? 'none' : 'done';
+    
+    // 2. UI 즉시 렌더링 (0.01초 최속 반영)
+    renderTodo(); 
+    renderChart();
+    
+    // 3. 백그라운드 비동기 DB 저장
+    saveDayData(curDate);
   }
 }
 
-async function togglePin(zone, id) {
+function togglePin(zone, id) {
   if (zone === 'routine') {
     const item = D.routineItems.find(r => r.id === id);
     if (!item) return;
     item.pinned = !item.pinned;
-    await saveTemplate();
     renderRoutine();
+    saveTemplate();
     toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
   } else {
     const item = todoItems(curDate).find(t => t.id === id);
     if (!item) return;
     item.pinned = !item.pinned;
-    await saveDayData(curDate);
     renderTodo();
+    saveDayData(curDate);
     toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
   }
 }
 
-async function deleteItem(zone, id) {
+function deleteItem(zone, id) {
   if (!confirm('이 항목을 삭제할까요?')) return;
   if (zone === 'routine') {
     D.routineItems = D.routineItems.filter(r => r.id !== id);
-    await saveTemplate();
     renderRoutine();
+    saveTemplate();
   } else {
     dayD(curDate).todoItems = todoItems(curDate).filter(t => t.id !== id);
-    await saveDayData(curDate);
     renderTodo();
+    saveDayData(curDate);
   }
   renderChart();
   toast('삭제되었습니다.', 'err');
 }
 
-async function addItem(zone) {
+function addItem(zone) {
   const inpId = zone === 'routine' ? 'routine-inp' : 'todo-inp';
   const inp = document.getElementById(inpId);
   const text = inp.value.trim();
   if (!text) return;
+  
   inp.value = '';
   if (zone === 'routine') {
     D.routineItems.push({ id: uid(), text, pinned: false });
-    await saveTemplate();
     renderRoutine();
+    saveTemplate();
   } else {
     const ti = todoItems(curDate);
     ti.push({ id: uid(), text, status: 'none', pinned: false });
-    await saveDayData(curDate);
     renderTodo();
+    saveDayData(curDate);
   }
   renderChart();
   toast('항목이 추가되었습니다.', 'ok');
@@ -1129,7 +1147,7 @@ function openEditModal(zone, id, text) {
   setTimeout(() => document.getElementById('edit-inp').focus(), 300);
 }
 
-async function saveEdit() {
+function saveEdit() {
   if (!editCtx) return;
   const text = document.getElementById('edit-inp').value.trim();
   if (!text) return;
@@ -1137,13 +1155,13 @@ async function saveEdit() {
   if (zone === 'routine') {
     const item = D.routineItems.find(r => r.id === id);
     if (item) item.text = text;
-    await saveTemplate();
     renderRoutine();
+    saveTemplate();
   } else {
     const item = todoItems(curDate).find(t => t.id === id);
     if (item) item.text = text;
-    await saveDayData(curDate);
     renderTodo();
+    saveDayData(curDate);
   }
   closeModal('modal-edit');
   editCtx = null;
@@ -1157,20 +1175,20 @@ function openFailModal(zone, id, reason) {
   setTimeout(() => document.getElementById('fail-inp').focus(), 300);
 }
 
-async function saveFail() {
+function saveFail() {
   if (!failCtx) return;
   const reason = document.getElementById('fail-inp').value.trim();
   const { zone, id } = failCtx;
   if (zone === 'routine') {
     const rs = routineState(curDate);
     rs[id] = { ...(rs[id]||{}), status: 'fail', failReason: reason };
-    await saveDayData(curDate);
     renderRoutine();
+    saveDayData(curDate);
   } else {
     const item = todoItems(curDate).find(t => t.id === id);
     if (item) { item.status = 'fail'; item.failReason = reason; }
-    await saveDayData(curDate);
     renderTodo();
+    saveDayData(curDate);
   }
   closeModal('modal-fail');
   failCtx = null;
@@ -1216,8 +1234,8 @@ async function reorder(zone, srcId, tgtId) {
     if (si < 0 || ti < 0) return;
     const [rm] = items.splice(si, 1);
     items.splice(ti, 0, rm);
-    await saveTemplate();
     renderRoutine();
+    await saveTemplate();
   } else {
     const items = todoItems(curDate);
     const si = items.findIndex(i => i.id === srcId);
@@ -1225,8 +1243,8 @@ async function reorder(zone, srcId, tgtId) {
     if (si < 0 || ti < 0) return;
     const [rm] = items.splice(si, 1);
     items.splice(ti, 0, rm);
-    await saveDayData(curDate);
     renderTodo();
+    await saveDayData(curDate);
   }
   toast('순서가 변경되었습니다.');
 }
@@ -1242,9 +1260,9 @@ async function saveDev() {
   const verse = document.getElementById('dev-verse').value.trim();
   const meditation = document.getElementById('dev-med').value.trim();
   dayD(curDate).devotion = { verse, meditation };
-  await saveDayData(curDate);
   renderDevPreview();
   closeModal('modal-dev');
+  await saveDayData(curDate);
   toast('말씀 묵상이 저장되었습니다. ✝', 'ok');
 }
 
@@ -1327,9 +1345,9 @@ async function saveRetroQuestions() {
       D.retroQuestions[idx].text = val;
     }
   });
-  await saveTemplate();
   closeModal('modal-retro-qs');
   renderRetroModal();
+  await saveTemplate();
   toast('자기점검 질문이 변경되었습니다.', 'ok');
 }
 
@@ -1340,8 +1358,8 @@ function calcRetroTotal() {
 async function saveRetro() {
   const total = calcRetroTotal();
   dayD(curDate).retro = { answers: retroAns, total, savedAt: new Date().toISOString() };
-  await saveDayData(curDate);
   closeModal('modal-retro');
+  await saveDayData(curDate);
   toast(`자기점검 완료! 총점: ${total}/50 🌙`, 'ok');
 }
 
@@ -1501,23 +1519,24 @@ async function typeEffect(el, text) {
   });
 }
 
-async function addCoachingToTodo() {
+function addCoachingToTodo() {
   if (!lastCoach) return;
   const m = lastCoach.match(/→\s*To-do:\s*(.+)/);
   const text = m ? m[1].trim() : lastCoach.slice(0, 60) + '...';
   todoItems(curDate).push({ id: uid(), text, status: 'none', pinned: false });
-  await saveDayData(curDate);
-  renderTodo(); renderChart();
+  renderTodo(); 
+  renderChart();
+  saveDayData(curDate);
   toast('To-do에 추가되었습니다! ✅', 'ok');
   document.getElementById('c-add-todo-btn').style.display = 'none';
 }
 
-async function saveMemo() {
+function saveMemo() {
   const text = document.getElementById('coaching-inp').value.trim();
   if (!text) { toast('메모할 내용을 입력해 주세요.'); return; }
   D.memos.unshift({ id: uid(), text, createdAt: new Date().toISOString() });
-  await saveTemplate();
   renderMemos();
+  saveTemplate();
   toast('📌 메모가 저장되었습니다.', 'ok');
 }
 
@@ -1585,7 +1604,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toast('로그아웃되었습니다.');
   });
 
-  /* 날짜 버튼 클릭 리스너 */
   document.getElementById('btn-prev-day').addEventListener('click', () => { curDate = addDays(curDate, -1); renderAll(); });
   document.getElementById('btn-next-day').addEventListener('click', () => { curDate = addDays(curDate, 1); renderAll(); });
   document.getElementById('today-btn').addEventListener('click', () => { curDate = todayStr(); renderAll(); });
