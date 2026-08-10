@@ -16,9 +16,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ============================================================
-       CSS 변수 — Paper Warm Theme
-    ============================================================ */
     :root {
       --bg-page:       #f5f0e8;
       --bg-card:       #fdfaf4;
@@ -52,9 +49,6 @@
     ::-webkit-scrollbar-track { background: var(--bg-page); }
     ::-webkit-scrollbar-thumb { background: var(--border-warm); border-radius: 3px; }
 
-    /* ============================================================
-       로그인 화면
-    ============================================================ */
     #login-screen {
       position: fixed; inset: 0; background: var(--bg-header);
       z-index: 2000; display: flex; flex-direction: column;
@@ -79,9 +73,6 @@
       background: rgba(255,255,255,0.05); border-radius: 6px; padding: 8px 12px;
     }
 
-    /* ============================================================
-       로딩 오버레이
-    ============================================================ */
     #loading-overlay {
       position: fixed; inset: 0; background: rgba(245,240,232,0.9);
       z-index: 1500; display: flex; align-items: center; justify-content: center;
@@ -91,13 +82,9 @@
     .spinner { width: 36px; height: 36px; border: 3px solid var(--border-warm); border-top-color: var(--accent-gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ============================================================
-       앱 셸 레이아웃
-    ============================================================ */
     #app-shell { display: flex; flex-direction: column; min-height: 100vh; }
     #app-shell.hidden { display: none; }
 
-    /* 헤더 */
     #app-header {
       background: var(--bg-header); color: var(--text-light);
       padding: 0 16px; height: 56px;
@@ -118,7 +105,6 @@
     #user-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--accent-gold); object-fit: cover; }
     #user-name-disp { font-size: 0.76rem; color: var(--accent-gold); max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* 날짜 네비 */
     #date-nav {
       background: var(--bg-card); border-bottom: 1px solid var(--border-light);
       padding: 9px 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -144,12 +130,8 @@
     #today-btn:hover { opacity: 0.85; }
     #date-picker { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
 
-    /* 메인 */
     #main { flex: 1; padding: 14px; max-width: 900px; margin: 0 auto; width: 100%; }
 
-    /* ============================================================
-       카드
-    ============================================================ */
     .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
     .card-hd {
       display: flex; align-items: center; justify-content: space-between;
@@ -158,9 +140,6 @@
     .card-title { font-family: var(--font-serif); font-size: 0.93rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
     .card-bd { padding: 13px 15px; }
 
-    /* ============================================================
-       주간 차트
-    ============================================================ */
     .week-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 80px; }
     .wbar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; cursor: pointer; }
     .wbar-outer { flex: 1; width: 100%; background: var(--border-light); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; overflow: hidden; transition: var(--transition); }
@@ -172,9 +151,6 @@
     .wbar-lbl.cur { color: var(--accent-warm); font-weight: 700; }
     .wbar-pct { font-size: 0.63rem; color: var(--text-secondary); font-weight: 600; }
 
-    /* ============================================================
-       체크리스트
-    ============================================================ */
     .cl-wrap { display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
     .cl-item {
       display: flex; align-items: center; gap: 7px;
@@ -226,9 +202,6 @@
     .prog-fill { height: 100%; background: linear-gradient(to right, var(--accent-gold), var(--accent-warm)); border-radius: 3px; transition: width 0.4s ease; }
     .prog-lbl { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 2px; }
 
-    /* ============================================================
-       말씀 묵상 카드
-    ============================================================ */
     .verse-prev {
       font-family: var(--font-serif); font-size: 0.9rem; line-height: 1.8;
       color: var(--text-secondary); background: var(--bg-page);
@@ -239,9 +212,6 @@
     .medit-prev { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.7; margin-top: 7px; white-space: pre-wrap; word-break: break-all; }
     .dev-empty { text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.83rem; font-style: italic; }
 
-    /* ============================================================
-       도구 그리드
-    ============================================================ */
     .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
     .tool-btn {
       padding: 13px 8px; border-radius: var(--radius-card);
@@ -252,9 +222,6 @@
     .tool-btn .ti { font-size: 1.5rem; }
     .tool-btn:hover { border-color: var(--accent-gold); background: #fdf6e3; color: var(--text-primary); }
 
-    /* ============================================================
-       AI 코칭 & 메모
-    ============================================================ */
     #coaching-inp {
       width: 100%; min-height: 75px; padding: 9px;
       border: 1px solid var(--border-warm); border-radius: var(--radius-btn);
@@ -296,9 +263,6 @@
     .memo-del:hover { color: var(--accent-red); }
     .divider { height: 1px; background: var(--border-light); margin: 10px 0; }
 
-    /* ============================================================
-       모달 공통
-    ============================================================ */
     .modal-ov {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
@@ -327,7 +291,6 @@
     .modal-x:hover { background: var(--border-light); color: var(--text-primary); }
     .modal-bd { padding: 14px 17px; }
 
-    /* 말씀 묵상 모달 */
     .dev-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; margin-top: 12px; }
     .dev-lbl:first-child { margin-top: 0; }
     .dev-verse-inp {
@@ -351,7 +314,6 @@
     }
     .dev-save-btn:hover { opacity: 0.85; }
 
-    /* 자기점검 모달 */
     .rq-wrap { margin-bottom: 14px; }
     .rq-txt { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 7px; line-height: 1.5; }
     .rq-scores { display: flex; gap: 5px; }
@@ -376,7 +338,6 @@
     }
     .retro-save-btn:hover { opacity: 0.85; }
 
-    /* 타이머 모달 */
     .tab-row { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 13px; }
     .tab-btn { flex: 1; padding: 8px; font-size: 0.83rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; transition: var(--transition); }
     .tab-btn.active { color: var(--accent-warm); border-bottom-color: var(--accent-warm); }
@@ -398,7 +359,6 @@
     .lap-item { display: flex; justify-content: space-between; padding: 4px 9px; font-size: 0.76rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); }
     .lap-item:last-child { border-bottom: none; }
 
-    /* 실패 사유 / 편집 모달 공통 */
     .modal-inp {
       width: 100%; padding: 9px; border: 1px solid var(--border-warm);
       border-radius: var(--radius-btn); background: var(--bg-page);
@@ -411,9 +371,6 @@
     }
     .modal-save-btn:hover { opacity: 0.85; }
 
-    /* ============================================================
-       토스트
-    ============================================================ */
     #toast-box { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
     .toast { background: var(--bg-header); color: var(--text-light); padding: 8px 17px; border-radius: 18px; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); transition: opacity 0.22s, transform 0.22s; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateY(0); }
@@ -421,18 +378,12 @@
     .toast.err { background: var(--accent-red); }
     .toast.info { background: var(--accent-blue); }
 
-    /* ============================================================
-       배지
-    ============================================================ */
     .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.66rem; font-weight: 700; }
     .bg-gold { background: var(--accent-gold); color: #1a1000; }
     .bg-green { background: var(--accent-green); color: #fff; }
     .bg-blue { background: var(--accent-blue); color: #fff; }
     .bg-red { background: var(--accent-red); color: #fff; }
 
-    /* ============================================================
-       반응형
-    ============================================================ */
     @media (min-width: 640px) {
       #main { padding: 18px 22px; }
       .modal-ov { align-items: center; }
@@ -443,7 +394,6 @@
       #chart-card, #dev-card { grid-column: 1 / -1; }
     }
 
-    /* 타이핑 커서 */
     .typing::after { content: '|'; animation: blink 0.7s step-end infinite; }
     @keyframes blink { 50% { opacity: 0; } }
 
@@ -452,9 +402,7 @@
 </head>
 <body>
 
-<!-- ============================================================
-     로그인 화면
-============================================================ -->
+<!-- 로그인 화면 -->
 <div id="login-screen">
   <div class="login-logo">
     ✝ 성장 로그
@@ -472,17 +420,13 @@
   </p>
 </div>
 
-<!-- ============================================================
-     로딩 오버레이
-============================================================ -->
+<!-- 로딩 오버레이 -->
 <div id="loading-overlay">
   <div class="spinner"></div>
   <span style="font-size:0.8rem;color:var(--text-muted);">불러오는 중...</span>
 </div>
 
-<!-- ============================================================
-     앱 셸
-============================================================ -->
+<!-- 앱 셸 -->
 <div id="app-shell" class="hidden">
 
   <!-- 헤더 -->
@@ -500,7 +444,7 @@
   <!-- 날짜 네비 -->
   <nav id="date-nav">
     <button class="dnbtn" id="btn-prev-day">◀</button>
-    <span id="date-disp">2024년 1월 1일 (월)</span>
+    <span id="date-disp">2026년 8월 10일 (월)</span>
     <button class="dnbtn" id="btn-next-day">▶</button>
     <button id="today-btn">오늘</button>
     <input type="date" id="date-picker" />
@@ -602,9 +546,7 @@
   </main>
 </div>
 
-<!-- ============================================================
-     모달: 말씀 묵상
-============================================================ -->
+<!-- 모달: 말씀 묵상 -->
 <div class="modal-ov" id="modal-dev">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -622,23 +564,38 @@
   </div>
 </div>
 
-<!-- ============================================================
-     모달: 밤 자기점검
-============================================================ -->
+<!-- 모달: 밤 자기점검 -->
 <div class="modal-ov" id="modal-retro">
   <div class="modal-sh">
     <div class="modal-handle"></div>
     <div class="modal-hd">
       <span class="modal-title">🌙 밤 자기점검</span>
-      <button class="modal-x" data-close="modal-retro">✕</button>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="hbtn" id="btn-retro-edit-q" style="font-size:0.72rem;padding:3px 8px;">⚙ 질문 수정</button>
+        <button class="modal-x" data-close="modal-retro">✕</button>
+      </div>
     </div>
     <div class="modal-bd" id="retro-body"></div>
   </div>
 </div>
 
-<!-- ============================================================
-     모달: 스톱워치 & 타이머
-============================================================ -->
+<!-- 모달: 밤 자기점검 질문 편집 (신규 추가) -->
+<div class="modal-ov" id="modal-retro-qs">
+  <div class="modal-sh">
+    <div class="modal-handle"></div>
+    <div class="modal-hd">
+      <span class="modal-title">⚙ 자기점검 질문 편집</span>
+      <button class="modal-x" data-close="modal-retro-qs">✕</button>
+    </div>
+    <div class="modal-bd">
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:12px;">매일 밤 점검할 10가지 질문 항목을 자유롭게 수정해 보세요.</p>
+      <div id="retro-qs-inputs" style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;padding-right:4px;"></div>
+      <button class="modal-save-btn" id="btn-save-retro-qs" style="background:var(--accent-gold);color:#1a1000;margin-top:14px;">💾 질문 저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모달: 스톱워치 & 타이머 -->
 <div class="modal-ov" id="modal-timer">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -651,7 +608,6 @@
         <button class="tab-btn active" id="tab-sw">⏱ 스톱워치</button>
         <button class="tab-btn" id="tab-cd">⏳ 카운트다운</button>
       </div>
-      <!-- 스톱워치 -->
       <div id="panel-sw">
         <div class="timer-disp" id="sw-disp">00:00:00</div>
         <div class="timer-btns">
@@ -661,7 +617,6 @@
         </div>
         <div class="lap-list" id="lap-list"></div>
       </div>
-      <!-- 카운트다운 -->
       <div id="panel-cd" class="hidden">
         <div class="timer-disp" id="cd-disp">25:00</div>
         <div class="preset-row" id="preset-row">
@@ -685,9 +640,7 @@
   </div>
 </div>
 
-<!-- ============================================================
-     모달: 실패 사유
-============================================================ -->
+<!-- 모달: 실패 사유 -->
 <div class="modal-ov" id="modal-fail">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -703,9 +656,7 @@
   </div>
 </div>
 
-<!-- ============================================================
-     모달: 항목 편집
-============================================================ -->
+<!-- 모달: 항목 편집 -->
 <div class="modal-ov" id="modal-edit">
   <div class="modal-sh">
     <div class="modal-handle"></div>
@@ -720,18 +671,11 @@
   </div>
 </div>
 
-<!-- 토스트 -->
 <div id="toast-box"></div>
 
-<!-- ============================================================
-     JavaScript
-============================================================ -->
 <script>
 'use strict';
 
-/* ============================================================
-   ★ Firebase 설정
-============================================================ */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBNVVF1HfqxCl2w_Bid0mqn1iJjbl_U2kQ",
   authDomain: "new-grow-lutine.firebaseapp.com",
@@ -742,56 +686,85 @@ const FIREBASE_CONFIG = {
   measurementId: "G-NCXM999N32"
 };
 
-/* ============================================================
-   전역 상태
-============================================================ */
 let db = null, auth = null, fbOk = false;
 let currentUser = null;
+
+/* 안전한 날짜 계산 유틸 (타임존 오류 수정) */
+function todayStr() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function parseYMD(s) {
+  const parts = s.split('-');
+  return { y: parseInt(parts[0], 10), m: parseInt(parts[1], 10) - 1, d: parseInt(parts[2], 10) };
+}
+
+function fmtDate(s) {
+  const { y, m, d } = parseYMD(s);
+  const dt = new Date(Date.UTC(y, m, d));
+  const dn = ['일','월','화','수','목','금','토'];
+  return `${dt.getUTCFullYear()}년 ${dt.getUTCMonth()+1}월 ${dt.getUTCDate()}일 (${dn[dt.getUTCDay()]})`;
+}
+
+function addDays(s, n) {
+  const { y, m, d } = parseYMD(s);
+  const dt = new Date(Date.UTC(y, m, d + n));
+  const ry = dt.getUTCFullYear();
+  const rm = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const rd = String(dt.getUTCDate()).padStart(2, '0');
+  return `${ry}-${rm}-${rd}`;
+}
+
+function weekDates(s) {
+  const { y, m, d } = parseYMD(s);
+  const dt = new Date(Date.UTC(y, m, d));
+  const day = dt.getUTCDay();
+  const diffToMon = (day + 6) % 7;
+  
+  return Array.from({length:7}, (_, i) => {
+    const wDt = new Date(Date.UTC(y, m, d - diffToMon + i));
+    const wy = wDt.getUTCFullYear();
+    const wm = String(wDt.getUTCMonth() + 1).padStart(2, '0');
+    const wd = String(wDt.getUTCDate()).padStart(2, '0');
+    return `${wy}-${wm}-${wd}`;
+  });
+}
+
 let curDate = todayStr();
 
-// 앱 데이터 (메모리)
+const DEFAULT_RETRO_QUESTIONS = [
+  { id:'q1',  text:'오늘 하나님과의 교제(기도·말씀)를 충분히 했나요?' },
+  { id:'q2',  text:'오늘 나의 루틴을 성실히 이행했나요?' },
+  { id:'q3',  text:'오늘 동료·상관에게 선한 영향력을 끼쳤나요?' },
+  { id:'q4',  text:'오늘 부정적인 말이나 행동을 자제했나요?' },
+  { id:'q5',  text:'오늘 맡은 임무에 최선을 다했나요?' },
+  { id:'q6',  text:'오늘 몸과 마음의 건강을 돌봤나요?' },
+  { id:'q7',  text:'오늘 시간을 낭비하지 않고 집중했나요?' },
+  { id:'q8',  text:'오늘 감사한 일을 3가지 이상 떠올릴 수 있나요?' },
+  { id:'q9',  text:'오늘 내일을 위한 준비(계획·정리)를 했나요?' },
+  { id:'q10', text:'오늘 하루 전반적으로 만족스러웠나요?' },
+];
+
 const D = {
-  routineItems: [],  // 전역 루틴 템플릿 [{id, text, pinned}]
-  dayData: {},       // {YYYY-MM-DD: {routineState:{id:{status,failReason}}, todoItems:[{id,text,status,failReason,pinned}], devotion:{verse,meditation}, retro:{answers,total}}}
-  memos: [],         // [{id, text, createdAt}]
+  routineItems: [],
+  dayData: {},
+  memos: [],
+  retroQuestions: [...DEFAULT_RETRO_QUESTIONS]
 };
 
-// 스톱워치
 let swTimer = null, swElapsed = 0, swRunning = false, swStart = 0, swLaps = [];
-// 카운트다운
 let cdTimer = null, cdRem = 1500, cdTotal = 1500, cdRunning = false;
-// 컨텍스트
-let editCtx = null;   // {zone, id}
-let failCtx = null;   // {zone, id}
+let editCtx = null;
+let failCtx = null;
 let retroAns = {};
 let lastCoach = '';
 
-/* ============================================================
-   유틸
-============================================================ */
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
-}
-function fmtDate(s) {
-  const d = new Date(s + 'T00:00:00');
-  const dn = ['일','월','화','수','목','금','토'];
-  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${dn[d.getDay()]})`;
-}
-function addDays(s, n) {
-  const d = new Date(s + 'T00:00:00');
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
-}
-function weekDates(s) {
-  const d = new Date(s + 'T00:00:00');
-  const mon = new Date(d);
-  mon.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-  return Array.from({length:7}, (_,i) => { const dd = new Date(mon); dd.setDate(mon.getDate()+i); return dd.toISOString().slice(0,10); });
-}
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function pad(n) { return String(n).padStart(2,'0'); }
 function fmtSW(ms) { const h=Math.floor(ms/3600000),m=Math.floor((ms%3600000)/60000),s=Math.floor((ms%60000)/1000); return `${pad(h)}:${pad(m)}:${pad(s)}`; }
 function fmtCD(s) { return `${pad(Math.floor(s/60))}:${pad(s%60)}`; }
@@ -809,26 +782,15 @@ function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function setLoading(v) { document.getElementById('loading-overlay').classList.toggle('hidden', !v); }
 
-/* ============================================================
-   LocalStorage 헬퍼
-============================================================ */
 const LS = 'growth_log_v3';
 function lsRead() { try { return JSON.parse(localStorage.getItem(LS)||'{}'); } catch(e) { return {}; } }
 function lsWrite(data) { try { localStorage.setItem(LS, JSON.stringify(data)); } catch(e) {} }
-function lsGet(path) {
-  const keys = path.split('/'); let cur = lsRead();
-  for (const k of keys) { if (!cur||typeof cur!=='object') return undefined; cur = cur[k]; }
-  return cur;
-}
 function lsSet(path, val) {
   const data = lsRead(); const keys = path.split('/'); let cur = data;
   for (let i=0;i<keys.length-1;i++) { if (!cur[keys[i]]||typeof cur[keys[i]]!=='object') cur[keys[i]]={}; cur=cur[keys[i]]; }
   cur[keys[keys.length-1]] = val; lsWrite(data);
 }
 
-/* ============================================================
-   Firebase 초기화
-============================================================ */
 async function initFB() {
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
@@ -841,20 +803,18 @@ async function initFB() {
   }
 }
 
-/* ============================================================
-   데이터 레이어
-============================================================ */
-function userPath()    { return `users/${currentUser.uid}`; }
-function tmplPath()    { return `${userPath()}/settings/template`; }
-function dayPath(d)    { return `${userPath()}/days/${d}`; }
+function userPath() { return `users/${currentUser.uid}`; }
+function tmplPath() { return `${userPath()}/settings/template`; }
+function dayPath(d) { return `${userPath()}/days/${d}`; }
 
 async function saveTemplate() {
   if (fbOk && currentUser) {
-    try { await db.doc(tmplPath()).set({ routineItems: D.routineItems, memos: D.memos }, { merge: true }); }
+    try { await db.doc(tmplPath()).set({ routineItems: D.routineItems, memos: D.memos, retroQuestions: D.retroQuestions }, { merge: true }); }
     catch(e) { console.error(e); }
   } else {
     lsSet('template/routineItems', D.routineItems);
     lsSet('template/memos', D.memos);
+    lsSet('template/retroQuestions', D.retroQuestions);
   }
 }
 
@@ -871,14 +831,16 @@ async function saveDayData(date) {
 async function loadData() {
   if (fbOk && currentUser) {
     try {
-      // 템플릿
       const ts = await db.doc(tmplPath()).get();
       if (ts.exists) {
         const td = ts.data();
-        D.routineItems = td.routineItems || [];
+        D.routineItems = td.routineItems || defaultRoutine();
         D.memos = td.memos || [];
+        D.retroQuestions = td.retroQuestions || [...DEFAULT_RETRO_QUESTIONS];
+      } else {
+        D.routineItems = defaultRoutine();
       }
-      // 날짜 데이터 (오늘 기준 ±7일)
+      
       const today = todayStr();
       const dates = Array.from({length:15}, (_,i) => addDays(today, i-7));
       const snaps = await Promise.all(dates.map(d => db.doc(dayPath(d)).get()));
@@ -898,6 +860,7 @@ function loadLocal() {
   const ls = lsRead();
   D.routineItems = (ls.template && ls.template.routineItems) || defaultRoutine();
   D.memos        = (ls.template && ls.template.memos) || [];
+  D.retroQuestions = (ls.template && ls.template.retroQuestions) || [...DEFAULT_RETRO_QUESTIONS];
   D.dayData      = ls.days || {};
 }
 
@@ -911,16 +874,20 @@ function defaultRoutine() {
   ];
 }
 
-// 날짜별 데이터 접근 헬퍼
-function dayD(date) { if (!D.dayData[date]) D.dayData[date]={}; return D.dayData[date]; }
-function routineState(date) { const d=dayD(date); if (!d.routineState) d.routineState={}; return d.routineState; }
-function todoItems(date) { const d=dayD(date); if (!d.todoItems) d.todoItems=[]; return d.todoItems; }
+/* 안전한 날짜 객체 반환 헬퍼 */
+function dayD(date) { 
+  if (!D.dayData[date]) {
+    D.dayData[date] = { routineState: {}, todoItems: [], devotion: {}, retro: {} };
+  }
+  if (!D.dayData[date].todoItems) D.dayData[date].todoItems = [];
+  if (!D.dayData[date].routineState) D.dayData[date].routineState = {};
+  return D.dayData[date]; 
+}
+function routineState(date) { return dayD(date).routineState; }
+function todoItems(date) { return dayD(date).todoItems; }
 function devotion(date) { return dayD(date).devotion || {}; }
 function retro(date) { return dayD(date).retro || {}; }
 
-/* ============================================================
-   달성률 계산
-============================================================ */
 function calcAchievement(date) {
   const rs = routineState(date);
   const ti = todoItems(date);
@@ -932,9 +899,6 @@ function calcAchievement(date) {
   return Math.round((done / total) * 100);
 }
 
-/* ============================================================
-   렌더링
-============================================================ */
 function renderAll() {
   renderDateNav();
   renderChart();
@@ -1084,16 +1048,13 @@ function renderMemos() {
   });
 }
 
-/* ============================================================
-   체크리스트 액션
-============================================================ */
+/* 체크 토글 로직 수정 (done ↔ none 토글) */
 async function toggleStatus(zone, id) {
   if (zone === 'routine') {
     const rs = routineState(curDate);
     const cur = (rs[id]||{}).status || 'none';
-    const next = cur==='none'||!cur ? 'done' : cur==='done' ? 'fail' : 'none';
+    const next = (cur === 'done') ? 'none' : 'done';
     rs[id] = { ...(rs[id]||{}), status: next };
-    if (next === 'fail') { openFailModal(zone, id, (rs[id]||{}).failReason||''); }
     await saveDayData(curDate);
     renderRoutine(); renderChart();
   } else {
@@ -1101,9 +1062,8 @@ async function toggleStatus(zone, id) {
     const item = ti.find(t => t.id === id);
     if (!item) return;
     const cur = item.status || 'none';
-    const next = cur==='none'||!cur ? 'done' : cur==='done' ? 'fail' : 'none';
+    const next = (cur === 'done') ? 'none' : 'done';
     item.status = next;
-    if (next === 'fail') { openFailModal(zone, id, item.failReason||''); }
     await saveDayData(curDate);
     renderTodo(); renderChart();
   }
@@ -1153,7 +1113,8 @@ async function addItem(zone) {
     await saveTemplate();
     renderRoutine();
   } else {
-    todoItems(curDate).push({ id: uid(), text, status: 'none', pinned: false });
+    const ti = todoItems(curDate);
+    ti.push({ id: uid(), text, status: 'none', pinned: false });
     await saveDayData(curDate);
     renderTodo();
   }
@@ -1216,13 +1177,9 @@ async function saveFail() {
   toast('실패 사유가 기록되었습니다.');
 }
 
-/* ============================================================
-   드래그 앤 드롭
-============================================================ */
 let dragSrc = null, dragZone = null;
 
 function setupDrag(el, zone) {
-  // 마우스 드래그
   el.addEventListener('dragstart', e => {
     dragSrc = el; dragZone = zone;
     el.classList.add('dragging');
@@ -1249,51 +1206,6 @@ function setupDrag(el, zone) {
       reorder(zone, dragSrc.dataset.id, el.dataset.id);
     }
   });
-
-  // 터치 드래그
-  let touchStartY = 0, touchClone = null, touchActive = false;
-  el.addEventListener('touchstart', e => {
-    if (!e.target.closest('.drag-handle')) return;
-    touchStartY = e.touches[0].clientY;
-    dragSrc = el; dragZone = zone;
-    touchActive = true;
-    el.classList.add('dragging');
-    touchClone = el.cloneNode(true);
-    const r = el.getBoundingClientRect();
-    Object.assign(touchClone.style, {
-      position:'fixed', zIndex:'9999', opacity:'0.8', pointerEvents:'none',
-      width: r.width+'px', left: r.left+'px', top: r.top+'px',
-      boxShadow:'0 8px 24px rgba(0,0,0,0.2)', borderRadius:'7px'
-    });
-    document.body.appendChild(touchClone);
-  }, {passive:true});
-
-  el.addEventListener('touchmove', e => {
-    if (!touchActive || !touchClone) return;
-    e.preventDefault();
-    const t = e.touches[0];
-    const dy = t.clientY - touchStartY;
-    const r = el.getBoundingClientRect();
-    touchClone.style.top = (r.top + dy) + 'px';
-    touchClone.style.display = 'none';
-    const target = document.elementFromPoint(t.clientX, t.clientY);
-    touchClone.style.display = '';
-    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
-    const ti = target && target.closest('.cl-item');
-    if (ti && ti !== el && ti.dataset.zone === zone) ti.classList.add('drag-over');
-  }, {passive:false});
-
-  el.addEventListener('touchend', e => {
-    if (!touchActive) return;
-    touchActive = false;
-    if (touchClone) { touchClone.remove(); touchClone = null; }
-    el.classList.remove('dragging');
-    const t = e.changedTouches[0];
-    const target = document.elementFromPoint(t.clientX, t.clientY);
-    const ti = target && target.closest('.cl-item');
-    document.querySelectorAll('.cl-item').forEach(i => i.classList.remove('drag-over'));
-    if (ti && ti !== el && ti.dataset.zone === zone) reorder(zone, el.dataset.id, ti.dataset.id);
-  });
 }
 
 async function reorder(zone, srcId, tgtId) {
@@ -1319,9 +1231,6 @@ async function reorder(zone, srcId, tgtId) {
   toast('순서가 변경되었습니다.');
 }
 
-/* ============================================================
-   말씀 묵상 모달
-============================================================ */
 function openDevModal() {
   const dev = devotion(curDate);
   document.getElementById('dev-verse').value = dev.verse || '';
@@ -1339,22 +1248,6 @@ async function saveDev() {
   toast('말씀 묵상이 저장되었습니다. ✝', 'ok');
 }
 
-/* ============================================================
-   자기점검 (Retrospective)
-============================================================ */
-const RETRO_QS = [
-  { id:'q1',  text:'오늘 하나님과의 교제(기도·말씀)를 충분히 했나요?' },
-  { id:'q2',  text:'오늘 나의 루틴을 성실히 이행했나요?' },
-  { id:'q3',  text:'오늘 동료·상관에게 선한 영향력을 끼쳤나요?' },
-  { id:'q4',  text:'오늘 부정적인 말이나 행동을 자제했나요?' },
-  { id:'q5',  text:'오늘 맡은 임무에 최선을 다했나요?' },
-  { id:'q6',  text:'오늘 몸과 마음의 건강을 돌봤나요?' },
-  { id:'q7',  text:'오늘 시간을 낭비하지 않고 집중했나요?' },
-  { id:'q8',  text:'오늘 감사한 일을 3가지 이상 떠올릴 수 있나요?' },
-  { id:'q9',  text:'오늘 내일을 위한 준비(계획·정리)를 했나요?' },
-  { id:'q10', text:'오늘 하루 전반적으로 만족스러웠나요?' },
-];
-
 function retroGrade(total) {
   if (total >= 45) return '🌟 탁월한 하루! 주님께 영광을 돌립니다.';
   if (total >= 35) return '😊 좋은 하루였습니다. 내일도 화이팅!';
@@ -1368,11 +1261,11 @@ function renderRetroModal() {
   retroAns = { ...(saved.answers || {}) };
   const body = document.getElementById('retro-body');
   let html = '';
-  RETRO_QS.forEach((q, i) => {
+  D.retroQuestions.forEach((q, i) => {
     const ans = retroAns[q.id] || {};
     html += `
       <div class="rq-wrap">
-        <div class="rq-txt">${i+1}. ${q.text}</div>
+        <div class="rq-txt">${i+1}. ${esc(q.text)}</div>
         <div class="rq-scores">
           ${[1,2,3,4,5].map(n => `<button class="rq-sbtn${ans.score===n?' sel':''}" data-qid="${q.id}" data-n="${n}">${n}</button>`).join('')}
         </div>
@@ -1408,6 +1301,38 @@ function renderRetroModal() {
   document.getElementById('btn-retro-save').addEventListener('click', saveRetro);
 }
 
+function openRetroQuestionsEditModal() {
+  const container = document.getElementById('retro-qs-inputs');
+  container.innerHTML = '';
+  D.retroQuestions.forEach((q, idx) => {
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '8px';
+    row.innerHTML = `
+      <span style="font-size:0.8rem;font-weight:700;width:24px;">${idx+1}.</span>
+      <input type="text" class="modal-inp rq-edit-input" data-idx="${idx}" value="${esc(q.text)}" placeholder="질문 입력..." />
+    `;
+    container.appendChild(row);
+  });
+  openModal('modal-retro-qs');
+}
+
+async function saveRetroQuestions() {
+  const inputs = document.querySelectorAll('.rq-edit-input');
+  inputs.forEach(inp => {
+    const idx = parseInt(inp.dataset.idx, 10);
+    const val = inp.value.trim();
+    if (val && D.retroQuestions[idx]) {
+      D.retroQuestions[idx].text = val;
+    }
+  });
+  await saveTemplate();
+  closeModal('modal-retro-qs');
+  renderRetroModal();
+  toast('자기점검 질문이 변경되었습니다.', 'ok');
+}
+
 function calcRetroTotal() {
   return Object.values(retroAns).reduce((s, a) => s + (a.score||0), 0);
 }
@@ -1420,9 +1345,6 @@ async function saveRetro() {
   toast(`자기점검 완료! 총점: ${total}/50 🌙`, 'ok');
 }
 
-/* ============================================================
-   스톱워치
-============================================================ */
 function swUpdate() {
   swElapsed = Date.now() - swStart;
   document.getElementById('sw-disp').textContent = fmtSW(swElapsed);
@@ -1456,9 +1378,6 @@ function swLap() {
   document.getElementById('lap-list').prepend(el);
 }
 
-/* ============================================================
-   카운트다운
-============================================================ */
 function cdUpdate() {
   if (cdRem <= 0) { cdStop(); document.getElementById('cd-disp').textContent = '00:00'; playBeep(); toast('⏰ 타이머 종료!', 'info'); return; }
   cdRem--;
@@ -1504,9 +1423,6 @@ function playBeep() {
   } catch(e) {}
 }
 
-/* ============================================================
-   AI 코칭
-============================================================ */
 async function submitCoaching() {
   const input = document.getElementById('coaching-inp').value.trim();
   if (!input) { toast('코칭 내용을 입력해 주세요.'); return; }
@@ -1515,7 +1431,6 @@ async function submitCoaching() {
   const resp = document.getElementById('coaching-resp');
   resp.classList.add('vis'); resp.textContent = ''; resp.classList.add('typing');
 
-  // 오늘 컨텍스트 빌드
   const rs = routineState(curDate);
   const rCtx = D.routineItems.map(r => `- ${r.text}: ${(rs[r.id]||{}).status==='done'?'완료':(rs[r.id]||{}).status==='fail'?'실패':'미완료'}`).join('\n');
   const ti = todoItems(curDate);
@@ -1526,7 +1441,6 @@ async function submitCoaching() {
 
   let coachText = '';
   try {
-    // OpenAI API 호출 시도 (환경변수 또는 직접 키 입력 필요)
     const apiKey = typeof OPENAI_API_KEY !== 'undefined' ? OPENAI_API_KEY : '';
     if (apiKey) {
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1543,7 +1457,7 @@ async function submitCoaching() {
         coachText = data.choices?.[0]?.message?.content || '';
       }
     }
-  } catch(e) { /* API 실패 시 폴백 */ }
+  } catch(e) {}
 
   if (!coachText) coachText = localCoach(input);
   lastCoach = coachText;
@@ -1607,9 +1521,6 @@ async function saveMemo() {
   toast('📌 메모가 저장되었습니다.', 'ok');
 }
 
-/* ============================================================
-   인증 & 앱 초기화
-============================================================ */
 async function initApp() {
   setLoading(true);
   await initFB();
@@ -1637,7 +1548,6 @@ async function onLogin(user) {
     av.src = user.photoURL; av.classList.remove('hidden');
   }
   await loadData();
-  if (!D.routineItems || D.routineItems.length === 0) D.routineItems = defaultRoutine();
   setLoading(false);
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app-shell').classList.remove('hidden');
@@ -1648,7 +1558,6 @@ async function onLogin(user) {
 async function skipLogin() {
   currentUser = null;
   loadLocal();
-  if (!D.routineItems || D.routineItems.length === 0) D.routineItems = defaultRoutine();
   setLoading(false);
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app-shell').classList.remove('hidden');
@@ -1656,12 +1565,8 @@ async function skipLogin() {
   toast('로컬 모드로 시작합니다. (이 기기에만 저장)', 'info');
 }
 
-/* ============================================================
-   이벤트 리스너
-============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
 
-  // 로그인
   document.getElementById('btn-google-login').addEventListener('click', async () => {
     if (!fbOk) { toast('Firebase 설정이 필요합니다. 로컬 모드를 이용하세요.', 'err'); return; }
     try {
@@ -1671,7 +1576,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btn-skip-login').addEventListener('click', skipLogin);
 
-  // 로그아웃
   document.getElementById('btn-logout').addEventListener('click', async () => {
     if (fbOk && currentUser) await auth.signOut();
     currentUser = null;
@@ -1681,9 +1585,9 @@ document.addEventListener('DOMContentLoaded', () => {
     toast('로그아웃되었습니다.');
   });
 
-  // 날짜 네비
-  document.getElementById('btn-prev-day').addEventListener('click', () => { curDate = addDays(curDate,-1); renderAll(); });
-  document.getElementById('btn-next-day').addEventListener('click', () => { curDate = addDays(curDate,1); renderAll(); });
+  /* 날짜 버튼 클릭 리스너 */
+  document.getElementById('btn-prev-day').addEventListener('click', () => { curDate = addDays(curDate, -1); renderAll(); });
+  document.getElementById('btn-next-day').addEventListener('click', () => { curDate = addDays(curDate, 1); renderAll(); });
   document.getElementById('today-btn').addEventListener('click', () => { curDate = todayStr(); renderAll(); });
   document.getElementById('date-disp').addEventListener('click', () => {
     const p = document.getElementById('date-picker');
@@ -1694,22 +1598,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.value) { curDate = e.target.value; renderAll(); }
   });
 
-  // 루틴 추가
   document.getElementById('btn-routine-add').addEventListener('click', () => addItem('routine'));
   document.getElementById('routine-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('routine'); });
 
-  // 투두 추가
   document.getElementById('btn-todo-add').addEventListener('click', () => addItem('todo'));
   document.getElementById('todo-inp').addEventListener('keydown', e => { if (e.key==='Enter') addItem('todo'); });
 
-  // 말씀 묵상
   document.getElementById('btn-dev-edit').addEventListener('click', openDevModal);
   document.getElementById('btn-dev-save').addEventListener('click', saveDev);
 
-  // 자기점검
   document.getElementById('btn-retro').addEventListener('click', () => { renderRetroModal(); openModal('modal-retro'); });
+  document.getElementById('btn-retro-edit-q').addEventListener('click', openRetroQuestionsEditModal);
+  document.getElementById('btn-save-retro-qs').addEventListener('click', saveRetroQuestions);
 
-  // 스톱워치
   document.getElementById('btn-stopwatch').addEventListener('click', () => {
     document.getElementById('tab-sw').click();
     openModal('modal-timer');
@@ -1718,7 +1619,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-sw-reset').addEventListener('click', swReset);
   document.getElementById('btn-sw-lap').addEventListener('click', swLap);
 
-  // 카운트다운
   document.getElementById('btn-timer').addEventListener('click', () => {
     document.getElementById('tab-cd').click();
     openModal('modal-timer');
@@ -1736,7 +1636,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => cdSet(parseInt(btn.dataset.min)));
   });
 
-  // 타이머 탭 전환
   document.getElementById('tab-sw').addEventListener('click', () => {
     document.getElementById('tab-sw').classList.add('active');
     document.getElementById('tab-cd').classList.remove('active');
@@ -1750,7 +1649,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('panel-sw').classList.add('hidden');
   });
 
-  // AI 코칭
   document.getElementById('btn-ai-open').addEventListener('click', () => {
     document.getElementById('ai-card').scrollIntoView({ behavior: 'smooth' });
     setTimeout(() => document.getElementById('coaching-inp').focus(), 400);
@@ -1759,7 +1657,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('c-add-todo-btn').addEventListener('click', addCoachingToTodo);
   document.getElementById('btn-save-memo').addEventListener('click', saveMemo);
 
-  // 메모 토글
   document.getElementById('btn-memo-toggle').addEventListener('click', () => {
     const ml = document.getElementById('memo-list');
     const hidden = ml.style.display === 'none';
@@ -1767,33 +1664,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-memo-toggle').textContent = hidden ? '메모 ▴' : '메모 ▾';
   });
 
-  // 편집 저장
   document.getElementById('btn-edit-save').addEventListener('click', saveEdit);
   document.getElementById('edit-inp').addEventListener('keydown', e => { if(e.key==='Enter') saveEdit(); });
 
-  // 실패 사유 저장
   document.getElementById('btn-fail-save').addEventListener('click', saveFail);
 
-  // 모달 닫기 버튼 (data-close 속성)
   document.querySelectorAll('[data-close]').forEach(btn => {
     btn.addEventListener('click', () => closeModal(btn.dataset.close));
   });
 
-  // 모달 오버레이 클릭으로 닫기
   document.querySelectorAll('.modal-ov').forEach(ov => {
     ov.addEventListener('click', e => {
       if (e.target === ov) closeModal(ov.id);
     });
   });
 
-  // 키보드 ESC로 모달 닫기
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-ov.open').forEach(ov => closeModal(ov.id));
     }
   });
 
-  // 앱 초기화
   initApp();
 });
 </script>
