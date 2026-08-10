@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>성장 로그 — 크리스천 군인 영성 &amp; 자기관리 (V3.1 Clean Architecture)</title>
+  <title>성장 로그 — 크리스천 군인 영성 &amp; 자기관리 (V3.1 AI System 통합)</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,6 +34,7 @@
       --font-sans:     'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
       --transition:    0.2s ease;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 15px; scroll-behavior: smooth; }
     body { font-family: var(--font-sans); background: var(--bg-page); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
@@ -44,9 +45,9 @@
     ::-webkit-scrollbar-track { background: var(--bg-page); }
     ::-webkit-scrollbar-thumb { background: var(--border-warm); border-radius: 3px; }
 
-    /* Loading & App Layout */
+    /* Loading & App Shell */
     #loading-overlay {
-      position: fixed; inset: 0; background: rgba(245,240,232,0.9);
+      position: fixed; inset: 0; background: rgba(245,240,232,0.92);
       z-index: 1500; display: flex; align-items: center; justify-content: center;
       flex-direction: column; gap: 12px;
     }
@@ -65,14 +66,6 @@
     }
     #header-logo { font-family: var(--font-serif); font-size: 1.1rem; font-weight: 700; color: var(--accent-gold); }
     #header-logo small { font-weight: 300; font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-left: 6px; }
-    #header-right { display: flex; align-items: center; gap: 8px; }
-    .hbtn {
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-      color: var(--text-light); border-radius: var(--radius-btn);
-      padding: 5px 11px; font-size: 0.76rem; transition: var(--transition);
-    }
-    .hbtn:hover { background: rgba(255,255,255,0.18); }
-    .hbtn.gold { background: var(--accent-gold); color: #1a1000; border-color: var(--accent-gold); font-weight: 700; }
 
     #date-nav {
       background: var(--bg-card); border-bottom: 1px solid var(--border-light);
@@ -96,10 +89,9 @@
       font-size: 0.7rem; padding: 3px 8px; border-radius: 12px;
       background: var(--accent-warm); color: #fff; font-weight: 700;
     }
-    #today-btn:hover { opacity: 0.85; }
     #date-picker { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
 
-    #main { flex: 1; padding: 14px; max-width: 900px; margin: 0 auto; width: 100%; }
+    #main { flex: 1; padding: 14px; max-width: 920px; margin: 0 auto; width: 100%; }
 
     /* Cards */
     .card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); box-shadow: var(--shadow-card); margin-bottom: 14px; overflow: hidden; }
@@ -107,11 +99,22 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 11px 15px; background: var(--bg-card-alt); border-bottom: 1px solid var(--border-light);
     }
-    .card-title { font-family: var(--font-serif); font-size: 0.93rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
+    .card-title { font-family: var(--font-serif); font-size: 0.95rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 5px; }
     .card-bd { padding: 13px 15px; }
 
+    /* Badges & Tags */
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+    .badge-gold { background: var(--accent-gold); color: #1a1000; }
+    .badge-green { background: var(--accent-green); color: #fff; }
+    .badge-blue { background: var(--accent-blue); color: #fff; }
+    .badge-red { background: var(--accent-red); color: #fff; }
+    .badge-warm { background: var(--accent-warm); color: #fff; }
+
+    .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .tag { background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-size: 0.76rem; border: 1px solid #cbd5e1; color: #334155; }
+
     /* Chart */
-    .week-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 80px; }
+    .week-bars { display: flex; align-items: flex-end; justify-content: space-between; gap: 5px; height: 75px; margin-bottom: 12px; }
     .wbar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; cursor: pointer; }
     .wbar-outer { flex: 1; width: 100%; background: var(--border-light); border-radius: 4px 4px 0 0; display: flex; align-items: flex-end; overflow: hidden; transition: var(--transition); }
     .wbar-wrap:hover .wbar-outer { background: var(--border-warm); }
@@ -122,8 +125,13 @@
     .wbar-lbl.cur { color: var(--accent-warm); font-weight: 700; }
     .wbar-pct { font-size: 0.63rem; color: var(--text-secondary); font-weight: 600; }
 
+    /* Progress Bar */
+    .prog-wrap { height: 7px; background: var(--border-light); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .prog-fill { height: 100%; background: linear-gradient(to right, var(--accent-gold), var(--accent-warm)); border-radius: 4px; transition: width 0.4s ease; }
+    .prog-lbl { font-size: 0.72rem; color: var(--text-muted); text-align: right; margin-top: 3px; }
+
     /* Checklists */
-    .cl-wrap { display: flex; flex-direction: column; gap: 3px; min-height: 20px; }
+    .cl-wrap { display: flex; flex-direction: column; gap: 4px; min-height: 20px; }
     .cl-item {
       display: flex; align-items: center; gap: 7px;
       padding: 7px 9px; border-radius: 7px;
@@ -131,10 +139,7 @@
       transition: var(--transition); position: relative; user-select: none;
     }
     .cl-item:hover { border-color: var(--border-warm); background: var(--bg-card-alt); }
-    .cl-item.dragging { opacity: 0.45; border: 2px dashed var(--accent-gold) !important; }
-    .cl-item.drag-over { border-color: var(--accent-gold) !important; background: #fdf6e3 !important; transform: scale(1.01); }
-    .drag-handle { color: var(--text-muted); cursor: grab; font-size: 1rem; padding: 0 1px; flex-shrink: 0; touch-action: none; line-height: 1; }
-    .drag-handle:active { cursor: grabbing; }
+    .drag-handle { color: var(--text-muted); cursor: grab; font-size: 0.95rem; flex-shrink: 0; }
     .chk-btn {
       width: 21px; height: 21px; border-radius: 50%;
       border: 2px solid var(--border-warm); flex-shrink: 0;
@@ -157,6 +162,7 @@
     .iabtn:hover { background: var(--border-light); color: var(--text-primary); }
     .iabtn.pin-on { color: var(--accent-gold); }
     .iabtn.del:hover { background: #fde8e8; color: var(--accent-red); }
+
     .add-row { display: flex; gap: 6px; margin-top: 8px; }
     .add-inp {
       flex: 1; padding: 7px 9px; border: 1px solid var(--border-warm);
@@ -169,9 +175,6 @@
       border-radius: var(--radius-btn); font-size: 0.8rem; font-weight: 700; transition: var(--transition);
     }
     .add-btn:hover { opacity: 0.85; }
-    .prog-wrap { height: 5px; background: var(--border-light); border-radius: 3px; overflow: hidden; margin-top: 7px; }
-    .prog-fill { height: 100%; background: linear-gradient(to right, var(--accent-gold), var(--accent-warm)); border-radius: 3px; transition: width 0.4s ease; }
-    .prog-lbl { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 2px; }
 
     /* Word Meditation Preview */
     .verse-prev {
@@ -192,56 +195,35 @@
       display: flex; flex-direction: column; align-items: center; gap: 5px;
       transition: var(--transition); font-size: 0.78rem; color: var(--text-secondary); font-weight: 600;
     }
-    .tool-btn .ti { font-size: 1.5rem; }
+    .tool-btn .ti { font-size: 1.4rem; }
     .tool-btn:hover { border-color: var(--accent-gold); background: #fdf6e3; color: var(--text-primary); }
 
-    /* AI Coaching Section */
-    #coaching-inp {
-      width: 100%; min-height: 75px; padding: 9px;
-      border: 1px solid var(--border-warm); border-radius: var(--radius-btn);
-      background: var(--bg-page); font-size: 0.84rem; color: var(--text-primary);
-      resize: vertical; outline: none; line-height: 1.6; transition: var(--transition);
+    /* V3.1 AI System Components Styling */
+    .btn-ai-trigger {
+      width: 100%; padding: 12px; background: var(--accent-blue); color: #fff;
+      border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; gap: 6px; transition: var(--transition);
     }
-    #coaching-inp:focus { border-color: var(--accent-gold); background: #fff; }
-    .c-btn-row { display: flex; gap: 6px; margin-top: 7px; }
-    .c-submit-btn {
-      flex: 1; padding: 9px; background: var(--accent-blue); color: #fff;
-      border-radius: var(--radius-btn); font-size: 0.82rem; font-weight: 700; transition: var(--transition);
-    }
-    .c-submit-btn:hover { opacity: 0.85; }
-    .c-memo-btn {
-      padding: 9px 13px; background: var(--bg-card-alt); border: 1px solid var(--border-warm);
-      border-radius: var(--radius-btn); font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; transition: var(--transition);
-    }
-    .c-memo-btn:hover { background: var(--border-light); }
-    #coaching-resp {
-      background: var(--bg-page); border: 1px solid var(--border-light);
-      border-radius: var(--radius-btn); padding: 13px; font-size: 0.84rem;
-      line-height: 1.8; color: var(--text-primary); display: none; margin-top: 10px;
-      word-break: break-word;
-    }
-    #coaching-resp.vis { display: block; }
+    .btn-ai-trigger:hover { opacity: 0.9; }
 
-    /* Strategies Display (Candidates & Approved Domain) */
-    .strategy-card-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .review-box { background: var(--bg-page); border: 1px solid var(--border-light); padding: 12px; border-radius: var(--radius-btn); margin-bottom: 10px; }
+    .review-box h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 5px; color: var(--text-primary); }
+    .reflection-quote { font-style: italic; color: var(--text-secondary); border-left: 3px solid var(--accent-gold); padding-left: 8px; margin-top: 4px; font-size: 0.83rem; line-height: 1.6; }
+
+    .strategy-card-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     .strategy-card { border: 1px solid var(--border-light); border-left: 4px solid var(--accent-gold); border-radius: var(--radius-btn); padding: 12px; background: var(--bg-card-alt); }
     .strategy-card.candidate { border-left-color: var(--accent-warm); background: #fffbeb; }
     .strategy-card.approved { border-left-color: var(--accent-green); background: #f0fdf4; }
     .strategy-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .strategy-card-title { font-size: 0.92rem; font-weight: 700; color: var(--text-primary); }
     .strategy-card-desc { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
-    .section-notice { font-size: 0.78rem; color: var(--accent-warm); background: #fffbe3; padding: 8px 10px; border-radius: var(--radius-btn); margin-top: 10px; border: 1px solid #fde68a; }
+    .section-notice { font-size: 0.78rem; color: var(--accent-warm); background: #fffbe3; padding: 8px 10px; border-radius: var(--radius-btn); margin-bottom: 8px; border: 1px solid #fde68a; line-height: 1.5; }
 
-    .memo-list { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
-    .memo-item {
-      background: var(--bg-page); border: 1px solid var(--border-light);
-      border-radius: 6px; padding: 7px 9px; font-size: 0.8rem; color: var(--text-secondary);
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 7px;
-    }
-    .memo-txt { flex: 1; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
-    .memo-del { color: var(--text-muted); font-size: 0.82rem; flex-shrink: 0; transition: var(--transition); }
-    .memo-del:hover { color: var(--accent-red); }
-    .divider { height: 1px; background: var(--border-light); margin: 10px 0; }
+    /* History List */
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-page); padding: 8px 12px; border-radius: var(--radius-btn); border: 1px solid var(--border-light); font-size: 0.82rem; }
+    .history-item-date { font-weight: 700; color: var(--accent-warm); }
+    .history-item-detail { color: var(--text-secondary); }
 
     /* Modals & Overlays */
     .modal-ov {
@@ -275,20 +257,15 @@
 
     .dev-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px; margin-top: 12px; }
     .dev-lbl:first-child { margin-top: 0; }
-    .dev-verse-inp {
-      width: 100%; padding: 9px; border: 1px solid var(--border-warm);
-      border-radius: var(--radius-btn); background: var(--bg-page);
-      font-family: var(--font-serif); font-size: 0.88rem; color: var(--text-primary);
-      resize: vertical; min-height: 70px; outline: none; transition: var(--transition);
-    }
-    .dev-verse-inp:focus { border-color: var(--accent-gold); background: #fff; }
-    .dev-med-inp {
+    .dev-verse-inp, .dev-med-inp {
       width: 100%; padding: 9px; border: 1px solid var(--border-warm);
       border-radius: var(--radius-btn); background: var(--bg-page);
       font-size: 0.86rem; color: var(--text-primary); resize: vertical;
-      min-height: 100px; outline: none; transition: var(--transition); line-height: 1.6;
+      outline: none; transition: var(--transition); line-height: 1.6;
     }
-    .dev-med-inp:focus { border-color: var(--accent-gold); background: #fff; }
+    .dev-verse-inp { font-family: var(--font-serif); min-height: 65px; }
+    .dev-med-inp { min-height: 95px; }
+    .dev-verse-inp:focus, .dev-med-inp:focus { border-color: var(--accent-gold); background: #fff; }
     .dev-save-btn {
       width: 100%; margin-top: 13px; padding: 10px;
       background: var(--accent-gold); color: #1a1000;
@@ -297,8 +274,8 @@
     .dev-save-btn:hover { opacity: 0.85; }
 
     /* Retro Questions Modal */
-    .rq-wrap { margin-bottom: 14px; }
-    .rq-txt { font-size: 0.86rem; font-weight: 600; color: var(--text-primary); margin-bottom: 7px; line-height: 1.5; }
+    .rq-wrap { margin-bottom: 12px; }
+    .rq-txt { font-size: 0.84rem; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; line-height: 1.4; }
     .rq-scores { display: flex; gap: 5px; }
     .rq-sbtn {
       flex: 1; padding: 6px 3px; border-radius: 5px;
@@ -313,35 +290,31 @@
       background: var(--bg-page); font-size: 0.8rem; color: var(--text-primary); outline: none; transition: var(--transition);
     }
     .rq-comment:focus { border-color: var(--accent-gold); }
-    #retro-total { text-align: center; font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; color: var(--accent-warm); margin: 10px 0 4px; }
+    #retro-total { text-align: center; font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; color: var(--accent-warm); margin: 10px 0 4px; }
     #retro-grade { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; }
     .retro-save-btn {
       width: 100%; padding: 10px; background: var(--accent-warm); color: #fff;
       border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700; transition: var(--transition);
     }
-    .retro-save-btn:hover { opacity: 0.85; }
 
     /* Timer Modal */
     .tab-row { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 13px; }
     .tab-btn { flex: 1; padding: 8px; font-size: 0.83rem; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; transition: var(--transition); }
     .tab-btn.active { color: var(--accent-warm); border-bottom-color: var(--accent-warm); }
-    .timer-disp { font-family: var(--font-serif); font-size: 3rem; font-weight: 700; text-align: center; color: var(--text-primary); letter-spacing: 0.04em; margin: 14px 0; }
-    .timer-btns { display: flex; gap: 9px; justify-content: center; margin-bottom: 10px; }
-    .tbtn { padding: 9px 22px; border-radius: 22px; font-size: 0.86rem; font-weight: 700; transition: var(--transition); }
+    .timer-disp { font-family: var(--font-serif); font-size: 2.8rem; font-weight: 700; text-align: center; color: var(--text-primary); letter-spacing: 0.04em; margin: 12px 0; }
+    .timer-btns { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .tbtn { padding: 8px 20px; border-radius: 20px; font-size: 0.84rem; font-weight: 700; transition: var(--transition); }
     .tbtn.start { background: var(--accent-green); color: #fff; }
     .tbtn.pause { background: var(--accent-warm); color: #fff; }
     .tbtn.reset { background: var(--bg-card-alt); border: 1px solid var(--border-warm); color: var(--text-secondary); }
-    .tbtn:hover { opacity: 0.85; }
     .preset-row { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; }
     .preset-btn {
-      padding: 4px 11px; border-radius: 13px; border: 1px solid var(--border-warm);
-      background: var(--bg-page); font-size: 0.76rem; color: var(--text-secondary); font-weight: 600; transition: var(--transition);
+      padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-warm);
+      background: var(--bg-page); font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; transition: var(--transition);
     }
-    .preset-btn:hover { border-color: var(--accent-gold); color: var(--text-primary); }
     .preset-btn.active-preset { background: var(--accent-gold); border-color: var(--accent-gold); color: #1a1000; }
-    .lap-list { max-height: 130px; overflow-y: auto; margin-top: 9px; border: 1px solid var(--border-light); border-radius: var(--radius-btn); }
+    .lap-list { max-height: 120px; overflow-y: auto; margin-top: 8px; border: 1px solid var(--border-light); border-radius: var(--radius-btn); }
     .lap-item { display: flex; justify-content: space-between; padding: 4px 9px; font-size: 0.76rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-light); }
-    .lap-item:last-child { border-bottom: none; }
 
     /* Inputs & General Modals */
     .modal-inp {
@@ -354,7 +327,6 @@
       width: 100%; margin-top: 11px; padding: 10px;
       border-radius: var(--radius-btn); font-size: 0.88rem; font-weight: 700; transition: var(--transition);
     }
-    .modal-save-btn:hover { opacity: 0.85; }
 
     /* Toast */
     #toast-box { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 5px; pointer-events: none; }
@@ -364,16 +336,6 @@
     .toast.err { background: var(--accent-red); }
     .toast.info { background: var(--accent-blue); }
 
-    /* Badges & Tag Container */
-    .badge { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: 0.66rem; font-weight: 700; }
-    .bg-gold { background: var(--accent-gold); color: #1a1000; }
-    .bg-green { background: var(--accent-green); color: #fff; }
-    .bg-blue { background: var(--accent-blue); color: #fff; }
-    .bg-red { background: var(--accent-red); color: #fff; }
-
-    .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-    .tag { background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-size: 0.76rem; border: 1px solid #cbd5e1; color: #334155; }
-
     @media (min-width: 640px) {
       #main { padding: 18px 22px; }
       .modal-ov { align-items: center; }
@@ -381,7 +343,7 @@
     }
     @media (min-width: 860px) {
       #main { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
-      #chart-card, #dev-card, #approved-card { grid-column: 1 / -1; }
+      #chart-card, #dev-card, #approved-card, #ai-review-section { grid-column: 1 / -1; }
     }
 
     .hidden { display: none !important; }
@@ -392,7 +354,7 @@
 <!-- 로딩 오버레이 -->
 <div id="loading-overlay">
   <div class="spinner"></div>
-  <span style="font-size:0.8rem;color:var(--text-muted);">IndexedDB 엔진 로딩 중...</span>
+  <span style="font-size:0.8rem;color:var(--text-muted);">V3.1 Clean Architecture 데이터베이스 엔진 로딩 중...</span>
 </div>
 
 <!-- 앱 셸 -->
@@ -401,7 +363,7 @@
   <!-- 헤더 -->
   <header id="app-header">
     <div style="display:flex;align-items:center;gap:8px;">
-      <span id="header-logo">✝ 성장 로그 <small>Growth Log (V3.1 Clean Architecture)</small></span>
+      <span id="header-logo">✝ 성장 로그 <small>V3.1 AI Spiritual Habit System</small></span>
     </div>
     <div id="header-right">
       <span id="user-name-disp" style="font-size:0.78rem;color:var(--accent-gold);">크리스천 군인 모드</span>
@@ -420,25 +382,33 @@
   <!-- 메인 레이아웃 -->
   <main id="main">
 
-    <!-- 주간 달성률 차트 (Q8 Review Mode 연동) -->
+    <!-- 오늘의 영적 습관 대시보드 카드 -->
     <div class="card" id="chart-card">
       <div class="card-hd">
-        <span class="card-title">📊 주간 달성률 대시보드</span>
+        <span class="card-title">📊 오늘의 영적 습관 대시보드</span>
         <div style="display:flex;gap:6px;align-items:center;">
-          <span class="badge bg-gold" id="week-avg-badge">평균 0%</span>
-          <span class="badge bg-blue" id="review-mode-badge">RECORD_ENCOURAGEMENT</span>
+          <span class="badge badge-gold" id="week-avg-badge">평균 0%</span>
+          <span class="badge badge-blue" id="review-mode-badge">RECORD_ENCOURAGEMENT</span>
         </div>
       </div>
       <div class="card-bd">
         <div class="week-bars" id="week-bars"></div>
+        <div class="prog-wrap"><div class="prog-fill" id="dashboard-prog" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;margin-bottom:12px;">
+          <span style="font-size:0.75rem;color:var(--text-muted);">오늘의 습관 완수율</span>
+          <span style="font-size:0.75rem;font-weight:700;color:var(--accent-warm);" id="dashboard-prog-lbl">0%</span>
+        </div>
+        <button id="btn-generate-ai" class="btn-ai-trigger">
+          <span>✨</span> AI 주간 영적 데이터 분석 및 습관 전략 제안
+        </button>
       </div>
     </div>
 
-    <!-- 오늘의 말씀 묵상 (Q14 Protected) -->
+    <!-- 오늘의 말씀 묵상 카드 (Q14 Spiritual Null Rule Protected) -->
     <div class="card" id="dev-card">
       <div class="card-hd">
         <span class="card-title">📖 오늘의 말씀 묵상 (Devotion &amp; Reflection)</span>
-        <button class="hbtn" id="btn-dev-edit" style="font-size:0.73rem;padding:4px 9px;">✏ 기록하기</button>
+        <button class="dnbtn" id="btn-dev-edit" style="width:auto;height:auto;padding:3px 8px;border-radius:var(--radius-btn);font-size:0.72rem;">✏ 기록하기</button>
       </div>
       <div class="card-bd" id="dev-preview">
         <div class="dev-empty">말씀을 기록해 보세요 ✝ (Devotion 미입력 시 Q14 Null 보존)</div>
@@ -449,12 +419,10 @@
     <div class="card" id="routine-card">
       <div class="card-hd">
         <span class="card-title">🔄 My Routine</span>
-        <span class="badge bg-green" id="routine-badge">0/0</span>
+        <span class="badge badge-green" id="routine-badge">0/0</span>
       </div>
       <div class="card-bd">
         <div class="cl-wrap" id="routine-list" data-zone="routine"></div>
-        <div class="prog-wrap"><div class="prog-fill" id="routine-prog" style="width:0%"></div></div>
-        <p class="prog-lbl" id="routine-prog-lbl">완료 0%</p>
         <div class="add-row">
           <input type="text" class="add-inp" id="routine-inp" placeholder="루틴 항목 추가 (Enter)..." />
           <button class="add-btn" id="btn-routine-add">추가</button>
@@ -466,12 +434,10 @@
     <div class="card" id="todo-card">
       <div class="card-hd">
         <span class="card-title">✅ To-do List</span>
-        <span class="badge bg-blue" id="todo-badge">0/0</span>
+        <span class="badge badge-blue" id="todo-badge">0/0</span>
       </div>
       <div class="card-bd">
         <div class="cl-wrap" id="todo-list" data-zone="todo"></div>
-        <div class="prog-wrap"><div class="prog-fill" id="todo-prog" style="width:0%;background:linear-gradient(to right,var(--accent-blue),#6a9fd8)"></div></div>
-        <p class="prog-lbl" id="todo-prog-lbl">완료 0%</p>
         <div class="add-row">
           <input type="text" class="add-inp" id="todo-inp" placeholder="할 일 추가 (Enter)..." />
           <button class="add-btn" id="btn-todo-add" style="background:var(--accent-blue);">추가</button>
@@ -487,52 +453,56 @@
           <button class="tool-btn" id="btn-stopwatch"><span class="ti">⏱</span>스톱워치</button>
           <button class="tool-btn" id="btn-timer"><span class="ti">⏳</span>카운트다운</button>
           <button class="tool-btn" id="btn-retro"><span class="ti">🌙</span>밤 자기점검</button>
-          <button class="tool-btn" id="btn-ai-open"><span class="ti">🤖</span>AI 코칭</button>
+          <button class="tool-btn" id="btn-quick-ai"><span class="ti">🤖</span>AI 주간 분석</button>
         </div>
       </div>
     </div>
 
-    <!-- AI 1일 성장 코칭 Board & AI Candidate Output -->
-    <div class="card" id="ai-card">
+    <!-- Recent History Card -->
+    <div class="card" id="history-card">
+      <div class="card-hd"><span class="card-title">📜 최근 7일간 기록 히스토리</span></div>
+      <div class="card-bd">
+        <div id="recent-history-list" class="history-list"></div>
+      </div>
+    </div>
+
+    <!-- V3.1 AI 영적 습관 분석 결과 섹션 (신규 교체 통합) -->
+    <div class="card hidden" id="ai-review-section">
       <div class="card-hd">
-        <span class="card-title">🤖 AI 1일 성장 코칭 Board (Orchestrator Gate)</span>
-        <button class="hbtn" id="btn-memo-toggle" style="font-size:0.7rem;padding:3px 7px;">메모 ▾</button>
+        <span class="card-title">🤖 AI 영적 습관 분석 결과 (AI Review)</span>
+        <span class="badge badge-warm" id="ai-state-badge">후보 제안 상태</span>
       </div>
       <div class="card-bd">
-        <textarea id="coaching-inp" placeholder="오늘의 고민, 기도제목, 피곤함 등 추가할 상황이 있다면 입력해 주세요..."></textarea>
-        <div class="c-btn-row">
-          <button class="c-submit-btn" id="btn-coaching">🤖 AI 영성 &amp; 습관 데이터 통합 분석 받기</button>
-          <button class="c-memo-btn" id="btn-save-memo">📌 메모 저장</button>
+        <div class="review-box">
+          <h3>영적 상태 요약</h3>
+          <p id="ai-summary-text" style="font-size:0.85rem;line-height:1.6;color:var(--text-primary);">분석 대기 중...</p>
         </div>
 
-        <!-- AI Generated Response Container -->
-        <div id="coaching-resp">
-          <div style="font-size:0.83rem;color:var(--text-secondary);">
-            <strong>검증된 근거 기록 (Q2 Evidence):</strong>
-            <div id="verified-evidence-tags" class="tag-container"></div>
-          </div>
-          <div class="divider"></div>
-          <div id="ai-summary-text" style="line-height:1.6;"></div>
-          <div class="divider"></div>
-          <div id="ai-candidate-box">
-            <h4 style="font-family:var(--font-serif);font-size:0.95rem;color:var(--text-primary);margin-bottom:6px;">🎯 AI 추천 습관 전략 후보 (Candidate)</h4>
-            <p class="section-notice">⚠️ 아래 제안은 Candidate 상태이며 사용자의 <strong>[승인]</strong> 없이는 저장되지 않습니다 (Q12 Explicit User Approval Enforcement).</p>
-            <div id="candidate-strategy-list" class="strategy-card-list"></div>
-          </div>
+        <div class="review-box">
+          <h3>검증된 근거 기록 (Q2 Verified Evidence)</h3>
+          <div id="verified-evidence-tags" class="tag-container"></div>
         </div>
 
-        <div class="divider"></div>
-        <div class="memo-list" id="memo-list"></div>
+        <div class="review-box">
+          <h3>영적 반추 내용 (Q14 Protected)</h3>
+          <p id="ai-reflection-text" class="reflection-quote">기록 없음</p>
+        </div>
+
+        <div style="margin-top:12px;">
+          <h3 style="font-family:var(--font-serif);font-size:0.92rem;color:var(--text-primary);margin-bottom:4px;">🎯 AI 추천 습관 전략 후보 (Candidate Strategies)</h3>
+          <p class="section-notice">⚠️ 아래 전략은 AI가 제안한 **후보(Candidate)** 상태입니다. 사용자가 **[전략 승인하기]** 버튼을 클릭하여 명시적으로 승인해야만 저장됩니다 (Q12 Explicit User Approval Enforcement).</p>
+          <div id="candidate-strategy-list" class="strategy-card-list"></div>
+        </div>
       </div>
     </div>
 
-    <!-- 승인된 도메인 습관 전략 (Domain Strategy Persistence) -->
+    <!-- 승인된 도메인 습관 전략 카드 (Approved Domain Strategies) -->
     <div class="card" id="approved-card">
       <div class="card-hd">
         <span class="card-title">🏆 승인된 도메인 습관 전략 (Approved Domain Strategies)</span>
       </div>
       <div class="card-bd">
-        <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:10px;">사용자가 명시적으로 승인하여 IndexedDB `approvedStrategies` 저장소에 영속화된 전략 목록입니다.</p>
+        <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:10px;">명시적으로 승인되어 IndexedDB `approvedStrategies` 저장소에 영속화된 전략입니다.</p>
         <div id="approved-strategy-list" class="strategy-card-list"></div>
       </div>
     </div>
@@ -551,9 +521,9 @@
     <div class="modal-bd">
       <div class="dev-lbl">📌 오늘의 말씀 (성경 구절 / Devotion)</div>
       <textarea class="dev-verse-inp" id="dev-verse" placeholder="예) 빌립보서 4:13 — 내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라 (비워 두면 Devotion=null)"></textarea>
-      <div class="dev-lbl">✍ 묵상 / 적용 / 기도 (Spiritual Reflection)</div>
+      <div class="dev-lbl">✍ 영적 반추 (Spiritual Reflection)</div>
       <textarea class="dev-med-inp" id="dev-med" placeholder="오늘 말씀을 통해 받은 은혜와 기도 제목을 기록하세요. (Devotion이 null이면 null로 보존됩니다)"></textarea>
-      <small style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:4px;">Q14 규칙: Devotion이 비어 있으면 Spiritual Reflection은 자동 null 처리됩니다.</small>
+      <small style="font-size:0.73rem;color:var(--text-muted);display:block;margin-top:4px;">Q14 규칙: Devotion이 비어 있으면 Spiritual Reflection은 자동 null 처리됩니다.</small>
       <button class="dev-save-btn" id="btn-dev-save">💾 IndexedDB에 저장하기</button>
     </div>
   </div>
@@ -566,7 +536,7 @@
     <div class="modal-hd">
       <span class="modal-title">🌙 밤 자기점검 (10개 영역)</span>
       <div style="display:flex;gap:6px;align-items:center;">
-        <button class="hbtn" id="btn-retro-edit-q" style="font-size:0.72rem;padding:3px 8px;">⚙ 질문 수정</button>
+        <button class="dnbtn" id="btn-retro-edit-q" style="width:auto;height:auto;padding:3px 7px;border-radius:var(--radius-btn);font-size:0.72rem;">⚙ 질문 수정</button>
         <button class="modal-x" data-close="modal-retro">✕</button>
       </div>
     </div>
@@ -583,7 +553,7 @@
       <button class="modal-x" data-close="modal-retro-qs">✕</button>
     </div>
     <div class="modal-bd">
-      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:12px;">매일 밤 점검할 10가지 질문 항목을 자유롭게 수정해 보세요.</p>
+      <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:12px;">매일 밤 점검할 10가지 질문 항목을 자유롭게 수정해 보세요.</p>
       <div id="retro-qs-inputs" style="display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;padding-right:4px;"></div>
       <button class="modal-save-btn" id="btn-save-retro-qs" style="background:var(--accent-gold);color:#1a1000;margin-top:14px;">💾 질문 저장하기</button>
     </div>
@@ -644,7 +614,6 @@
       <button class="modal-x" data-close="modal-fail">✕</button>
     </div>
     <div class="modal-bd">
-      <p style="font-size:0.83rem;color:var(--text-secondary);margin-bottom:9px;line-height:1.6;">왜 이 항목을 완수하지 못했나요?<br/>솔직한 기록이 성장의 발판이 됩니다.</p>
       <textarea class="modal-inp" id="fail-inp" style="min-height:75px;resize:vertical;" placeholder="실패 사유를 입력하세요..."></textarea>
       <button class="modal-save-btn" id="btn-fail-save" style="background:var(--accent-red);color:#fff;">저장</button>
     </div>
@@ -666,7 +635,7 @@
   </div>
 </div>
 
-<!-- 모달: Q12 명시적 전략 승인 Confirmation Modal -->
+<!-- Q12 Explicit Approval Confirmation Modal -->
 <div class="modal-ov" id="approval-modal" role="dialog" aria-modal="true">
   <div class="modal-sh" style="max-width:480px;">
     <div class="modal-handle"></div>
@@ -675,10 +644,10 @@
       <button class="modal-x" id="modal-btn-cancel-x">✕</button>
     </div>
     <div class="modal-bd">
-      <p id="modal-text" style="font-size:0.88rem;color:var(--text-primary);line-height:1.6;margin-bottom:16px;">정말로 이 전략을 승인하여 도메인 습관 전략으로 저장하시겠습니까?</p>
+      <p id="modal-text" style="font-size:0.88rem;color:var(--text-primary);line-height:1.6;margin-bottom:16px;">정말로 이 전략을 승인하여 IndexedDB 도메인 전략으로 저장하시겠습니까?</p>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
-        <button id="modal-btn-confirm" class="btn" style="padding:9px 16px;background:var(--accent-green);color:#fff;border-radius:var(--radius-btn);font-weight:700;">✓ 명시적 승인 및 저장</button>
-        <button id="modal-btn-cancel" class="btn" style="padding:9px 16px;background:var(--bg-card-alt);border:1px solid var(--border-warm);color:var(--text-secondary);border-radius:var(--radius-btn);">취소</button>
+        <button id="modal-btn-confirm" class="add-btn" style="background:var(--accent-green);color:#fff;padding:8px 16px;">✓ 명시적 승인 및 저장</button>
+        <button id="modal-btn-cancel" class="add-btn" style="background:var(--bg-card-alt);border:1px solid var(--border-warm);color:var(--text-secondary);padding:8px 16px;">취소</button>
       </div>
     </div>
   </div>
@@ -687,7 +656,7 @@
 <div id="toast-box"></div>
 
 <!-- ============================================================
-     JAVASCRIPT IMPLEMENTATION (CLEAN ARCHITECTURE BUNDLE)
+     JAVASCRIPT IMPLEMENTATION (CLEAN ARCHITECTURE CORE)
 ============================================================ -->
 <script>
 'use strict';
@@ -761,7 +730,7 @@ function approveCandidateStrategy(candidate, approvalAction) {
 }
 
 // ==========================================
-// STAGE 2: INDEXEDDB PERSISTENCE LAYER
+// STAGE 2: UNIFIED INDEXEDDB PERSISTENCE LAYER
 // ==========================================
 class IndexedDbDailyRecordRepository {
   constructor() {
@@ -976,7 +945,6 @@ async function assembleAiContext(recordRepo, eventRepo, options) {
 }
 
 function buildAiPrompt(context) {
-  const activePatternsOnly = getActivePatterns(context.activePatterns);
   const verifiedIds = [...context.verifiedEvidenceIds];
 
   const systemPrompt = `System: V3.1 AI Spiritual Habit System for Christian Soldiers.
@@ -1028,7 +996,7 @@ function processPostValidationGate(rawResponse, context) {
         id: typeof s.id === 'string' ? s.id : `strat-cand-${idx + 1}`,
         name: typeof s.name === 'string' ? s.name : 'Candidate Strategy',
         description: typeof s.description === 'string' ? s.description : '',
-        isUserApproved: false // Q12 Force false
+        isUserApproved: false
       });
     });
   }
@@ -1064,7 +1032,7 @@ class ConfigurableApiLlmClient {
         {
           id: `strat-cand-${Date.now()}-1`,
           name: '휴대폰 수령 직후 성경 1장 읽기 (2분 법칙)',
-          description: '일과 후 휴대폰을 전달받았을 때 유튜브/숏폼 접속 전 성경 앱을 먼저 열어 말씀을 묵상합니다.',
+          description: '일과 후 휴대폰을 전달받았을 때 미디어 접속 전 성경 앱을 먼저 열어 말씀을 묵상합니다.',
           isUserApproved: false
         },
         {
@@ -1343,15 +1311,9 @@ class GrowthLogApp {
     document.getElementById('btn-todo-add')?.addEventListener('click', () => this.addItem('todo'));
     document.getElementById('todo-inp')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.addItem('todo'); });
 
-    // AI Coaching & Strategy Generation
-    document.getElementById('btn-coaching')?.addEventListener('click', () => this.handleGenerateAiReview());
-    document.getElementById('btn-save-memo')?.addEventListener('click', () => this.saveMemo());
-    document.getElementById('btn-memo-toggle')?.addEventListener('click', () => {
-      const ml = document.getElementById('memo-list');
-      const hidden = ml.style.display === 'none';
-      ml.style.display = hidden ? '' : 'none';
-      document.getElementById('btn-memo-toggle').textContent = hidden ? '메모 ▴' : '메모 ▾';
-    });
+    // V3.1 AI Generation Triggers
+    document.getElementById('btn-generate-ai')?.addEventListener('click', () => this.handleGenerateAiReview());
+    document.getElementById('btn-quick-ai')?.addEventListener('click', () => this.handleGenerateAiReview());
 
     // Modal Confirmation for Strategy Approval (Q12 Enforcement)
     document.getElementById('modal-btn-confirm')?.addEventListener('click', () => this.executePendingApproval());
@@ -1423,11 +1385,11 @@ class GrowthLogApp {
 
   async renderAll() {
     this.renderDateNav();
-    await this.renderChart();
+    await this.renderChartAndDashboard();
     await this.renderDevotion();
     await this.renderRoutine();
     await this.renderTodo();
-    this.renderMemos();
+    await this.renderRecentHistory();
     await this.renderApprovedStrategiesList();
   }
 
@@ -1435,7 +1397,7 @@ class GrowthLogApp {
     document.getElementById('date-disp').textContent = fmtDate(this.curDate);
   }
 
-  async renderChart() {
+  async renderChartAndDashboard() {
     const dates = weekDates(this.curDate);
     const container = document.getElementById('week-bars');
     if (!container) return;
@@ -1478,11 +1440,21 @@ class GrowthLogApp {
 
     document.getElementById('week-avg-badge').textContent = `평균 ${cnt>0?Math.round(sum/cnt):0}%`;
 
-    // Q8 Review Mode Display
+    // Q8 Review Mode Display & Daily Dashboard Progress
     const recentRecords = await this.recordRepo.listByDateRange(dates[0], dates[6]);
     const uniqueDaysCount = new Set(recentRecords.map(r => r.date)).size;
     const reviewMode = calculateWeeklyReviewMode(uniqueDaysCount);
     document.getElementById('review-mode-badge').textContent = reviewMode;
+
+    const curRec = await this.getOrCreateDayRecord(this.curDate);
+    const totalToday = this.template.routineItems.length + (curRec.todoItems ? curRec.todoItems.length : 0);
+    let doneToday = 0;
+    this.template.routineItems.forEach(r => { if (curRec.routineState && curRec.routineState[r.id]?.status === 'done') doneToday++; });
+    if (curRec.todoItems) curRec.todoItems.forEach(t => { if (t.status === 'done') doneToday++; });
+    const todayPct = totalToday > 0 ? Math.round((doneToday / totalToday) * 100) : 0;
+
+    document.getElementById('dashboard-prog').style.width = todayPct + '%';
+    document.getElementById('dashboard-prog-lbl').textContent = todayPct + '%';
   }
 
   async renderDevotion() {
@@ -1525,7 +1497,6 @@ class GrowthLogApp {
     rec.devotion = verse.length > 0 ? verse : null;
     rec.spiritualReflection = rec.devotion !== null && meditation.length > 0 ? meditation : null;
 
-    // Save Evidence Event if devotion exists
     if (rec.devotion) {
       const evId = `ev-${this.curDate}-${Date.now()}`;
       if (!rec.evidenceIds) rec.evidenceIds = [];
@@ -1541,7 +1512,7 @@ class GrowthLogApp {
 
     await this.saveDayRecord(this.curDate);
     await this.renderDevotion();
-    await this.renderChart();
+    await this.renderChartAndDashboard();
     this.closeModal('modal-dev');
     this.showToast('말씀 묵상이 IndexedDB에 저장되었습니다. ✝', 'ok');
   }
@@ -1556,7 +1527,7 @@ class GrowthLogApp {
     this.template.routineItems.forEach(item => {
       list.appendChild(this.makeClItem('routine', item, rs[item.id] || {}));
     });
-    this.updateProg('routine', this.template.routineItems, rs);
+    this.updateBadge('routine', this.template.routineItems, rs);
   }
 
   async renderTodo() {
@@ -1569,7 +1540,7 @@ class GrowthLogApp {
     const stateMap = {};
     ti.forEach(t => stateMap[t.id] = t);
     ti.forEach(item => list.appendChild(this.makeClItem('todo', item, item)));
-    this.updateProg('todo', ti, stateMap);
+    this.updateBadge('todo', ti, stateMap);
   }
 
   makeClItem(zone, item, state) {
@@ -1577,20 +1548,19 @@ class GrowthLogApp {
     el.className = 'cl-item';
     el.dataset.id = item.id;
     el.dataset.zone = zone;
-    el.draggable = true;
 
     const sc = state.status === 'done' ? 'done' : state.status === 'fail' ? 'fail' : '';
     const ci = state.status === 'done' ? '✓' : state.status === 'fail' ? '✕' : '';
 
     el.innerHTML = `
-      <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
+      <span class="drag-handle" title="순서">⠿</span>
       <button class="chk-btn ${sc}" data-act="chk">${ci}</button>
       <div class="item-tw">
         <span class="item-txt ${sc}">${esc(item.text)}</span>
         ${state.failReason ? `<div class="item-fail-r">사유: ${esc(state.failReason)}</div>` : ''}
       </div>
       <div class="item-acts">
-        <button class="iabtn ${item.pinned ? 'pin-on' : ''}" data-act="pin" title="${item.pinned ? '고정 해제 (To-do로 이동)' : 'My Routine으로 고정'}">📌</button>
+        <button class="iabtn ${item.pinned ? 'pin-on' : ''}" data-act="pin" title="${item.pinned ? '고정 해제' : 'Routine 고정'}">📌</button>
         <button class="iabtn" data-act="edit" title="편집">✏</button>
         ${sc === 'fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
         <button class="iabtn del" data-act="del" title="삭제">🗑</button>
@@ -1647,13 +1617,13 @@ class GrowthLogApp {
     }
 
     if (zone === 'routine') {
-      this.updateProg('routine', this.template.routineItems, rec.routineState || {});
+      this.updateBadge('routine', this.template.routineItems, rec.routineState || {});
     } else {
       const stateMap = {};
       (rec.todoItems || []).forEach(t => stateMap[t.id] = t);
-      this.updateProg('todo', rec.todoItems || [], stateMap);
+      this.updateBadge('todo', rec.todoItems || [], stateMap);
     }
-    await this.renderChart();
+    await this.renderChartAndDashboard();
   }
 
   async togglePin(zone, id) {
@@ -1703,7 +1673,7 @@ class GrowthLogApp {
       await this.saveDayRecord(this.curDate);
       await this.renderTodo();
     }
-    await this.renderChart();
+    await this.renderChartAndDashboard();
     this.showToast('삭제되었습니다.', 'err');
   }
 
@@ -1726,37 +1696,68 @@ class GrowthLogApp {
       await this.saveDayRecord(this.curDate);
       await this.renderTodo();
     }
-    await this.renderChart();
+    await this.renderChartAndDashboard();
     this.showToast('항목이 추가되었습니다.', 'ok');
   }
 
-  updateProg(zone, items, stateMap) {
+  updateBadge(zone, items, stateMap) {
     const total = items.length;
     let done = 0;
     items.forEach(item => { if ((stateMap[item.id] || {}).status === 'done') done++; });
-    const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
     if (zone === 'routine') {
-      document.getElementById('routine-prog').style.width = pct + '%';
-      document.getElementById('routine-prog-lbl').textContent = `완료 ${pct}%`;
       document.getElementById('routine-badge').textContent = `${done}/${total}`;
     } else {
-      document.getElementById('todo-prog').style.width = pct + '%';
-      document.getElementById('todo-prog-lbl').textContent = `완료 ${pct}%`;
       document.getElementById('todo-badge').textContent = `${done}/${total}`;
     }
   }
 
-  // AI Review & Candidate Generation Workflow
-  async handleGenerateAiReview() {
-    const btn = document.getElementById('btn-coaching');
-    if (btn) btn.disabled = true;
+  async renderRecentHistory() {
+    const startDate = addDays(this.curDate, -6);
+    const records = await this.recordRepo.listByDateRange(startDate, this.curDate);
 
-    const resp = document.getElementById('coaching-resp');
-    if (resp) resp.classList.add('vis');
+    const historyContainer = document.getElementById('recent-history-list');
+    if (!historyContainer) return;
+    historyContainer.innerHTML = '';
+
+    if (records.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:0.8rem;color:var(--text-muted);font-style:italic;text-align:center;padding:10px;';
+      empty.textContent = '최근 7일간 저장된 영적 기록이 없습니다.';
+      historyContainer.appendChild(empty);
+      return;
+    }
+
+    records.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'history-item-date';
+      dateSpan.textContent = r.date;
+
+      const detailSpan = document.createElement('span');
+      detailSpan.className = 'history-item-detail';
+      detailSpan.textContent = r.devotion ? `말씀: ${r.devotion}` : '기록 없음 (Q14 Null Protected)';
+
+      item.appendChild(dateSpan);
+      item.appendChild(detailSpan);
+      historyContainer.appendChild(item);
+    });
+  }
+
+  // V3.1 AI Review & Candidate Generation Workflow
+  async handleGenerateAiReview() {
+    const btn1 = document.getElementById('btn-generate-ai');
+    const btn2 = document.getElementById('btn-quick-ai');
+    if (btn1) btn1.disabled = true;
+    if (btn2) btn2.disabled = true;
+
+    const reviewSection = document.getElementById('ai-review-section');
+    if (reviewSection) reviewSection.classList.remove('hidden');
 
     const summaryText = document.getElementById('ai-summary-text');
-    if (summaryText) summaryText.textContent = '🤖 영성 & 습관 데이터를 검증된 ContextEvent 기반으로 분석 중입니다...';
+    if (summaryText) summaryText.textContent = '🤖 AI가 영적 습관 데이터를 검증된 ContextEvent 기반으로 분석 중입니다...';
 
     const startDate = addDays(this.curDate, -6);
 
@@ -1766,7 +1767,8 @@ class GrowthLogApp {
       patterns: [{ id: 'pat-1', status: PatternStatus.ACTIVE, metrics: {} }]
     });
 
-    if (btn) btn.disabled = false;
+    if (btn1) btn1.disabled = false;
+    if (btn2) btn2.disabled = false;
 
     if (!result.success || !result.data) {
       if (summaryText) summaryText.textContent = `분석 실패: ${result.error?.message}`;
@@ -1775,14 +1777,15 @@ class GrowthLogApp {
     }
 
     this.renderCandidateReview(result.data);
-    this.showToast('AI 분석 및 습관 전략 후보(Candidate)가 생성되었습니다.', 'info');
+    reviewSection?.scrollIntoView({ behavior: 'smooth' });
+    this.showToast('AI 분석 및 추천 습관 전략 후보가 생성되었습니다.', 'info');
   }
 
   renderCandidateReview(viewModel) {
     const summaryText = document.getElementById('ai-summary-text');
     if (summaryText) summaryText.textContent = viewModel.summary;
 
-    // Q2 Evidence
+    // Q2 Evidence Tags
     const evidenceContainer = document.getElementById('verified-evidence-tags');
     if (evidenceContainer) {
       evidenceContainer.innerHTML = '';
@@ -1801,7 +1804,15 @@ class GrowthLogApp {
       }
     }
 
-    // Candidate Strategies Render
+    // Q14 Reflection Text
+    const reflectionText = document.getElementById('ai-reflection-text');
+    if (reflectionText) {
+      reflectionText.textContent = viewModel.spiritualReflection !== null
+        ? `"${viewModel.spiritualReflection}"`
+        : 'Devotion이 비어 있어 영적 반추가 생성되지 않았습니다. (Q14 Null Protected)';
+    }
+
+    // Q12 Candidate Strategy Cards
     const strategyContainer = document.getElementById('candidate-strategy-list');
     if (strategyContainer) {
       strategyContainer.innerHTML = '';
@@ -1818,7 +1829,7 @@ class GrowthLogApp {
         title.textContent = strat.name;
 
         const badge = document.createElement('span');
-        badge.className = 'badge bg-gold';
+        badge.className = 'badge badge-warm';
         badge.textContent = '후보 (미승인)';
 
         header.appendChild(title); header.appendChild(badge);
@@ -1828,8 +1839,8 @@ class GrowthLogApp {
         desc.textContent = strat.description;
 
         const btnApprove = document.createElement('button');
-        btnApprove.className = 'btn';
-        btnApprove.style.cssText = 'padding:6px 12px;background:var(--accent-green);color:#fff;border-radius:var(--radius-btn);font-weight:700;font-size:0.78rem;';
+        btnApprove.className = 'add-btn';
+        btnApprove.style.cssText = 'background:var(--accent-green);color:#fff;padding:6px 12px;font-size:0.78rem;';
         btnApprove.textContent = '✓ 이 전략 승인하기 (Explicit User Approval)';
         btnApprove.addEventListener('click', () => this.openApprovalConfirmationModal(strat));
 
@@ -1898,7 +1909,7 @@ class GrowthLogApp {
       title.textContent = strat.name;
 
       const badge = document.createElement('span');
-      badge.className = 'badge bg-green';
+      badge.className = 'badge badge-green';
       badge.textContent = '도메인 승인 완료';
 
       header.appendChild(title); header.appendChild(badge);
@@ -1910,37 +1921,6 @@ class GrowthLogApp {
       card.appendChild(header); card.appendChild(desc);
       listContainer.appendChild(card);
     });
-  }
-
-  renderMemos() {
-    const list = document.getElementById('memo-list');
-    if (!list) return;
-    list.innerHTML = '';
-
-    (this.template.memos || []).forEach((memo, idx) => {
-      const el = document.createElement('div');
-      el.className = 'memo-item';
-      el.innerHTML = `<span class="memo-txt">${esc(memo.text)}</span><button class="memo-del" data-idx="${idx}">✕</button>`;
-      el.querySelector('.memo-del')?.addEventListener('click', async () => {
-        this.template.memos.splice(idx, 1);
-        await this.saveTemplateState();
-        this.renderMemos();
-        this.showToast('메모가 삭제되었습니다.', 'info');
-      });
-      list.appendChild(el);
-    });
-  }
-
-  async saveMemo() {
-    const inp = document.getElementById('coaching-inp');
-    const text = inp ? inp.value.trim() : '';
-    if (!text) { this.showToast('메모할 내용을 입력해 주세요.', 'info'); return; }
-
-    this.template.memos.unshift({ id: uid(), text, createdAt: new Date().toISOString() });
-    await this.saveTemplateState();
-    this.renderMemos();
-    if (inp) inp.value = '';
-    this.showToast('📌 메모가 저장되었습니다.', 'ok');
   }
 
   // Night Retro Modal
@@ -2048,7 +2028,7 @@ class GrowthLogApp {
     this.showToast('자기점검 질문이 변경되었습니다.', 'ok');
   }
 
-  // Timer & Stopwatch Logic
+  // Timers
   swUpdate() {
     this.swElapsed = Date.now() - this.swStart;
     document.getElementById('sw-disp').textContent = fmtSW(this.swElapsed);
@@ -2193,7 +2173,7 @@ class GrowthLogApp {
   }
 }
 
-// Global App Lifecycle
+// Global App Lifecycle Initialization
 document.addEventListener('DOMContentLoaded', async () => {
   window.app = new GrowthLogApp();
   await window.app.init();
