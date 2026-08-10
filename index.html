@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -176,7 +176,6 @@
     .item-txt.done { text-decoration: line-through; color: var(--text-muted); }
     .item-txt.fail { color: var(--accent-red); }
     .item-fail-r { font-size: 0.72rem; color: var(--accent-red); margin-top: 2px; font-style: italic; }
-    .pin-ico { font-size: 0.68rem; color: var(--accent-gold); flex-shrink: 0; }
     .item-acts { display: flex; gap: 3px; flex-shrink: 0; }
     .iabtn {
       width: 24px; height: 24px; border-radius: 4px; font-size: 0.72rem;
@@ -689,7 +688,6 @@ const FIREBASE_CONFIG = {
 let db = null, auth = null, fbOk = false;
 let currentUser = null;
 
-/* 안전한 UTC 기반 날짜 유틸 함수 (타임존 뒤틀림 방지) */
 function todayStr() {
   const now = new Date();
   const y = now.getFullYear();
@@ -864,17 +862,17 @@ function loadLocal() {
   D.dayData      = ls.days || {};
 }
 
+/* My Routine 기본 목록 (기본적으로 모두 pinned: true 보장) */
 function defaultRoutine() {
   return [
-    { id: uid(), text: '기상 후 말씀 묵상 (10분)', pinned: false },
-    { id: uid(), text: '아침 체조 / 스트레칭', pinned: false },
-    { id: uid(), text: '일과 시작 전 기도', pinned: false },
-    { id: uid(), text: '점심 식사 감사 기도', pinned: false },
-    { id: uid(), text: '저녁 자기점검 & 일지 작성', pinned: false },
+    { id: uid(), text: '기상 후 말씀 묵상 (10분)', pinned: true },
+    { id: uid(), text: '아침 체조 / 스트레칭', pinned: true },
+    { id: uid(), text: '일과 시작 전 기도', pinned: true },
+    { id: uid(), text: '점심 식사 감사 기도', pinned: true },
+    { id: uid(), text: '저녁 자기점검 & 일지 작성', pinned: true },
   ];
 }
 
-/* 안전한 날짜 객체 반환 헬퍼 */
 function dayD(date) { 
   if (!D.dayData[date]) {
     D.dayData[date] = { routineState: {}, todoItems: [], devotion: {}, retro: {} };
@@ -941,32 +939,33 @@ function renderChart() {
 
 function renderRoutine() {
   const rs = routineState(curDate);
-  const sorted = [...D.routineItems].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0));
   const list = document.getElementById('routine-list');
   list.innerHTML = '';
-  sorted.forEach(item => list.appendChild(makeClItem('routine', item, rs[item.id]||{})));
+  D.routineItems.forEach(item => list.appendChild(makeClItem('routine', item, rs[item.id]||{})));
   updateProg('routine', D.routineItems, rs);
 }
 
 function renderTodo() {
   const ti = todoItems(curDate);
-  const sorted = [...ti].sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0));
   const list = document.getElementById('todo-list');
   list.innerHTML = '';
   const stateMap = {};
   ti.forEach(t => stateMap[t.id] = t);
-  sorted.forEach(item => list.appendChild(makeClItem('todo', item, item)));
+  ti.forEach(item => list.appendChild(makeClItem('todo', item, item)));
   updateProg('todo', ti, stateMap);
 }
 
+/* 중복 고정 아이콘 정리 및 HTML 렌더링 */
 function makeClItem(zone, item, state) {
   const el = document.createElement('div');
   el.className = 'cl-item';
   el.dataset.id = item.id;
   el.dataset.zone = zone;
   el.draggable = true;
+
   const sc = state.status === 'done' ? 'done' : state.status === 'fail' ? 'fail' : '';
   const ci = state.status === 'done' ? '✓' : state.status === 'fail' ? '✕' : '';
+
   el.innerHTML = `
     <span class="drag-handle" title="드래그하여 순서 변경">⠿</span>
     <button class="chk-btn ${sc}" data-act="chk">${ci}</button>
@@ -974,20 +973,30 @@ function makeClItem(zone, item, state) {
       <span class="item-txt ${sc}">${esc(item.text)}</span>
       ${state.failReason ? `<div class="item-fail-r">사유: ${esc(state.failReason)}</div>` : ''}
     </div>
-    ${item.pinned ? '<span class="pin-ico">📌</span>' : ''}
     <div class="item-acts">
-      <button class="iabtn ${item.pinned?'pin-on':''}" data-act="pin" title="${item.pinned?'고정 해제':'고정'}">${item.pinned?'📌':'📍'}</button>
+      <button class="iabtn ${item.pinned ? 'pin-on' : ''}" data-act="pin" title="${item.pinned ? '고정 해제 (To-do로 이동)' : 'My Routine으로 고정'}">📌</button>
       <button class="iabtn" data-act="edit" title="편집">✏</button>
-      ${sc==='fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
+      ${sc === 'fail' ? `<button class="iabtn" data-act="edit-fail" title="실패 사유 편집">📝</button>` : ''}
       <button class="iabtn del" data-act="del" title="삭제">🗑</button>
     </div>
   `;
-  el.querySelector('[data-act="chk"]').addEventListener('click', e => { e.stopPropagation(); toggleStatus(zone, item.id); });
+
+  const chkBtn = el.querySelector('[data-act="chk"]');
+  const txtEl = el.querySelector('.item-txt');
+
+  chkBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleStatus(zone, item.id, chkBtn, txtEl);
+  });
+
   el.querySelector('[data-act="pin"]').addEventListener('click', e => { e.stopPropagation(); togglePin(zone, item.id); });
   el.querySelector('[data-act="edit"]').addEventListener('click', e => { e.stopPropagation(); openEditModal(zone, item.id, item.text); });
   el.querySelector('[data-act="del"]').addEventListener('click', e => { e.stopPropagation(); deleteItem(zone, item.id); });
+
   const efBtn = el.querySelector('[data-act="edit-fail"]');
-  if (efBtn) efBtn.addEventListener('click', e => { e.stopPropagation(); openFailModal(zone, item.id, state.failReason||''); });
+  if (efBtn) efBtn.addEventListener('click', e => { e.stopPropagation(); openFailModal(zone, item.id, state.failReason || ''); });
+
   setupDrag(el, zone);
   return el;
 }
@@ -1048,59 +1057,90 @@ function renderMemos() {
   });
 }
 
-/* 
-   ★ 낙관적 UI 업데이트 적용 (Optimistic UI Update)
-   - 클릭 즉시 메모리 변경 및 UI 렌더링
-   - DB/로컬 저장은 비동기 백그라운드로 실행하여 DOM 업데이트 블로킹 해제
-*/
-function toggleStatus(zone, id) {
+function toggleStatus(zone, id, targetBtn, textEl) {
+  let isDone = false;
+
   if (zone === 'routine') {
     const rs = routineState(curDate);
-    const cur = (rs[id]||{}).status || 'none';
+    const cur = (rs[id] || {}).status || 'none';
     const next = (cur === 'done') ? 'none' : 'done';
-    
-    // 1. 메모리 업데이트
-    rs[id] = { ...(rs[id]||{}), status: next };
-    
-    // 2. UI 즉시 렌더링 (0.01초 최속 반영)
-    renderRoutine(); 
-    renderChart();
-    
-    // 3. 백그라운드 비동기 DB 저장
-    saveDayData(curDate);
+    rs[id] = { ...(rs[id] || {}), status: next };
+    isDone = (next === 'done');
   } else {
     const ti = todoItems(curDate);
     const item = ti.find(t => t.id === id);
     if (!item) return;
-    
-    // 1. 메모리 업데이트
     const cur = item.status || 'none';
     item.status = (cur === 'done') ? 'none' : 'done';
-    
-    // 2. UI 즉시 렌더링 (0.01초 최속 반영)
-    renderTodo(); 
-    renderChart();
-    
-    // 3. 백그라운드 비동기 DB 저장
-    saveDayData(curDate);
+    isDone = (item.status === 'done');
   }
+
+  if (targetBtn && textEl) {
+    if (isDone) {
+      targetBtn.classList.add('done');
+      targetBtn.classList.remove('fail');
+      targetBtn.textContent = '✓';
+      textEl.classList.add('done');
+      textEl.classList.remove('fail');
+    } else {
+      targetBtn.classList.remove('done', 'fail');
+      targetBtn.textContent = '';
+      textEl.classList.remove('done', 'fail');
+    }
+  } else {
+    if (zone === 'routine') renderRoutine(); else renderTodo();
+  }
+
+  if (zone === 'routine') {
+    updateProg('routine', D.routineItems, routineState(curDate));
+  } else {
+    const stateMap = {};
+    todoItems(curDate).forEach(t => stateMap[t.id] = t);
+    updateProg('todo', todoItems(curDate), stateMap);
+  }
+  renderChart();
+  saveDayData(curDate);
 }
 
-function togglePin(zone, id) {
-  if (zone === 'routine') {
-    const item = D.routineItems.find(r => r.id === id);
-    if (!item) return;
-    item.pinned = !item.pinned;
-    renderRoutine();
-    saveTemplate();
-    toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
-  } else {
-    const item = todoItems(curDate).find(t => t.id === id);
-    if (!item) return;
-    item.pinned = !item.pinned;
+/* 
+   ★ 고정(Pin) 동적 연동 기능
+   - To-do 고정 ➔ My Routine으로 이동
+   - My Routine 고정 해제 ➔ To-do List로 이동
+*/
+async function togglePin(zone, id) {
+  if (zone === 'todo') {
+    // To-do ➔ My Routine으로 이동
+    const ti = todoItems(curDate);
+    const idx = ti.findIndex(t => t.id === id);
+    if (idx < 0) return;
+
+    const [item] = ti.splice(idx, 1);
+    item.pinned = true;
+    D.routineItems.push({ id: item.id, text: item.text, pinned: true });
+
     renderTodo();
-    saveDayData(curDate);
-    toast(item.pinned ? '📌 고정되었습니다.' : '고정이 해제되었습니다.');
+    renderRoutine();
+    renderChart();
+    await saveTemplate();
+    await saveDayData(curDate);
+    toast('📌 My Routine으로 고정되었습니다.', 'ok');
+  } else if (zone === 'routine') {
+    // My Routine ➔ To-do List로 이동
+    const idx = D.routineItems.findIndex(r => r.id === id);
+    if (idx < 0) return;
+
+    const [item] = D.routineItems.splice(idx, 1);
+    item.pinned = false;
+
+    const ti = todoItems(curDate);
+    ti.push({ id: item.id, text: item.text, status: 'none', pinned: false });
+
+    renderRoutine();
+    renderTodo();
+    renderChart();
+    await saveTemplate();
+    await saveDayData(curDate);
+    toast('고정이 해제되어 To-do List로 이동되었습니다.', 'info');
   }
 }
 
@@ -1127,7 +1167,7 @@ function addItem(zone) {
   
   inp.value = '';
   if (zone === 'routine') {
-    D.routineItems.push({ id: uid(), text, pinned: false });
+    D.routineItems.push({ id: uid(), text, pinned: true });
     renderRoutine();
     saveTemplate();
   } else {
