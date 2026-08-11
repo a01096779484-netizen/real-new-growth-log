@@ -17,6 +17,7 @@
   <script>
     window.ENV = {
       // ⚠️ Google Cloud Console에서 발급받은 실제 Client ID를 입력하세요.
+      // 미입력 시에도 '게스트/데모 모드'로 정상 동작합니다.
       GOOGLE_CLIENT_ID: "YOUR_ACTUAL_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
     };
   </script>
@@ -76,7 +77,7 @@
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 15px; scroll-behavior: smooth; }
-    body { font-family: var(--font-sans); background: var(--bg-page); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; padding-bottom: 75px; transition: background 0.5s ease, color 0.5s ease; }
+    body { font-family: var(--font-sans); background: var(--bg-page); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; padding-bottom: 30px; transition: background 0.5s ease, color 0.5s ease; }
     button { cursor: pointer; border: none; background: none; font-family: inherit; }
     input, textarea, select { font-family: inherit; }
     ul, ol { list-style: none; }
@@ -104,18 +105,24 @@
       color: var(--text-light);
     }
     .auth-card {
-      width: 100%; max-width: 410px; background: rgba(44, 34, 20, 0.88);
+      width: 100%; max-width: 420px; background: rgba(44, 34, 20, 0.92);
       border: 1px solid var(--accent-gold); border-radius: 18px; padding: 36px 24px;
       text-align: center; backdrop-filter: blur(8px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      display: flex; flex-direction: column; align-items: center; gap: 20px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
     }
     .auth-logo { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; color: var(--accent-gold); }
     .auth-sub { font-size: 0.9rem; color: #d4c4a0; line-height: 1.5; }
-    .auth-btn-box { width: 100%; display: flex; justify-content: center; margin-top: 10px; min-height: 44px; }
-    .auth-err-msg { font-size: 0.78rem; color: #f87171; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px 14px; border-radius: 8px; width: 100%; text-align: left; line-height: 1.4; word-break: break-all; }
+    .auth-btn-box { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px; min-height: 44px; }
+    .auth-guest-btn {
+      width: 100%; padding: 11px 16px; border-radius: 24px; font-size: 0.88rem; font-weight: 700;
+      background: rgba(201, 168, 76, 0.2); border: 1px solid var(--accent-gold); color: #fdfaf4;
+      display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
+    }
+    .auth-guest-btn:hover { background: var(--accent-gold); color: #1a1000; }
+    .auth-err-msg { font-size: 0.76rem; color: #fca5a5; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); padding: 8px 12px; border-radius: 8px; width: 100%; text-align: left; line-height: 1.4; word-break: break-all; }
 
     /* ============================================================
-       MAIN APP SHELL (인증 완료 사용자 전용 화면)
+       MAIN APP SHELL (인증 완료 사용자 화면)
     ============================================================ */
     #app-shell { display: flex; flex-direction: column; min-height: 100vh; }
     #app-shell.hidden { display: none !important; }
@@ -165,14 +172,18 @@
 
     #main { flex: 1; padding: 14px; max-width: 920px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 14px; }
 
+    /* 맥락형 인터랙션 카드 (Contextual Trigger Cards) */
+    .clickable-card { cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+    .clickable-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(44,36,22,0.12); border-color: var(--accent-gold); }
+
     /* 10초 스피드 영적 스냅샷 바 (A-1) */
     .snapshot-bar-card {
       background: var(--bg-card); border: 1px solid var(--border-warm); border-radius: var(--radius-card);
-      padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
       box-shadow: var(--shadow-card);
     }
-    .snapshot-title { font-size: 0.85rem; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 6px; }
-    .snapshot-display { font-size: 0.8rem; color: var(--text-secondary); }
+    .snapshot-title { font-size: 0.88rem; font-weight: 700; color: var(--accent-gold); display: flex; align-items: center; gap: 6px; }
+    .snapshot-display { font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px; }
 
     /* Hero Card for Night Self-Reflection */
     .hero-card {
@@ -272,7 +283,7 @@
       border-left: 3px solid var(--accent-gold); padding: 8px 12px; border-radius: 0 6px 6px 0; cursor: pointer; white-space: pre-wrap;
     }
     .medit-prev { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-top: 6px; white-space: pre-wrap; word-break: break-all; }
-    .dev-empty { text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.82rem; font-style: italic; }
+    .dev-empty { text-align: center; padding: 14px; color: var(--text-muted); font-size: 0.82rem; font-style: italic; cursor: pointer; }
 
     /* Tools Grid */
     .tool-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
@@ -286,25 +297,11 @@
     .tool-btn:hover { border-color: var(--accent-gold); background: var(--bg-page); }
 
     /* Prayer Timeline (C-1) */
-    .prayer-item { background: var(--bg-page); border: 1px solid var(--border-light); border-left: 3px solid var(--accent-blue); padding: 10px; border-radius: var(--radius-btn); margin-bottom: 8px; }
+    .prayer-item { background: var(--bg-page); border: 1px solid var(--border-light); border-left: 3px solid var(--accent-blue); padding: 10px; border-radius: var(--radius-btn); margin-bottom: 8px; cursor: pointer; }
     .prayer-item.answered { border-left-color: var(--accent-green); background: rgba(59,122,87,0.05); }
     .prayer-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .prayer-title { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); }
     .prayer-ans-note { font-size: 0.8rem; color: var(--accent-green); margin-top: 4px; padding-top: 4px; border-top: 1px stroke var(--border-light); font-style: italic; }
-
-    /* One-Hand Bottom Floating Action Bar (J-2) */
-    #bottom-fab-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
-      background: var(--bg-header); border-top: 1px solid var(--accent-gold);
-      display: flex; align-items: center; justify-content: space-around;
-      z-index: 1200; box-shadow: 0 -3px 12px rgba(0,0,0,0.2); padding: 0 10px;
-    }
-    .fab-btn {
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
-      color: rgba(255,255,255,0.7); font-size: 0.68rem; font-weight: 600; transition: var(--transition);
-    }
-    .fab-btn .fab-icon { font-size: 1.2rem; }
-    .fab-btn:hover, .fab-btn.active { color: var(--accent-gold); }
 
     /* Modals & Overlays */
     .modal-ov {
@@ -335,7 +332,7 @@
     .tag-pill.selected { background: var(--accent-warm); color: #fff; border-color: var(--accent-warm); }
 
     /* Toast */
-    #toast-box { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+    #toast-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
     .toast { background: var(--bg-header); color: var(--text-light); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; box-shadow: 0 4px 14px rgba(0,0,0,0.3); opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.ok { background: var(--accent-green); }
@@ -365,7 +362,7 @@
 </div>
 
 <!-- ============================================================
-     1. AUTHENTICATION GATE SCREEN (미인증 로그인 전용 화면)
+     1. AUTHENTICATION GATE SCREEN (미인증 사용자를 위한 로그인 전용 화면)
 ============================================================ -->
 <div id="auth-screen" class="hidden">
   <div class="auth-card">
@@ -376,16 +373,21 @@
       거룩한 훈련소에 오신 것을 환영합니다.
     </div>
 
-    <!-- Google 로그인 버튼 마운트 영역 -->
-    <div class="auth-btn-box" id="google-login-btn-target"></div>
+    <!-- Google 로그인 버튼 마운트 영역 및 게스트 모드 통합 -->
+    <div class="auth-btn-box">
+      <div id="google-login-btn-target"></div>
+      <button class="auth-guest-btn" id="btn-guest-login">
+        <span>🛡️</span> 게스트 전우로 바로 체험하기 (데모)
+      </button>
+    </div>
 
-    <!-- OAuth 설정 미비 안내용 에러 표시 박스 -->
+    <!-- Client ID 상태 안내 박스 -->
     <div id="auth-error-box" class="auth-err-msg hidden"></div>
   </div>
 </div>
 
 <!-- ============================================================
-     2. MAIN APPLICATION SHELL (로그인 완료 사용자 화면)
+     2. MAIN APPLICATION SHELL (인증 완료 사용자 화면)
 ============================================================ -->
 <div id="app-shell" class="hidden">
 
@@ -425,20 +427,20 @@
     <input type="date" id="date-picker" />
   </nav>
 
-  <!-- 메인 레이아웃 -->
+  <!-- 메인 레이아웃 (맥락형 인터랙션 디자인) -->
   <main id="main">
 
-    <!-- 10초 스피드 영적 스냅샷 카드 (A-1) -->
-    <section class="snapshot-bar-card" id="snapshot-bar">
+    <!-- 10초 스피드 영적 스냅샷 카드 (A-1) -> 터치 시 모달 오픈 -->
+    <section class="snapshot-bar-card clickable-card" id="snapshot-bar" title="클릭하여 10초 스냅샷 기록">
       <div>
-        <div class="snapshot-title">⚡ 10초 영적 스냅샷</div>
+        <div class="snapshot-title">⚡ 10초 영적 스냅샷 <small style="font-size:0.7rem;color:var(--text-muted);font-weight:normal;">(터치하여 기록)</small></div>
         <div class="snapshot-display" id="snapshot-disp-text">오늘의 피로도와 상태를 기록해 주세요.</div>
       </div>
-      <button class="add-btn" id="btn-open-snapshot" style="padding:5px 10px;font-size:0.75rem;">기록하기</button>
+      <button class="add-btn" id="btn-open-snapshot" style="padding:5px 10px;font-size:0.75rem;">기록</button>
     </section>
 
-    <!-- 🌙 히어로 카드: 밤 자기점검 -->
-    <section class="hero-card" id="hero-retro-section">
+    <!-- 🌙 히어로 카드: 밤 자기점검 -> 전체 영역 터치 가능 -->
+    <section class="hero-card clickable-card" id="hero-retro-section" title="클릭하여 밤 자기점검 시작">
       <div class="hero-header">
         <div class="hero-title">🌙 오늘 밤 자기점검</div>
         <span class="badge badge-gold" id="hero-retro-badge">미완료</span>
@@ -553,26 +555,7 @@
   </main>
 </div>
 
-<!-- 모바일 한 손 조작 하단 고정 바 (J-2) -->
-<div id="bottom-fab-bar">
-  <button class="fab-btn" id="fab-snapshot">
-    <span class="fab-icon">⚡</span>
-    <span>스냅샷</span>
-  </button>
-  <button class="fab-btn" id="fab-devotion">
-    <span class="fab-icon">📖</span>
-    <span>말씀</span>
-  </button>
-  <button class="fab-btn" id="fab-retro" style="color:var(--accent-gold);">
-    <span class="fab-icon">🌙</span>
-    <span>자기점검</span>
-  </button>
-  <button class="fab-btn" id="fab-prayer">
-    <span class="fab-icon">🙏</span>
-    <span>기도</span>
-  </button>
-</div>
-
+<!-- MODALS -->
 <!-- 모달: 10초 스피드 스냅샷 (A-1) -->
 <div class="modal-ov" id="modal-snapshot">
   <div class="modal-sh">
@@ -954,7 +937,7 @@ class SacredBarracksApp {
       this.showAuthScreen();
     }
 
-    // 2. Google OAuth 초기화
+    // 2. Google OAuth 초기화 및 이벤트 바인딩
     this.initGoogleAuth();
     this.bindEvents();
 
@@ -975,17 +958,17 @@ class SacredBarracksApp {
     const clientId = window.ENV?.GOOGLE_CLIENT_ID;
     const errBox = document.getElementById('auth-error-box');
 
+    // Client ID 미설정 시에도 에러로 멈추지 않고 게스트 모드 가이드 안내
     if (!clientId || clientId.includes('YOUR_ACTUAL_GOOGLE_CLIENT_ID') || clientId.includes('placeholder')) {
       if (errBox) {
         errBox.classList.remove('hidden');
-        errBox.innerHTML = `⚠️ <b>Google OAuth Client ID 설정이 필요합니다.</b><br>코드 18행의 <code>window.ENV.GOOGLE_CLIENT_ID</code>에 Google Cloud Console에서 발급받은 실제 Client ID를 입력하세요.`;
+        errBox.innerHTML = `💡 <b>안내:</b> Google OAuth Client ID가 미설정 상태입니다.<br>구글 로그인 사용 시 <code>window.ENV.GOOGLE_CLIENT_ID</code>에 ID를 등록하세요.<br>지금은 <b>'게스트 전우로 바로 체험하기'</b> 버튼을 눌러 모든 기능을 테스트할 수 있습니다.`;
       }
-      return;
     } else {
       if (errBox) errBox.classList.add('hidden');
     }
 
-    if (window.google && window.google.accounts && window.google.accounts.id) {
+    if (clientId && !clientId.includes('YOUR_ACTUAL_GOOGLE_CLIENT_ID') && window.google && window.google.accounts && window.google.accounts.id) {
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: (resp) => this.handleGoogleLoginResponse(resp)
@@ -1001,8 +984,6 @@ class SacredBarracksApp {
           text: 'signin_with'
         });
       }
-    } else {
-      setTimeout(() => this.initGoogleAuth(), 300);
     }
   }
 
@@ -1023,6 +1004,24 @@ class SacredBarracksApp {
 
     await this.repo.save('userProfile', { id: 'current_user', ...this.currentUser });
     this.showToast(`${this.currentUser.name}님 환영합니다! ✝`, 'ok');
+    
+    this.showMainApp();
+    await this.loadState();
+    await this.renderAll();
+  }
+
+  async loginAsGuest() {
+    this.currentUser = {
+      id: 'guest_warrior_' + Date.now(),
+      name: '게스트 전우',
+      email: 'guest@sacred-barracks.local',
+      picture: '',
+      isGuest: true,
+      loggedInAt: new Date().toISOString()
+    };
+
+    await this.repo.save('userProfile', { id: 'current_user', ...this.currentUser });
+    this.showToast('게스트 모드로 진입했습니다. 🛡️', 'ok');
     
     this.showMainApp();
     await this.loadState();
@@ -1106,14 +1105,21 @@ class SacredBarracksApp {
     if (this.currentUser) {
       document.getElementById('user-name-disp').textContent = this.currentUser.name;
       const img = document.getElementById('user-avatar-img');
-      if (img && this.currentUser.picture) {
-        img.src = this.currentUser.picture;
-        img.style.display = 'block';
+      if (img) {
+        if (this.currentUser.picture) {
+          img.src = this.currentUser.picture;
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'none';
+        }
       }
     }
   }
 
   bindEvents() {
+    // 게스트 모드 진입 버튼
+    document.getElementById('btn-guest-login')?.addEventListener('click', () => this.loginAsGuest());
+
     document.getElementById('duty-mode-select')?.addEventListener('change', (e) => this.changeDutyMode(e.target.value));
 
     document.getElementById('btn-prev-day')?.addEventListener('click', async () => { this.curDate = addDays(this.curDate, -1); await this.renderAll(); });
@@ -1135,10 +1141,15 @@ class SacredBarracksApp {
       this.showAuthScreen();
     });
 
-    // 10초 스피드 스냅샷
-    document.getElementById('btn-open-snapshot')?.addEventListener('click', () => this.openModal('modal-snapshot'));
-    document.getElementById('fab-snapshot')?.addEventListener('click', () => this.openModal('modal-snapshot'));
-    document.getElementById('btn-save-snapshot')?.addEventListener('click', () => this.saveSnapshot());
+    // 맥락형 인터랙션: 카드 및 바 자체를 클릭하여 직관적 모달 호출
+    document.getElementById('snapshot-bar')?.addEventListener('click', () => this.openModal('modal-snapshot'));
+    document.getElementById('btn-save-snapshot')?.addEventListener('click', (e) => { e.stopPropagation(); this.saveSnapshot(); });
+
+    document.getElementById('hero-retro-section')?.addEventListener('click', () => { this.renderRetroModal(); this.openModal('modal-retro'); });
+
+    document.getElementById('dev-preview')?.addEventListener('click', () => this.openDevModal());
+    document.getElementById('btn-dev-edit')?.addEventListener('click', (e) => { e.stopPropagation(); this.openDevModal(); });
+    document.getElementById('btn-dev-save')?.addEventListener('click', () => this.saveDevotion());
 
     // 태그 피커 클릭
     document.querySelectorAll('.tag-pill-container').forEach(container => {
@@ -1155,18 +1166,8 @@ class SacredBarracksApp {
       });
     });
 
-    // 말씀 묵상
-    document.getElementById('btn-dev-edit')?.addEventListener('click', () => this.openDevModal());
-    document.getElementById('fab-devotion')?.addEventListener('click', () => this.openDevModal());
-    document.getElementById('btn-dev-save')?.addEventListener('click', () => this.saveDevotion());
-
-    // 밤 자기점검
-    document.getElementById('btn-hero-start-retro')?.addEventListener('click', () => { this.renderRetroModal(); this.openModal('modal-retro'); });
-    document.getElementById('fab-retro')?.addEventListener('click', () => { this.renderRetroModal(); this.openModal('modal-retro'); });
-
     // 기도 타임라인
-    document.getElementById('btn-open-add-prayer')?.addEventListener('click', () => this.openModal('modal-prayer'));
-    document.getElementById('fab-prayer')?.addEventListener('click', () => this.openModal('modal-prayer'));
+    document.getElementById('btn-open-add-prayer')?.addEventListener('click', (e) => { e.stopPropagation(); this.openModal('modal-prayer'); });
     document.getElementById('btn-save-prayer')?.addEventListener('click', () => this.savePrayer());
 
     // 루틴 & Todo 추가
@@ -1175,10 +1176,8 @@ class SacredBarracksApp {
     document.getElementById('btn-todo-add')?.addEventListener('click', () => this.addItem('todo'));
     document.getElementById('todo-inp')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.addItem('todo'); });
 
-    // 실패 인사이트 분석기
+    // 몰입 도구
     document.getElementById('btn-open-fail-analyzer')?.addEventListener('click', () => this.openFailAnalyzerModal());
-
-    // 타이머
     document.getElementById('btn-stopwatch')?.addEventListener('click', () => this.openModal('modal-timer'));
     document.getElementById('btn-timer')?.addEventListener('click', () => this.openModal('modal-timer'));
     document.getElementById('btn-sw-start')?.addEventListener('click', () => this.swGo());
@@ -1229,7 +1228,7 @@ class SacredBarracksApp {
       if (snap) {
         disp.textContent = `🔋 피로도: ${snap.fatigue} | 🕊️ 영성: ${snap.spirit} | 💭 감정: ${snap.mood}`;
       } else {
-        disp.textContent = '오늘의 피로도와 영적 상태를 빠르게 남겨보세요.';
+        disp.textContent = '오늘의 피로도와 영적 상태를 빠르게 남겨보세요. (터치하여 기록)';
       }
     }
   }
@@ -1279,7 +1278,7 @@ class SacredBarracksApp {
     } else {
       if (badge) { badge.textContent = '미완료'; badge.className = 'badge badge-gold'; }
       if (scoreVal) scoreVal.textContent = `-- / 50`;
-      if (gradeText) gradeText.textContent = '점검 전입니다.';
+      if (gradeText) gradeText.textContent = '점검 전입니다. (터치하여 시작)';
     }
   }
 
@@ -1361,7 +1360,6 @@ class SacredBarracksApp {
         const vEl = document.createElement('div');
         vEl.className = 'verse-prev';
         vEl.textContent = rec.devotion;
-        vEl.addEventListener('click', () => this.openDevModal());
         el.appendChild(vEl);
       }
       if (rec.spiritualReflection) {
@@ -1371,7 +1369,7 @@ class SacredBarracksApp {
         el.appendChild(mEl);
       }
     } else {
-      el.innerHTML = '<div class="dev-empty">오늘의 성경 말씀과 묵상을 기록해 보세요 ✝</div>';
+      el.innerHTML = '<div class="dev-empty">오늘의 성경 말씀과 묵상을 기록해 보세요 ✝ (터치하여 입력)</div>';
     }
   }
 
@@ -1448,12 +1446,12 @@ class SacredBarracksApp {
       </div>
     `;
 
-    el.querySelector('.btn-chk-done').addEventListener('click', () => this.toggleStatus(zone, item.id, 'done'));
-    el.querySelector('.btn-chk-rec').addEventListener('click', () => this.toggleStatus(zone, item.id, 'recovery'));
-    el.querySelector('.btn-chk-fail').addEventListener('click', () => this.openFailModal(zone, item.id, item.text, state.failReason || ''));
+    el.querySelector('.btn-chk-done').addEventListener('click', (e) => { e.stopPropagation(); this.toggleStatus(zone, item.id, 'done'); });
+    el.querySelector('.btn-chk-rec').addEventListener('click', (e) => { e.stopPropagation(); this.toggleStatus(zone, item.id, 'recovery'); });
+    el.querySelector('.btn-chk-fail').addEventListener('click', (e) => { e.stopPropagation(); this.openFailModal(zone, item.id, item.text, state.failReason || ''); });
 
-    el.querySelector('[data-act="edit"]')?.addEventListener('click', () => this.openEditModal(zone, item.id, item.text));
-    el.querySelector('[data-act="del"]')?.addEventListener('click', () => this.deleteItem(zone, item.id));
+    el.querySelector('[data-act="edit"]')?.addEventListener('click', (e) => { e.stopPropagation(); this.openEditModal(zone, item.id, item.text); });
+    el.querySelector('[data-act="del"]')?.addEventListener('click', (e) => { e.stopPropagation(); this.deleteItem(zone, item.id); });
 
     return el;
   }
@@ -1591,7 +1589,7 @@ class SacredBarracksApp {
     container.innerHTML = '';
 
     if (prayers.length === 0) {
-      container.innerHTML = '<div style="font-size:0.8rem;color:var(--text-muted);font-style:italic;text-align:center;padding:10px;">등록된 기도제목이 없습니다.</div>';
+      container.innerHTML = '<div style="font-size:0.8rem;color:var(--text-muted);font-style:italic;text-align:center;padding:10px;">등록된 기도제목이 없습니다. 상단 + 버튼으로 추가해보세요.</div>';
       return;
     }
 
@@ -1605,6 +1603,11 @@ class SacredBarracksApp {
         </div>
         ${p.answerNote ? `<div class="prayer-ans-note">소감: ${esc(p.answerNote)} (${p.answeredAt})</div>` : ''}
       `;
+      item.addEventListener('click', () => {
+        document.getElementById('prayer-title-inp').value = p.title;
+        document.getElementById('prayer-ans-inp').value = p.answerNote || '';
+        this.openModal('modal-prayer');
+      });
       container.appendChild(item);
     });
   }
